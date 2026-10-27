@@ -71,15 +71,9 @@
             box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
             transform: translateY(-2px);
         }
-
-        .bg-islamic-pattern {
-            background-color: #050a18;
-            background-image: radial-gradient(rgba(212, 175, 55, 0.08) 1px, transparent 0);
-            background-size: 24px 24px;
-        }
     </style>
 </head>
-<body class="bg-navy-900 text-slate-100 font-sans antialiased bg-islamic-pattern selection:bg-gold-500 selection:text-navy-900">
+<body class="bg-navy-900 text-slate-100 font-sans antialiased selection:bg-gold-500 selection:text-navy-900">
 
     <!-- TOP ANNOUNCEMENT BAR -->
     <div class="bg-navy-950 border-b border-gold-500/20 py-2 px-4 text-xs md:text-sm text-gold-300">
@@ -145,15 +139,11 @@
         </div>
     </header>
 
-    <!-- 1. HERO SECTION WITH MAKKAH BACKGROUND -->
+    <!-- 1. HERO SECTION WITH FIXED MAKKAH BACKGROUND -->
     <section id="home" class="relative min-h-[90vh] flex items-center justify-center overflow-hidden py-16">
-        <!-- Direct Wikimedia Official Kaaba Image Background -->
-        <div class="absolute inset-0 z-0">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Kaaba_Masjid_Haraam_Makkah.jpg" 
-                 alt="Holy Kaaba Makkah Al Mukarramah" 
-                 class="w-full h-full object-cover object-center transform scale-105">
-            <!-- Dark Navy Overlay for Perfect Text Readability -->
-            <div class="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-900/80 to-navy-950/70"></div>
+        <!-- Direct Background Image with Inline Styling & Dark Overlay -->
+        <div class="absolute inset-0 z-0" style="background: url('https://upload.wikimedia.org/wikipedia/commons/e/e7/Kaaba_Masjid_Haraam_Makkah.jpg') no-repeat center center/cover;">
+            <div class="absolute inset-0 bg-navy-950/75"></div>
         </div>
 
         <!-- Hero Content Overlay -->
@@ -188,7 +178,7 @@
             </div>
 
             <!-- Quick Filter Widget -->
-            <div class="bg-navy-950/80 backdrop-blur-md p-6 rounded-2xl gold-border-glow text-left max-w-4xl mx-auto">
+            <div class="bg-navy-950/85 backdrop-blur-md p-6 rounded-2xl gold-border-glow text-left max-w-4xl mx-auto">
                 <p class="text-xs font-bold uppercase tracking-widest text-gold-400 mb-4 flex items-center gap-2">
                     <i class="fa-solid fa-magnifying-glass"></i> Quick Package & Hotel Finder
                 </p>
