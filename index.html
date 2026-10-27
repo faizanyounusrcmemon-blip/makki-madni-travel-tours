@@ -13,6 +13,7 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+
     <!-- CMS configuration: set your Supabase project URL and anon key in cms-config.js -->
     <script src="/cms-config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -71,9 +72,32 @@
             box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
             transform: translateY(-2px);
         }
+
+        .bg-islamic-pattern {
+            background-color: #050a18;
+            background-image: radial-gradient(rgba(212, 175, 55, 0.08) 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+
+        /* Hero image fills the full first screen behind the brand title */
+        #home > div:first-child {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+        }
+        #makkah-hero-image {
+            display: block;
+            min-width: 100%;
+            min-height: 100%;
+            object-fit: cover;
+            object-position: center 45%;
+        }
+        @media (max-width: 640px) {
+            #makkah-hero-image { object-position: center center; }
+        }
     </style>
 </head>
-<body class="bg-navy-900 text-slate-100 font-sans antialiased selection:bg-gold-500 selection:text-navy-900">
+<body class="bg-navy-900 text-slate-100 font-sans antialiased bg-islamic-pattern selection:bg-gold-500 selection:text-navy-900">
 
     <!-- TOP ANNOUNCEMENT BAR -->
     <div class="bg-navy-950 border-b border-gold-500/20 py-2 px-4 text-xs md:text-sm text-gold-300">
@@ -139,11 +163,20 @@
         </div>
     </header>
 
-    <!-- 1. HERO SECTION WITH FIXED MAKKAH BACKGROUND -->
+    <!-- 1. HERO SECTION — MAKKAH / HOLY KAABA BACKGROUND -->
     <section id="home" class="relative min-h-[90vh] flex items-center justify-center overflow-hidden py-16">
-        <!-- Direct Background Image with Inline Styling & Dark Overlay -->
-        <div class="absolute inset-0 z-0" style="background: url('https://upload.wikimedia.org/wikipedia/commons/e/e7/Kaaba_Masjid_Haraam_Makkah.jpg') no-repeat center center/cover;">
-            <div class="absolute inset-0 bg-navy-950/75"></div>
+        <!-- Full hero background image with automatic fallback if the first image fails -->
+        <div class="absolute inset-0 z-0 bg-navy-950">
+            <img
+                 id="makkah-hero-image"
+                 src="https://images.unsplash.com/photo-1564769625905-50e93615e769?auto=format&fit=crop&w=2000&q=90"
+                 data-fallback="https://upload.wikimedia.org/wikipedia/commons/e/e7/Kaaba_Masjid_Haraam_Makkah.jpg"
+                 alt="Holy Kaaba and Masjid al-Haram in Makkah Al Mukarramah"
+                 fetchpriority="high"
+                 class="w-full h-full object-cover object-center transform scale-105"
+                 onerror="if(this.dataset.fallback && this.src !== this.dataset.fallback){this.src=this.dataset.fallback;}else{this.style.display='none';}">
+            <!-- Dark navy overlay keeps the gold title readable while showing Makkah -->
+            <div class="absolute inset-0 bg-gradient-to-t from-navy-950/95 via-navy-900/55 to-navy-950/55"></div>
         </div>
 
         <!-- Hero Content Overlay -->
@@ -178,7 +211,7 @@
             </div>
 
             <!-- Quick Filter Widget -->
-            <div class="bg-navy-950/85 backdrop-blur-md p-6 rounded-2xl gold-border-glow text-left max-w-4xl mx-auto">
+            <div class="bg-navy-950/80 backdrop-blur-md p-6 rounded-2xl gold-border-glow text-left max-w-4xl mx-auto">
                 <p class="text-xs font-bold uppercase tracking-widest text-gold-400 mb-4 flex items-center gap-2">
                     <i class="fa-solid fa-magnifying-glass"></i> Quick Package & Hotel Finder
                 </p>
