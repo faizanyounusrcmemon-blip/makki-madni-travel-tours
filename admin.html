@@ -1,46 +1,304 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Website Admin | Makki Madni Travel & Tours</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/cms-config.js"></script>
-<style>
-body{font-family:Montserrat,sans-serif;background:#050a18;color:#f8fafc} .gold{color:#e6ca65}.panel{background:#0a1128;border:1px solid #8b702f66;border-radius:18px}.field{width:100%;background:#030712;border:1px solid #6b5a2a;border-radius:9px;padding:11px;color:white;outline:none}.btn{background:linear-gradient(135deg,#f3e5ab,#d4af37,#aa7c11);color:#030712;font-weight:800;border-radius:9px;padding:11px 16px}.btn2{border:1px solid #d4af37;color:#f3e5ab;border-radius:9px;padding:9px 12px}.hidden{display:none!important}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Content Manager | Makki Madni Travel</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: { 950: '#030712', 900: '#050a18', 800: '#0a1128', 700: '#111d42' },
+                        gold: { 300: '#f3e5ab', 400: '#e6ca65', 500: '#d4af37', 600: '#aa7c11' }
+                    },
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        sans: ['Montserrat', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #FFF5C0 0%, #D4AF37 40%, #AA7C11 70%, #F3E5AB 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .panel { background: rgba(10, 17, 40, 0.92); backdrop-blur: blur(10px); border: 1px solid rgba(212, 175, 55, 0.4); border-radius: 18px; }
+        .field { width: 100%; background: #030712; border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 9px; padding: 11px; color: white; outline: none; }
+        .field:focus { border-color: #d4af37; }
+        .btn { background: linear-gradient(135deg, #f3e5ab, #d4af37, #aa7c11); color: #030712; font-weight: 800; border-radius: 9px; padding: 10px 18px; transition: 0.2s; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn2 { border: 1px solid #d4af37; color: #f3e5ab; border-radius: 9px; padding: 9px 14px; transition: 0.2s; }
+        .btn2:hover { background: rgba(212, 175, 55, 0.1); }
+    </style>
 </head>
-<body>
-<header class="border-b border-yellow-600/30 px-4 py-5"><div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3"><div><p class="gold text-xs tracking-[.25em]">MAKKI MADNI TRAVEL & TOURS</p><h1 class="text-xl md:text-2xl font-bold mt-1" style="font-family:Cinzel,serif">Website Content Manager</h1></div><a href="/" class="btn2">← View Website</a></div></header>
-<main class="max-w-6xl mx-auto p-4 md:p-7">
-<div id="config-warning" class="panel p-5 mb-5 hidden"><h2 class="gold font-bold mb-2">Supabase setup required</h2><p class="text-sm text-slate-300">cms-config.js mein Project URL aur anon/public key add karein. Setup ke liye README.txt dekhein.</p></div>
-<section id="login-panel" class="panel max-w-lg mx-auto p-6 md:p-8 mt-8">
-<h2 class="text-xl font-bold gold mb-2">Admin Login</h2><p class="text-sm text-slate-400 mb-5">Sirf authorized admin account se login karein.</p>
-<form id="login-form" class="space-y-4"><label class="block text-sm">Email<input class="field mt-2" id="email" type="email" required autocomplete="username"></label><label class="block text-sm">Password<input class="field mt-2" id="password" type="password" required autocomplete="current-password"></label><button class="btn w-full" type="submit">Secure Login</button></form><p id="login-msg" class="text-sm mt-4 text-amber-200"></p>
-</section>
-<section id="dashboard" class="hidden">
-<div class="flex flex-wrap gap-3 items-center justify-between my-6"><div><h2 class="text-2xl font-bold gold">Manage Website</h2><p class="text-sm text-slate-400">Hotels aur Umrah packages yahan se add/edit/delete karein.</p></div><button id="logout" class="btn2">Logout</button></div>
-<div class="flex flex-wrap gap-3 mb-5"><button class="btn" id="new-hotel">+ Add Hotel</button><button class="btn" id="new-package">+ Add Package</button><button class="btn2" id="refresh">Refresh List</button></div>
-<div id="status" class="text-sm mb-4 text-amber-200"></div>
-<div class="grid md:grid-cols-2 gap-5"><section class="panel p-4"><h3 class="gold font-bold text-lg mb-3">Hotels</h3><div id="hotels-list" class="space-y-3"></div></section><section class="panel p-4"><h3 class="gold font-bold text-lg mb-3">Umrah Packages</h3><div id="packages-list" class="space-y-3"></div></section></div>
-</section>
-<div class="text-center text-xs text-slate-500 mt-10">Makki Madni Travel & Tours · Private admin dashboard</div>
-</main>
-<div id="editor-wrap" class="hidden fixed inset-0 z-50 bg-black/80 overflow-y-auto p-3 md:p-8"><div class="panel max-w-2xl mx-auto p-5 md:p-7 my-4"><div class="flex justify-between gap-3 mb-5"><h2 id="editor-title" class="text-xl font-bold gold">Edit content</h2><button id="close-editor" class="btn2">Close</button></div>
-<form id="editor" class="space-y-4">
-<input type="hidden" id="record-id"><input type="hidden" id="record-type">
-<label class="block text-sm">Name / Title<input id="f-name" class="field mt-1" required maxlength="120"></label>
-<div id="city-wrap"><label class="block text-sm">City<select id="f-city" class="field mt-1"><option value="makkah">Makkah</option><option value="madinah">Madinah</option></select></label></div>
-<label class="block text-sm">Badge / Short label<input id="f-badge" class="field mt-1" placeholder="5-Star Luxury VIP"></label>
-<label class="block text-sm">Description<textarea id="f-description" class="field mt-1" rows="4" required maxlength="2000"></textarea></label>
-<div id="view-wrap"><label class="block text-sm">View / Location text<input id="f-view" class="field mt-1" placeholder="Haram / Kaaba view"></label></div>
-<label class="block text-sm">Price / Rate (optional)<input id="f-price" class="field mt-1" placeholder="Direct Quote / PKR 250,000"></label>
-<label class="block text-sm">Photo URL (optional)<input id="f-image" class="field mt-1" placeholder="https://..."></label>
-<label class="block text-sm">Or upload photo<input id="f-file" class="field mt-1" type="file" accept="image/png,image/jpeg,image/webp"></label>
-<label class="block text-sm">Display order<input id="f-order" class="field mt-1" type="number" value="0"></label>
-<label class="flex items-center gap-3"><input id="f-visible" type="checkbox" checked class="w-5 h-5 accent-yellow-500"> <span>Website par show karein</span></label>
-<div class="flex gap-3"><button class="btn flex-1" type="submit">Save Changes</button><button id="cancel-editor" class="btn2" type="button">Cancel</button></div><p id="editor-msg" class="text-sm text-amber-200"></p>
-</form></div></div>
-<script src="/admin.js"></script>
-</body></html>
+<body class="bg-navy-950 text-slate-100 font-sans min-h-screen relative">
+
+    <!-- BACKGROUND MAKKI CLOCK TOWER / KAABA VIEW (As Requested in Screenshot) -->
+    <div class="fixed inset-0 z-0 opacity-30 pointer-events-none">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Kaaba_Masjid_Haraam_Makkah.jpg" alt="Makkah Background" class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-900/80 to-navy-950"></div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="relative z-10 border-b border-gold-500/30 px-6 py-4 bg-navy-950/80 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-gold-500/20 border border-gold-400 flex items-center justify-center text-gold-400">
+                    <i class="fa-solid fa-kaaba"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold font-cinzel gold-gradient-text">MAKKI MADNI TRAVEL & TOURS</h1>
+                    <p class="text-xs text-slate-400 tracking-wider">Website Content Manager · Manage Hotels & Umrah Packages</p>
+                </div>
+            </div>
+            <a href="index.html" class="btn2 text-xs uppercase tracking-wider"><i class="fa-solid fa-arrow-left mr-1"></i> View Website</a>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="relative z-10 max-w-6xl mx-auto p-4 md:p-8">
+
+        <!-- LOGIN PANEL -->
+        <section id="login-panel" class="panel max-w-md mx-auto p-8 mt-12 shadow-2xl">
+            <div class="text-center mb-6">
+                <div class="inline-block p-3 rounded-full bg-gold-500/10 border border-gold-500/30 text-gold-400 text-2xl mb-2">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h2 class="text-2xl font-bold font-cinzel text-gold-300">Admin Login</h2>
+                <p class="text-xs text-slate-400 mt-1">Sirf authorized admin account se login karein.</p>
+            </div>
+
+            <form id="login-form" class="space-y-4" onsubmit="handleLogin(event)">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Email Address</label>
+                    <input class="field text-sm" id="email" type="email" value="admin@makkimadni.com" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Password</label>
+                    <input class="field text-sm" id="password" type="password" value="admin123" required>
+                </div>
+                <button class="btn w-full py-3 mt-2 text-sm uppercase tracking-wider" type="submit">Secure Login</button>
+            </form>
+            <p id="login-msg" class="text-xs text-center text-amber-300 mt-4"></p>
+        </section>
+
+        <!-- DASHBOARD (Hidden until login) -->
+        <section id="dashboard" class="hidden space-y-6">
+            <div class="panel p-6 flex flex-wrap gap-4 items-center justify-between">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-widest text-emerald-400"><i class="fa-solid fa-circle text-[8px] mr-1"></i> System Ready</span>
+                    <h2 class="text-2xl font-bold font-cinzel text-gold-300 mt-1">Manage Website Content</h2>
+                    <p class="text-xs text-slate-300">Hotels aur Umrah packages yahan se add, edit ya delete karein.</p>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="openEditor('hotel')" class="btn text-xs"><i class="fa-solid fa-plus mr-1"></i> Add Hotel</button>
+                    <button onclick="openEditor('package')" class="btn text-xs"><i class="fa-solid fa-plus mr-1"></i> Add Package</button>
+                    <button onclick="handleLogout()" class="btn2 text-xs">Logout</button>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- HOTELS MANAGEMENT -->
+                <div class="panel p-6">
+                    <h3 class="font-cinzel text-lg font-bold text-gold-300 mb-4 flex items-center justify-between">
+                        <span><i class="fa-solid fa-hotel mr-2"></i> Hotels List</span>
+                        <span id="hotel-count" class="text-xs bg-navy-900 border border-gold-500/30 px-2.5 py-1 rounded-full text-gold-400">0</span>
+                    </h3>
+                    <div id="hotels-list" class="space-y-3 max-h-[400px] overflow-y-auto pr-1">
+                        <!-- Dynamic items -->
+                    </div>
+                </div>
+
+                <!-- PACKAGES MANAGEMENT -->
+                <div class="panel p-6">
+                    <h3 class="font-cinzel text-lg font-bold text-gold-300 mb-4 flex items-center justify-between">
+                        <span><i class="fa-solid fa-box-archive mr-2"></i> Umrah Packages</span>
+                        <span id="package-count" class="text-xs bg-navy-900 border border-gold-500/30 px-2.5 py-1 rounded-full text-gold-400">0</span>
+                    </h3>
+                    <div id="packages-list" class="space-y-3 max-h-[400px] overflow-y-auto pr-1">
+                        <!-- Dynamic items -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- EDITOR MODAL -->
+    <div id="editor-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="panel max-w-lg w-full p-6 shadow-2xl">
+            <div class="flex justify-between items-center mb-4 pb-2 border-b border-gold-500/20">
+                <h3 id="modal-title" class="font-cinzel text-lg font-bold text-gold-300">Add New Record</h3>
+                <button onclick="closeEditor()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form id="record-form" onsubmit="saveRecord(event)" class="space-y-4">
+                <input type="hidden" id="rec-id">
+                <input type="hidden" id="rec-type">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Title / Hotel Name</label>
+                    <input class="field text-sm" id="rec-name" required placeholder="e.g. Fairmont Makkah">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Badge / Subtitle</label>
+                    <input class="field text-sm" id="rec-badge" placeholder="e.g. 5-Star Luxury VIP">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Description / Details</label>
+                    <textarea class="field text-sm" id="rec-desc" rows="3" required placeholder="Write details here..."></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Price / View Info</label>
+                    <input class="field text-sm" id="rec-price" placeholder="e.g. PKR 250,000 or Haram View">
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button class="btn flex-1 py-2.5 text-xs uppercase" type="submit">Save Changes</button>
+                    <button class="btn2 py-2.5 text-xs uppercase" type="button" onclick="closeEditor()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SCRIPT FOR LOCAL STORAGE ADMIN -->
+    <script>
+        let dbHotels = JSON.parse(localStorage.getItem('mm_hotels')) || [
+            { id: 1, name: "Makkah Clock Royal Tower", badge: "5-Star Luxury VIP", desc: "Premium luxury suites inside Abraj Al Bait with direct elevator access.", price: "Haram View" },
+            { id: 2, name: "Swissôtel Makkah", badge: "5-Star Deluxe", desc: "Modern luxury with direct access to Ajyad Street.", price: "Kaaba View" }
+        ];
+
+        let dbPackages = JSON.parse(localStorage.getItem('mm_packages')) || [
+            { id: 1, name: "5-Star VIP Umrah", badge: "15 Days Executive", desc: "7 Nights Makkah Fairmont + 7 Nights Madinah Dar Al Taqwa.", price: "PKR 250,000" },
+            { id: 2, name: "4-Star Deluxe Umrah", badge: "14 Days Standard", desc: "7 Nights Swissôtel + 7 Nights Frontel Al Harithia.", price: "PKR 180,000" }
+        ];
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            if(email === 'admin@makkimadni.com' && pass === 'admin123') {
+                document.getElementById('login-panel').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+                renderLists();
+            } else {
+                document.getElementById('login-msg').innerText = "Invalid credentials! Use admin@makkimadni.com / admin123";
+            }
+        }
+
+        function handleLogout() {
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('login-panel').classList.remove('hidden');
+        }
+
+        function renderLists() {
+            const hList = document.getElementById('hotels-list');
+            const pList = document.getElementById('packages-list');
+            
+            document.getElementById('hotel-count').innerText = dbHotels.length;
+            document.getElementById('package-count').innerText = dbPackages.length;
+
+            hList.innerHTML = dbHotels.map(h => `
+                <div class="bg-navy-900/80 p-4 rounded-xl border border-gold-500/20 flex justify-between items-center">
+                    <div>
+                        <span class="text-[10px] bg-gold-500/20 text-gold-300 px-2 py-0.5 rounded uppercase font-bold">${h.badge}</span>
+                        <h4 class="font-bold text-sm text-white mt-1">${h.name}</h4>
+                        <p class="text-xs text-slate-400 line-clamp-1">${h.desc}</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="editRecord('hotel', ${h.id})" class="btn2 px-2.5 py-1 text-xs"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteRecord('hotel', ${h.id})" class="bg-red-500/20 text-red-400 border border-red-500/30 px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('') || '<p class="text-xs text-slate-500 text-center py-4">No hotels added yet.</p>';
+
+            pList.innerHTML = dbPackages.map(p => `
+                <div class="bg-navy-900/80 p-4 rounded-xl border border-gold-500/20 flex justify-between items-center">
+                    <div>
+                        <span class="text-[10px] bg-gold-500/20 text-gold-300 px-2 py-0.5 rounded uppercase font-bold">${p.badge}</span>
+                        <h4 class="font-bold text-sm text-white mt-1">${p.name}</h4>
+                        <p class="text-xs text-slate-400 line-clamp-1">${p.desc} — <strong class="text-gold-400">${p.price}</strong></p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="editRecord('package', ${p.id})" class="btn2 px-2.5 py-1 text-xs"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteRecord('package', ${p.id})" class="bg-red-500/20 text-red-400 border border-red-500/30 px-2.5 py-1 rounded text-xs"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('') || '<p class="text-xs text-slate-500 text-center py-4">No packages added yet.</p>';
+        }
+
+        function openEditor(type, id = null) {
+            document.getElementById('editor-modal').classList.remove('hidden');
+            document.getElementById('rec-type').value = type;
+            document.getElementById('rec-id').value = id || '';
+            
+            if(id) {
+                const list = type === 'hotel' ? dbHotels : dbPackages;
+                const item = list.find(x => x.id === id);
+                document.getElementById('modal-title').innerText = `Edit ${type.toUpperCase()}`;
+                document.getElementById('rec-name').value = item.name;
+                document.getElementById('rec-badge').value = item.badge;
+                document.getElementById('rec-desc').value = item.desc;
+                document.getElementById('rec-price').value = item.price;
+            } else {
+                document.getElementById('modal-title').innerText = `Add New ${type.toUpperCase()}`;
+                document.getElementById('record-form').reset();
+            }
+        }
+
+        function closeEditor() {
+            document.getElementById('editor-modal').classList.add('hidden');
+        }
+
+        function saveRecord(e) {
+            e.preventDefault();
+            const type = document.getElementById('rec-type').value;
+            const id = document.getElementById('rec-id').value;
+            const obj = {
+                id: id ? parseInt(id) : Date.now(),
+                name: document.getElementById('rec-name').value,
+                badge: document.getElementById('rec-badge').value,
+                desc: document.getElementById('rec-desc').value,
+                price: document.getElementById('rec-price').value
+            };
+
+            if(type === 'hotel') {
+                if(id) dbHotels = dbHotels.map(x => x.id == id ? obj : x);
+                else dbHotels.push(obj);
+                localStorage.setItem('mm_hotels', JSON.stringify(dbHotels));
+            } else {
+                if(id) dbPackages = dbPackages.map(x => x.id == id ? obj : x);
+                else dbPackages.push(obj);
+                localStorage.setItem('mm_packages', JSON.stringify(dbPackages));
+            }
+
+            closeEditor();
+            renderLists();
+        }
+
+        function editRecord(type, id) {
+            openEditor(type, id);
+        }
+
+        function deleteRecord(type, id) {
+            if(confirm("Are you sure you want to delete this record?")) {
+                if(type === 'hotel') {
+                    dbHotels = dbHotels.filter(x => x.id !== id);
+                    localStorage.setItem('mm_hotels', JSON.stringify(dbHotels));
+                } else {
+                    dbPackages = dbPackages.filter(x => x.id !== id);
+                    localStorage.setItem('mm_packages', JSON.stringify(dbPackages));
+                }
+                renderLists();
+            }
+        }
+    </script>
+</body>
+</html>
