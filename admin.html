@@ -1,215 +1,823 @@
+
 <!doctype html>
 <html lang="en">
+
 <head>
+
 <meta charset="utf-8">
+
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
 <title>Website Admin | Makki Madni Travel & Tours</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link
+  href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Montserrat:wght@400;500;600;700&display=swap"
+  rel="stylesheet"
+>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="/cms-config.js"></script>
 
 <style>
-* { box-sizing: border-box; }
-html { min-height: 100%; }
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+}
+
 body {
   font-family: Montserrat, sans-serif;
   color: #f8fafc;
   min-height: 100vh;
   margin: 0;
-  background: linear-gradient(180deg, rgba(3, 7, 18, 0.72) 0%, rgba(3, 7, 18, 0.82) 50%, rgba(3, 7, 18, 0.91) 100%), url("https://images.unsplash.com/photo-1564769625905-50e93615e769?auto=format&fit=crop&w=2000&q=90");
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(3,7,18,.68) 0%,
+      rgba(3,7,18,.78) 50%,
+      rgba(3,7,18,.91) 100%
+    ),
+    url("https://images.unsplash.com/photo-1564769625905-50e93615e769?auto=format&fit=crop&w=2000&q=90");
+
   background-color: #050a18;
   background-position: center center;
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
-.gold { color: #e6ca65; }
+
+.gold {
+  color: #e6ca65;
+}
+
 .panel {
-  background: rgba(5, 10, 28, 0.88);
+  background: rgba(5,10,28,.88);
+
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(212, 175, 55, 0.45);
+
+  border: 1px solid rgba(212,175,55,.45);
   border-radius: 18px;
-  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.30);
+
+  box-shadow: 0 15px 45px rgba(0,0,0,.30);
 }
+
 .field {
-  display: block; width: 100%; background: rgba(3, 7, 18, 0.92);
-  border: 1px solid #6b5a2a; border-radius: 9px; padding: 12px;
-  color: white; outline: none; font-family: Montserrat, sans-serif;
+  display: block;
+  width: 100%;
+
+  background: rgba(3,7,18,.92);
+
+  border: 1px solid #6b5a2a;
+  border-radius: 9px;
+
+  padding: 12px;
+
+  color: white;
+  outline: none;
+
+  font-family: Montserrat,sans-serif;
 }
-.field:focus { border-color: #e6ca65; box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.16); }
+
+.field:focus {
+  border-color: #e6ca65;
+
+  box-shadow:
+    0 0 0 2px rgba(212,175,55,.16);
+}
+
 .btn {
-  display: inline-flex; justify-content: center; align-items: center; gap: 8px;
-  background: linear-gradient(135deg, #f3e5ab, #d4af37, #aa7c11);
-  color: #030712; font-weight: 800; border: 1px solid #e6ca65;
-  border-radius: 9px; padding: 11px 16px; cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f3e5ab,
+      #d4af37,
+      #aa7c11
+    );
+
+  color: #030712;
+  font-weight: 800;
+
+  border: 1px solid #e6ca65;
+  border-radius: 9px;
+
+  padding: 11px 16px;
+  cursor: pointer;
 }
+
+.btn:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
 .btn2 {
-  display: inline-flex; justify-content: center; align-items: center; gap: 7px;
-  background: rgba(3, 7, 18, 0.45); border: 1px solid #d4af37;
-  color: #f3e5ab; border-radius: 9px; padding: 9px 12px; cursor: pointer; text-decoration: none;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+
+  background: rgba(3,7,18,.45);
+
+  border: 1px solid #d4af37;
+  color: #f3e5ab;
+
+  border-radius: 9px;
+  padding: 9px 12px;
+
+  cursor: pointer;
+  text-decoration: none;
 }
-.hidden { display: none !important; }
-header { background: rgba(3, 7, 18, 0.78); border-bottom: 1px solid rgba(212, 175, 55, 0.35); }
-.password-wrap { position: relative; }
-.password-wrap .field { padding-right: 78px; }
+
+.hidden {
+  display: none !important;
+}
+
+header {
+  background: rgba(3,7,18,.78);
+
+  border-bottom:
+    1px solid rgba(212,175,55,.35);
+}
+
+.password-wrap {
+  position: relative;
+}
+
+.password-wrap .field {
+  padding-right: 78px;
+}
+
 .password-toggle {
-  position: absolute; top: 50%; right: 9px; transform: translateY(-50%);
-  padding: 7px 8px; color: #e6ca65; font-size: 12px; font-weight: 800;
-  background: transparent; border: none; cursor: pointer;
+  position: absolute;
+  top: 50%;
+  right: 9px;
+
+  transform: translateY(-50%);
+
+  padding: 7px 8px;
+
+  color: #e6ca65;
+  font-size: 12px;
+  font-weight: 800;
+
+  background: transparent;
+  border: none;
+
+  cursor: pointer;
 }
+
+video {
+  background: #000;
+}
+
 </style>
+
 </head>
 
 <body>
+
+<!-- ====================================== -->
+<!-- HEADER -->
+<!-- ====================================== -->
+
 <header class="px-4 py-5">
+
   <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
+
     <div>
-      <p class="gold text-xs tracking-[.25em]">MAKKI MADNI TRAVEL &amp; TOURS</p>
-      <h1 class="text-xl md:text-2xl font-bold mt-1" style="font-family:Cinzel,serif">Website Content Manager</h1>
-      <p class="text-xs text-slate-400 mt-1">Hotels · Umrah Packages · Multiple Media Support</p>
+
+      <p class="gold text-xs tracking-[.25em]">
+        MAKKI MADNI TRAVEL &amp; TOURS
+      </p>
+
+      <h1
+        class="text-xl md:text-2xl font-bold mt-1"
+        style="font-family:Cinzel,serif"
+      >
+        Website Content Manager
+      </h1>
+
+      <p class="text-xs text-slate-400 mt-1">
+        Hotels · Umrah Packages · Photos · Videos · PDF
+      </p>
+
     </div>
-    <a href="/" class="btn2">← View Website</a>
+
+    <a href="/" class="btn2">
+      ← View Website
+    </a>
+
   </div>
+
 </header>
 
+<!-- ====================================== -->
+<!-- MAIN -->
+<!-- ====================================== -->
+
 <main class="max-w-6xl mx-auto p-4 md:p-7">
-  <div id="config-warning" class="panel p-5 mb-5 hidden">
-    <h2 class="gold font-bold mb-2">Supabase Setup Required</h2>
-    <p class="text-sm text-slate-300">cms-config.js mein Project URL aur anon/public key check karein.</p>
+
+  <!-- CONFIG WARNING -->
+
+  <div
+    id="config-warning"
+    class="panel p-5 mb-5 hidden"
+  >
+
+    <h2 class="gold font-bold mb-2">
+      Supabase Setup Required
+    </h2>
+
+    <p class="text-sm text-slate-300">
+      cms-config.js mein Project URL aur anon/public key check karein.
+    </p>
+
   </div>
 
-  <!-- LOGIN PANEL -->
-  <section id="login-panel" class="panel max-w-lg mx-auto p-6 md:p-8 mt-8">
+  <!-- ====================================== -->
+  <!-- LOGIN -->
+  <!-- ====================================== -->
+
+  <section
+    id="login-panel"
+    class="panel max-w-lg mx-auto p-6 md:p-8 mt-8"
+  >
+
     <div class="text-center mb-6">
-      <div class="mx-auto mb-4 flex items-center justify-center rounded-full" style="width:76px;height:76px;border:1px solid #d4af37;background:rgba(212,175,55,.10);font-size:34px;">🕋</div>
-      <h2 class="text-xl md:text-2xl font-bold gold mb-2">Admin Login</h2>
+
+      <div
+        class="mx-auto mb-4 flex items-center justify-center rounded-full"
+        style="
+          width:76px;
+          height:76px;
+          border:1px solid #d4af37;
+          background:rgba(212,175,55,.10);
+          font-size:34px;
+        "
+      >
+        🕋
+      </div>
+
+      <h2 class="text-xl md:text-2xl font-bold gold mb-2">
+        Admin Login
+      </h2>
+
+      <p class="text-xs text-slate-400">
+        Makki Madni Travel Website Management
+      </p>
+
     </div>
+
     <form id="login-form" class="space-y-4">
-      <label class="block text-sm">Email <input class="field mt-2" id="email" type="email" required placeholder="Admin email"></label>
-      <label class="block text-sm">Password
-        <div class="password-wrap mt-2">
-          <input class="field" id="password" type="password" required placeholder="Enter password">
-          <button type="button" id="toggle-password" class="password-toggle">SHOW</button>
-        </div>
+
+      <label class="block text-sm">
+
+        Email
+
+        <input
+          class="field mt-2"
+          id="email"
+          type="email"
+          required
+          placeholder="Admin email"
+          autocomplete="username"
+        >
+
       </label>
-      <button class="btn w-full" type="submit">🔐 Secure Login</button>
+
+      <label class="block text-sm">
+
+        Password
+
+        <div class="password-wrap mt-2">
+
+          <input
+            class="field"
+            id="password"
+            type="password"
+            required
+            placeholder="Enter password"
+            autocomplete="current-password"
+          >
+
+          <button
+            type="button"
+            id="toggle-password"
+            class="password-toggle"
+          >
+            SHOW
+          </button>
+
+        </div>
+
+      </label>
+
+      <button class="btn w-full" type="submit">
+        🔐 Secure Login
+      </button>
+
     </form>
-    <p id="login-msg" class="text-sm mt-4 text-amber-200"></p>
+
+    <p
+      id="login-msg"
+      class="text-sm mt-4 text-amber-200"
+    ></p>
+
   </section>
 
+  <!-- ====================================== -->
   <!-- DASHBOARD -->
+  <!-- ====================================== -->
+
   <section id="dashboard" class="hidden">
+
     <div class="flex flex-wrap gap-3 items-center justify-between my-6">
+
       <div>
-        <h2 class="text-2xl font-bold gold">Manage Website Content</h2>
-        <p class="text-sm text-slate-300 mt-1">Hotels aur Packages mein multiple pictures, videos aur PDFs add karein.</p>
+
+        <h2 class="text-2xl font-bold gold">
+          Manage Website Content
+        </h2>
+
+        <p class="text-sm text-slate-300 mt-1">
+          Hotels aur Packages mein multiple pictures, videos aur PDFs add karein.
+        </p>
+
       </div>
-      <button id="logout" class="btn2" type="button">Logout</button>
+
+      <button
+        id="logout"
+        class="btn2"
+        type="button"
+      >
+        Logout
+      </button>
+
     </div>
+
+    <!-- ACTION BUTTONS -->
 
     <div class="flex flex-wrap gap-3 mb-5">
-      <button class="btn" id="new-hotel" type="button">+ Add Hotel</button>
-      <button class="btn" id="new-package" type="button">+ Add Package</button>
-      <button class="btn2" id="refresh" type="button">↻ Refresh List</button>
+
+      <button
+        class="btn"
+        id="new-hotel"
+        type="button"
+      >
+        + Add Hotel
+      </button>
+
+      <button
+        class="btn"
+        id="new-package"
+        type="button"
+      >
+        + Add Package
+      </button>
+
+      <button
+        class="btn2"
+        id="refresh"
+        type="button"
+      >
+        ↻ Refresh List
+      </button>
+
     </div>
 
-    <div id="status" class="text-sm mb-4 text-amber-200"></div>
+    <!-- STATUS -->
+
+    <div
+      id="status"
+      class="text-sm mb-4 text-amber-200"
+    ></div>
+
+    <!-- CONTENT GRID -->
 
     <div class="grid md:grid-cols-2 gap-5">
+
+      <!-- HOTELS -->
+
       <section class="panel p-4 md:p-5">
-        <h3 class="gold font-bold text-lg mb-3">🕋 Makkah &amp; Madinah Hotels</h3>
-        <div id="hotels-list" class="space-y-3"></div>
+
+        <h3 class="gold font-bold text-lg mb-3">
+          🕋 Makkah &amp; Madinah Hotels
+        </h3>
+
+        <div
+          id="hotels-list"
+          class="space-y-3"
+        ></div>
+
       </section>
+
+      <!-- PACKAGES -->
+
       <section class="panel p-4 md:p-5">
-        <h3 class="gold font-bold text-lg mb-3">✈ Umrah Packages</h3>
-        <div id="packages-list" class="space-y-3"></div>
+
+        <h3 class="gold font-bold text-lg mb-3">
+          ✈ Umrah Packages
+        </h3>
+
+        <div
+          id="packages-list"
+          class="space-y-3"
+        ></div>
+
       </section>
+
     </div>
+
   </section>
+
 </main>
 
+<!-- ====================================== -->
 <!-- EDITOR MODAL -->
-<div id="editor-wrap" class="hidden fixed inset-0 z-50 bg-black/80 overflow-y-auto p-3 md:p-8">
+<!-- ====================================== -->
+
+<div
+  id="editor-wrap"
+  class="hidden fixed inset-0 z-50 bg-black/80 overflow-y-auto p-3 md:p-8"
+>
+
   <div class="panel max-w-2xl mx-auto p-5 md:p-7 my-4">
+
+    <!-- EDITOR HEADER -->
+
     <div class="flex justify-between items-center gap-3 mb-5">
-      <h2 id="editor-title" class="text-xl font-bold gold">Edit Content</h2>
-      <button id="close-editor" class="btn2" type="button">Close ✕</button>
+
+      <h2
+        id="editor-title"
+        class="text-xl font-bold gold"
+      >
+        Edit Content
+      </h2>
+
+      <button
+        id="close-editor"
+        class="btn2"
+        type="button"
+      >
+        Close ✕
+      </button>
+
     </div>
 
-    <form id="editor" class="space-y-4">
-      <input type="hidden" id="record-id">
-      <input type="hidden" id="record-type">
+    <!-- EDITOR FORM -->
 
-      <label class="block text-sm">Name / Title <input id="f-name" class="field mt-1" required placeholder="Hotel or package name"></label>
-      
+    <form id="editor" class="space-y-4">
+
+      <input
+        type="hidden"
+        id="record-id"
+      >
+
+      <input
+        type="hidden"
+        id="record-type"
+      >
+
+      <!-- NAME -->
+
+      <label class="block text-sm">
+
+        Name / Title
+
+        <input
+          id="f-name"
+          class="field mt-1"
+          required
+          placeholder="Hotel or package name"
+        >
+
+      </label>
+
+      <!-- CITY -->
+
       <div id="city-wrap">
-        <label class="block text-sm">City
-          <select id="f-city" class="field mt-1">
-            <option value="makkah">Makkah</option>
-            <option value="madinah">Madinah</option>
+
+        <label class="block text-sm">
+
+          City
+
+          <select
+            id="f-city"
+            class="field mt-1"
+          >
+
+            <option value="makkah">
+              Makkah
+            </option>
+
+            <option value="madinah">
+              Madinah
+            </option>
+
           </select>
+
         </label>
+
       </div>
 
-      <label class="block text-sm">Badge / Short Label <input id="f-badge" class="field mt-1" placeholder="5-Star Luxury VIP"></label>
-      
-      <label class="block text-sm">Description <textarea id="f-description" class="field mt-1" rows="4" required placeholder="Details..."></textarea></label>
+      <!-- BADGE -->
+
+      <label class="block text-sm">
+
+        Badge / Short Label
+
+        <input
+          id="f-badge"
+          class="field mt-1"
+          placeholder="5-Star Luxury VIP"
+        >
+
+      </label>
+
+      <!-- DESCRIPTION -->
+
+      <label class="block text-sm">
+
+        Description
+
+        <textarea
+          id="f-description"
+          class="field mt-1"
+          rows="4"
+          required
+          placeholder="Details..."
+        ></textarea>
+
+      </label>
+
+      <!-- VIEW -->
 
       <div id="view-wrap">
-        <label class="block text-sm">View / Location Text <input id="f-view" class="field mt-1" placeholder="Haram / Kaaba view"></label>
+
+        <label class="block text-sm">
+
+          View / Location Text
+
+          <input
+            id="f-view"
+            class="field mt-1"
+            placeholder="Haram / Kaaba view"
+          >
+
+        </label>
+
       </div>
 
-      <label class="block text-sm">Price / Rate <input id="f-price" class="field mt-1" placeholder="PKR 250,000 / Direct Quote"></label>
+      <!-- PRICE -->
 
-      <!-- MULTIPLE IMAGES UPLOAD -->
       <label class="block text-sm">
-        Upload Multiple Pictures (Select many)
-        <input id="f-files" class="field mt-1" type="file" multiple accept="image/png,image/jpeg,image/webp">
-        <p class="text-xs text-slate-400 mt-1">Customer click karke sabhi tasveerein bari screen par dekh sakenge.</p>
-      </label>
-      <div id="preview-images" class="flex flex-wrap gap-2"></div>
 
-      <!-- VIDEOS & PDFS -->
-      <label class="block text-sm">Video URLs (Comma separated or YouTube link) 
-        <input id="f-videos" class="field mt-1" placeholder="https://youtube.com/watch?v=...">
-      </label>
-      <label class="block text-sm">PDF Brochure URL (Optional) 
-        <input id="f-pdfs" class="field mt-1" type="url" placeholder="https://...">
+        Price / Rate
+
+        <input
+          id="f-price"
+          class="field mt-1"
+          placeholder="PKR 250,000 / Direct Quote"
+        >
+
       </label>
 
-      <label class="block text-sm">Display Order <input id="f-order" class="field mt-1" type="number" value="0"></label>
+      <!-- ================================== -->
+      <!-- MULTIPLE PHOTOS -->
+      <!-- ================================== -->
+
+      <label class="block text-sm">
+
+        📷 Upload Multiple Pictures
+
+        <input
+          id="f-files"
+          class="field mt-1"
+          type="file"
+          multiple
+          accept="image/png,image/jpeg,image/webp"
+        >
+
+        <p class="text-xs text-slate-400 mt-1">
+          Multiple pictures select karein. Maximum 5MB per picture.
+        </p>
+
+      </label>
+
+      <!-- IMAGE PREVIEW -->
+
+      <div
+        id="preview-images"
+        class="flex flex-wrap gap-2"
+      ></div>
+
+      <!-- ================================== -->
+      <!-- VIDEO FILE UPLOAD -->
+      <!-- ================================== -->
+
+      <div class="border border-yellow-700/30 rounded-xl p-4">
+
+        <h3 class="gold font-bold mb-3">
+          🎬 Upload Hotel / Package Videos
+        </h3>
+
+        <label class="block text-sm">
+
+          Select Video Files
+
+          <input
+            id="f-video-files"
+            class="field mt-2"
+            type="file"
+            multiple
+            accept="video/mp4,video/webm,video/ogg"
+          >
+
+        </label>
+
+        <p class="text-xs text-slate-400 mt-2">
+          MP4, WebM aur OGG supported hain. Maximum 50MB per video.
+        </p>
+
+        <p class="text-xs text-amber-200 mt-1">
+          Video upload hone ke liye Supabase Storage permission zaroori hai.
+        </p>
+
+      </div>
+
+      <!-- VIDEO PREVIEW -->
+
+      <div
+        id="preview-videos"
+        class="space-y-3"
+      ></div>
+
+      <!-- ================================== -->
+      <!-- VIDEO URL -->
+      <!-- ================================== -->
+
+      <label class="block text-sm">
+
+        Video URLs
+
+        <textarea
+          id="f-videos"
+          class="field mt-1"
+          rows="4"
+          placeholder="YouTube ya direct video URL. Har URL alag line mein."
+        ></textarea>
+
+        <p class="text-xs text-slate-400 mt-1">
+          YouTube link ya direct MP4 URL paste karein.
+        </p>
+
+      </label>
+
+      <!-- ================================== -->
+      <!-- PDF -->
+      <!-- ================================== -->
+
+      <label class="block text-sm">
+
+        PDF Brochure URL (Optional)
+
+        <input
+          id="f-pdfs"
+          class="field mt-1"
+          type="url"
+          placeholder="https://..."
+        >
+
+      </label>
+
+      <!-- ================================== -->
+      <!-- SORT ORDER -->
+      <!-- ================================== -->
+
+      <label class="block text-sm">
+
+        Display Order
+
+        <input
+          id="f-order"
+          class="field mt-1"
+          type="number"
+          value="0"
+      >
+
+      </label>
+
+      <!-- ================================== -->
+      <!-- VISIBILITY -->
+      <!-- ================================== -->
 
       <label class="flex items-center gap-3">
-        <input id="f-visible" type="checkbox" checked class="w-5 h-5 accent-yellow-500">
-        <span>Website par show karein</span>
+
+        <input
+          id="f-visible"
+          type="checkbox"
+          checked
+          class="w-5 h-5 accent-yellow-500"
+        >
+
+        <span>
+          Website par show karein
+        </span>
+
       </label>
 
+      <!-- ================================== -->
+      <!-- SAVE / CANCEL -->
+      <!-- ================================== -->
+
       <div class="flex flex-wrap gap-3">
-        <button class="btn flex-1" type="submit">Save Changes</button>
-        <button id="cancel-editor" class="btn2" type="button">Cancel</button>
+
+        <button
+          class="btn flex-1"
+          type="submit"
+        >
+          Save Changes
+        </button>
+
+        <button
+          id="cancel-editor"
+          class="btn2"
+          type="button"
+        >
+          Cancel
+        </button>
+
       </div>
-      <p id="editor-msg" class="text-sm text-amber-200"></p>
+
+      <!-- EDITOR MESSAGE -->
+
+      <p
+        id="editor-msg"
+        class="text-sm text-amber-200"
+      ></p>
+
     </form>
+
   </div>
+
 </div>
 
+<!-- ====================================== -->
+<!-- PASSWORD SHOW / HIDE -->
+<!-- ====================================== -->
+
 <script>
+
 document.addEventListener("DOMContentLoaded", function () {
-  const passwordInput = document.getElementById("password");
-  const toggleButton = document.getElementById("toggle-password");
+
+  const passwordInput =
+    document.getElementById("password");
+
+  const toggleButton =
+    document.getElementById("toggle-password");
+
   if (passwordInput && toggleButton) {
-    toggleButton.addEventListener("click", function () {
-      const isHidden = passwordInput.type === "password";
-      passwordInput.type = isHidden ? "text" : "password";
-      toggleButton.textContent = isHidden ? "HIDE" : "SHOW";
-    });
+
+    toggleButton.addEventListener(
+      "click",
+      function () {
+
+        const isHidden =
+          passwordInput.type === "password";
+
+        passwordInput.type =
+          isHidden ? "text" : "password";
+
+        toggleButton.textContent =
+          isHidden ? "HIDE" : "SHOW";
+
+      }
+    );
+
   }
+
 });
+
 </script>
+
+<!-- ====================================== -->
+<!-- ADMIN JAVASCRIPT -->
+<!-- ====================================== -->
+
 <script src="/admin.js"></script>
+
 </body>
+
 </html>
