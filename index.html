@@ -13,7 +13,6 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-
     <!-- CMS configuration: set your Supabase project URL and anon key in cms-config.js -->
     <script src="/cms-config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -79,7 +78,6 @@
             background-size: 24px 24px;
         }
 
-        /* Hero image fills the full first screen behind the brand title */
         #home > div:first-child {
             position: absolute;
             inset: 0;
@@ -163,9 +161,8 @@
         </div>
     </header>
 
-    <!-- 1. HERO SECTION — MAKKAH / HOLY KAABA BACKGROUND -->
+    <!-- 1. HERO SECTION -->
     <section id="home" class="relative min-h-[90vh] flex items-center justify-center overflow-hidden py-16">
-        <!-- Full hero background image with automatic fallback if the first image fails -->
         <div class="absolute inset-0 z-0 bg-navy-950">
             <img
                  id="makkah-hero-image"
@@ -175,11 +172,9 @@
                  fetchpriority="high"
                  class="w-full h-full object-cover object-center transform scale-105"
                  onerror="if(this.dataset.fallback && this.src !== this.dataset.fallback){this.src=this.dataset.fallback;}else{this.style.display='none';}">
-            <!-- Dark navy overlay keeps the gold title readable while showing Makkah -->
             <div class="absolute inset-0 bg-gradient-to-t from-navy-950/95 via-navy-900/55 to-navy-950/55"></div>
         </div>
 
-        <!-- Hero Content Overlay -->
         <div class="relative z-10 max-w-5xl mx-auto text-center px-4 sm:px-6">
             <div class="mb-4">
                 <p class="font-playfair text-gold-300 text-lg sm:text-2xl tracking-widest opacity-95 drop-shadow">
@@ -187,7 +182,6 @@
                 </p>
             </div>
 
-            <!-- MAKKI MADNI BRANDING -->
             <h1 class="font-cinzel text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tight uppercase leading-none mb-2">
                 <span class="gold-gradient-text drop-shadow-2xl">MAKKI MADNI</span>
             </h1>
@@ -249,7 +243,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </section>
 
@@ -330,7 +323,7 @@
         </div>
     </section>
 
-    <!-- 3. REAL MAKKAH HOTELS SECTION -->
+    <!-- 3. DYNAMIC MAKKAH HOTELS SECTION -->
     <section id="makkah-hotels" class="py-20 bg-navy-950 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto mb-16">
@@ -341,71 +334,14 @@
                 <div class="w-24 h-1 bg-gradient-to-r from-transparent via-gold-500 to-transparent mx-auto mt-4"></div>
             </div>
 
+            <!-- Dynamic Grid populated by cms-public.js -->
             <div id="cms-makkah-hotels-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Hotel Card 1 -->
-                <div class="bg-navy-900 rounded-2xl overflow-hidden gold-border-glow flex flex-col justify-between">
-                    <div>
-                        <div class="relative h-64 overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover">
-                            <span class="absolute top-4 left-4 bg-gold-500 text-navy-950 text-xs font-black px-3 py-1 rounded-full uppercase">5-Star Luxury VIP</span>
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-cinzel text-xl font-bold text-white mb-2">Makkah Clock Royal Tower</h3>
-                            <p class="text-xs text-gold-400/90 font-medium mb-3"><i class="fa-solid fa-kaaba mr-1"></i> Panoramic Haram & Kaaba View Available</p>
-                            <p class="text-slate-300 text-xs leading-relaxed">Premium luxury suites inside Abraj Al Bait with direct elevator access to Haram courtyard.</p>
-                        </div>
-                    </div>
-                    <div class="p-6 pt-0">
-                        <a href="https://wa.me/923357476744?text=Assalamu%20Alaikum!%20Please%20share%20rates%20for%20Fairmont%20Makkah." target="_blank" class="w-full gold-button py-3 rounded-xl text-navy-950 font-bold text-xs uppercase text-center block">
-                            <i class="fa-brands fa-whatsapp text-base"></i> Inquire Rates on WhatsApp
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Hotel Card 2 -->
-                <div class="bg-navy-900 rounded-2xl overflow-hidden gold-border-glow flex flex-col justify-between">
-                    <div>
-                        <div class="relative h-64 overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover">
-                            <span class="absolute top-4 left-4 bg-gold-500 text-navy-950 text-xs font-black px-3 py-1 rounded-full uppercase">5-Star Deluxe</span>
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-cinzel text-xl font-bold text-white mb-2">Swissôtel Makkah</h3>
-                            <p class="text-xs text-gold-400/90 font-medium mb-3"><i class="fa-solid fa-kaaba mr-1"></i> Partial Kaaba & Full Haram View</p>
-                            <p class="text-slate-300 text-xs leading-relaxed">Modern luxury with direct access to Ajyad Street and Abraj Complex.</p>
-                        </div>
-                    </div>
-                    <div class="p-6 pt-0">
-                        <a href="https://wa.me/923357476744?text=Assalamu%20Alaikum!%20Please%20share%20rates%20for%20Swissôtel%20Makkah." target="_blank" class="w-full gold-button py-3 rounded-xl text-navy-950 font-bold text-xs uppercase text-center block">
-                            <i class="fa-brands fa-whatsapp text-base"></i> Inquire Rates on WhatsApp
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Hotel Card 3 -->
-                <div class="bg-navy-900 rounded-2xl overflow-hidden gold-border-glow flex flex-col justify-between">
-                    <div>
-                        <div class="relative h-64 overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover">
-                            <span class="absolute top-4 left-4 bg-gold-500 text-navy-950 text-xs font-black px-3 py-1 rounded-full uppercase">5-Star Executive</span>
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-cinzel text-xl font-bold text-white mb-2">Pullman Zamzam Makkah</h3>
-                            <p class="text-xs text-gold-400/90 font-medium mb-3"><i class="fa-solid fa-kaaba mr-1"></i> Haram Courtyard Facing</p>
-                            <p class="text-slate-300 text-xs leading-relaxed">Iconic hospitality offering audio feed connected directly to Haram prayers.</p>
-                        </div>
-                    </div>
-                    <div class="p-6 pt-0">
-                        <a href="https://wa.me/923357476744?text=Assalamu%20Alaikum!%20Please%20share%20rates%20for%20Pullman%20Zamzam." target="_blank" class="w-full gold-button py-3 rounded-xl text-navy-950 font-bold text-xs uppercase text-center block">
-                            <i class="fa-brands fa-whatsapp text-base"></i> Inquire Rates on WhatsApp
-                        </a>
-                    </div>
-                </div>
+                <p class="text-slate-300 text-sm col-span-3 text-center">Loading Makkah hotels...</p>
             </div>
         </div>
     </section>
 
-    <!-- 4. REAL MADINAH HOTELS SECTION -->
+    <!-- 4. DYNAMIC MADINAH HOTELS SECTION -->
     <section id="madinah-hotels" class="py-20 bg-navy-900 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto mb-16">
@@ -416,71 +352,14 @@
                 <div class="w-24 h-1 bg-gradient-to-r from-transparent via-gold-500 to-transparent mx-auto mt-4"></div>
             </div>
 
+            <!-- Dynamic Grid populated by cms-public.js -->
             <div id="cms-madinah-hotels-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Madinah Hotel 1 -->
-                <div class="bg-navy-950 rounded-2xl overflow-hidden gold-border-glow flex flex-col justify-between">
-                    <div>
-                        <div class="relative h-64 overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1590490360182-c33d57733427?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover">
-                            <span class="absolute top-4 left-4 bg-gold-500 text-navy-950 text-xs font-black px-3 py-1 rounded-full uppercase">5-Star Premier</span>
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-cinzel text-xl font-bold text-white mb-2">Dar Al Taqwa Hotel</h3>
-                            <p class="text-xs text-gold-400/90 font-medium mb-3"><i class="fa-solid fa-mosque mr-1"></i> Direct Courtyard Views</p>
-                            <p class="text-slate-300 text-xs leading-relaxed">Facing the Prophet's Mosque courtyard directly across Gate 25.</p>
-                        </div>
-                    </div>
-                    <div class="p-6 pt-0">
-                        <a href="https://wa.me/923357476744?text=Assalamu%20Alaikum!%20Please%20share%20rates%20for%20Dar%20Al%20Taqwa." target="_blank" class="w-full gold-button py-3 rounded-xl text-navy-950 font-bold text-xs uppercase text-center block">
-                            <i class="fa-brands fa-whatsapp text-base"></i> Inquire Rates on WhatsApp
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Madinah Hotel 2 -->
-                <div class="bg-navy-950 rounded-2xl overflow-hidden gold-border-glow flex flex-col justify-between">
-                    <div>
-                        <div class="relative h-64 overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1578683010236-d716f9a3f461?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover">
-                            <span class="absolute top-4 left-4 bg-gold-500 text-navy-950 text-xs font-black px-3 py-1 rounded-full uppercase">5-Star Executive</span>
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-cinzel text-xl font-bold text-white mb-2">Anwar Al Madinah Movenpick</h3>
-                            <p class="text-xs text-gold-400/90 font-medium mb-3"><i class="fa-solid fa-mosque mr-1"></i> Central Northern Plaza</p>
-                            <p class="text-slate-300 text-xs leading-relaxed">Madinah's largest hotel complex directly connected to a modern shopping center.</p>
-                        </div>
-                    </div>
-                    <div class="p-6 pt-0">
-                        <a href="https://wa.me/923357476744?text=Assalamu%20Alaikum!%20Please%20share%20rates%20for%20Movenpick%20Madinah." target="_blank" class="w-full gold-button py-3 rounded-xl text-navy-950 font-bold text-xs uppercase text-center block">
-                            <i class="fa-brands fa-whatsapp text-base"></i> Inquire Rates on WhatsApp
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Madinah Hotel 3 -->
-                <div class="bg-navy-950 rounded-2xl overflow-hidden gold-border-glow flex flex-col justify-between">
-                    <div>
-                        <div class="relative h-64 overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1618773928121-c32242e63f39?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover">
-                            <span class="absolute top-4 left-4 bg-gold-500 text-navy-950 text-xs font-black px-3 py-1 rounded-full uppercase">4-Star Premium</span>
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-cinzel text-xl font-bold text-white mb-2">Frontel Al Harithia</h3>
-                            <p class="text-xs text-gold-400/90 font-medium mb-3"><i class="fa-solid fa-mosque mr-1"></i> Markaziah District</p>
-                            <p class="text-slate-300 text-xs leading-relaxed">Excellent value with high-class hospitality and quick walk to gates.</p>
-                        </div>
-                    </div>
-                    <div class="p-6 pt-0">
-                        <a href="https://wa.me/923357476744?text=Assalamu%20Alaikum!%20Please%20share%20rates%20for%20Frontel%20Al%20Harithia." target="_blank" class="w-full gold-button py-3 rounded-xl text-navy-950 font-bold text-xs uppercase text-center block">
-                            <i class="fa-brands fa-whatsapp text-base"></i> Inquire Rates on WhatsApp
-                        </a>
-                    </div>
-                </div>
+                <p class="text-slate-300 text-sm col-span-3 text-center">Loading Madinah hotels...</p>
             </div>
         </div>
     </section>
 
-    <!-- 5. PREMIUM UMRAH PACKAGES SECTION -->
+    <!-- 5. DYNAMIC UMRAH PACKAGES SECTION -->
     <section id="packages" class="py-20 bg-navy-950 border-t border-gold-500/20 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto mb-12">
@@ -491,76 +370,9 @@
                 <div class="w-24 h-1 bg-gradient-to-r from-transparent via-gold-500 to-transparent mx-auto mt-4"></div>
             </div>
 
-            <!-- Packages Grid -->
+            <!-- Dynamic Grid populated by cms-public.js -->
             <div id="cms-packages-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Package 1 -->
-                <div class="pkg-card 5star bg-navy-900 rounded-2xl overflow-hidden gold-border-glow p-8 flex flex-col justify-between relative">
-                    <span class="absolute top-0 right-0 bg-gold-500 text-navy-950 text-[10px] font-black px-4 py-1 rounded-bl-xl uppercase tracking-widest">
-                        Most Popular
-                    </span>
-                    <div>
-                        <div class="text-gold-400 font-cinzel text-xs uppercase tracking-widest font-bold mb-1">15 Days Executive</div>
-                        <h3 class="font-cinzel text-2xl font-bold text-white mb-4">5-Star VIP Umrah</h3>
-                        <div class="mb-6 bg-navy-950/60 p-4 rounded-xl border border-gold-500/20">
-                            <p class="text-xs text-slate-400 uppercase tracking-wider">Customizable Rates</p>
-                            <p class="text-2xl font-black text-gold-300 font-cinzel">Direct Quote</p>
-                            <span class="text-[11px] text-slate-400">Based on Sharing / Quad / Double Room</span>
-                        </div>
-                        <ul class="text-xs text-slate-300 space-y-3 mb-6">
-                            <li class="flex items-center gap-2"><i class="fa-solid fa-hotel text-gold-500"></i> <strong>7 Nights Makkah:</strong> Fairmont Clock Tower (Haram View)</li>
-                            <li class="flex items-center gap-2"><i class="fa-solid fa-mosque text-gold-500"></i> <strong>7 Nights Madinah:</strong> Dar Al Taqwa (Courtyard View)</li>
-                            <li class="flex items-center gap-2"><i class="fa-solid fa-passport text-gold-500"></i> Full Umrah Visa Processing & Insurance</li>
-                            <li class="flex items-center gap-2"><i class="fa-solid fa-plane text-gold-500"></i> Direct Flights (PIA / Saudi Arabian Airlines)</li>
-                        </ul>
-                    </div>
-                    <a href="https://wa.me/923357476744?text=Assalamu%20Alaikum!%205-Star%20VIP%20Package%20Quote." target="_blank" class="w-full gold-button py-3.5 rounded-xl text-navy-950 font-extrabold text-xs uppercase tracking-wider text-center block">
-                        Get Custom Quote on WhatsApp
-                    </a>
-                </div>
-
-                <!-- Package 2 -->
-                <div class="pkg-card 4star bg-navy-900 rounded-2xl overflow-hidden gold-border-glow p-8 flex flex-col justify-between">
-                    <div>
-                        <div class="text-gold-400 font-cinzel text-xs uppercase tracking-widest font-bold mb-1">14 Days Standard</div>
-                        <h3 class="font-cinzel text-2xl font-bold text-white mb-4">4-Star Deluxe Umrah</h3>
-                        <div class="mb-6 bg-navy-950/60 p-4 rounded-xl border border-gold-500/20">
-                            <p class="text-xs text-slate-400 uppercase tracking-wider">Customizable Rates</p>
-                            <p class="text-2xl font-black text-gold-300 font-cinzel">Direct Quote</p>
-                            <span class="text-[11px] text-slate-400">Walking Distance Accommodations</span>
-                        </div>
-                        <ul class="text-xs text-slate-300 space-y-3 mb-6">
-                            <li class="flex items-center gap-2"><i class="fa-solid fa-hotel text-gold-500"></i> <strong>7 Nights Makkah:</strong> Swissôtel / Similar (100m)</li>
-                            <li class="flex items-center gap-2"><i class="fa-solid fa-mosque text-gold-500"></i> <strong>7 Nights Madinah:</strong> Frontel Al Harithia</li>
-                            <li class="flex items-center gap-2"><i class="fa-solid fa-passport text-gold-500"></i> Full Visa Processing & Support</li>
-                            <li class="flex items-center gap-2"><i class="fa-solid fa-plane text-gold-500"></i> Direct or Connecting Tickets</li>
-                        </ul>
-                    </div>
-                    <a href="https://wa.me/923357476744?text=Assalamu%20Alaikum!%204-Star%20Deluxe%20Package%20Quote." target="_blank" class="w-full gold-button py-3.5 rounded-xl text-navy-950 font-extrabold text-xs uppercase tracking-wider text-center block">
-                        Get Custom Quote on WhatsApp
-                    </a>
-                </div>
-
-                <!-- Package 3 -->
-                <div class="pkg-card economy bg-navy-900 rounded-2xl overflow-hidden gold-border-glow p-8 flex flex-col justify-between">
-                    <div>
-                        <div class="text-gold-400 font-cinzel text-xs uppercase tracking-widest font-bold mb-1">21 Days Saver</div>
-                        <h3 class="font-cinzel text-2xl font-bold text-white mb-4">Economy Family Saver</h3>
-                        <div class="mb-6 bg-navy-950/60 p-4 rounded-xl border border-gold-500/20">
-                            <p class="text-xs text-slate-400 uppercase tracking-wider">Customizable Rates</p>
-                            <p class="text-2xl font-black text-gold-300 font-cinzel">Best Value</p>
-                            <span class="text-[11px] text-slate-400">Shuttle Bus / Short Walk Option</span>
-                        </div>
-                        <ul class="text-xs text-slate-300 space-y-3 mb-6">
-                            <li class="flex items-center gap-2"><i class="fa-solid fa-hotel text-gold-500"></i> <strong>10 Nights Makkah:</strong> 3-Star Comfortable Hotel</li>
-                            <li class="flex items-center gap-2"><i class="fa-solid fa-mosque text-gold-500"></i> <strong>10 Nights Madinah:</strong> 3-Star Central Markaziah</li>
-                            <li class="flex items-center gap-2"><i class="fa-solid fa-passport text-gold-500"></i> Umrah Visa & Pilgrimage Insurance</li>
-                            <li class="flex items-center gap-2"><i class="fa-solid fa-plane text-gold-500"></i> Return Air Ticket Included</li>
-                        </ul>
-                    </div>
-                    <a href="https://wa.me/923357476744?text=Assalamu%20Alaikum!%20Economy%20Saver%20Package%20Quote." target="_blank" class="w-full gold-button py-3.5 rounded-xl text-navy-950 font-extrabold text-xs uppercase tracking-wider text-center block">
-                        Get Custom Quote on WhatsApp
-                    </a>
-                </div>
+                <p class="text-slate-300 text-sm col-span-3 text-center">Loading Umrah packages...</p>
             </div>
         </div>
     </section>
@@ -579,16 +391,16 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
                     <div>
                         <label class="block text-xs font-bold uppercase text-gold-400 mb-2">Number of Adult Pilgrims</label>
-<select id="calc-adults" class="w-full bg-navy-900 border border-gold-500/30 rounded-xl p-3 text-sm text-slate-200 focus:border-gold-500 focus:outline-none">
-    <option value="1">1 Person</option>
-    <option value="2" selected>2 Persons (Double Room)</option>
-    <option value="3">3 Persons (Triple Room)</option>
-    <option value="4">4 Persons (Quad Room)</option>
-    <option value="5">5 Persons (Quint Room)</option>
-    <option value="6">6 Persons Group</option>
-    <option value="8">8 Persons Group</option>
-    <option value="10">10+ Family Group</option>
-</select>
+                        <select id="calc-adults" class="w-full bg-navy-900 border border-gold-500/30 rounded-xl p-3 text-sm text-slate-200 focus:border-gold-500 focus:outline-none">
+                            <option value="1">1 Person</option>
+                            <option value="2" selected>2 Persons (Double Room)</option>
+                            <option value="3">3 Persons (Triple Room)</option>
+                            <option value="4">4 Persons (Quad Room)</option>
+                            <option value="5">5 Persons (Quint Room)</option>
+                            <option value="6">6 Persons Group</option>
+                            <option value="8">8 Persons Group</option>
+                            <option value="10">10+ Family Group</option>
+                        </select>
                     </div>
 
                     <div>
