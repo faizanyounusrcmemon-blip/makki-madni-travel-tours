@@ -308,55 +308,55 @@
   // PHOTO UPLOAD
   // ==========================================
 
-  async function uploadPhotos(files) {
-    const urls = [];
 
-    for (const file of files) {
-      if (!file.type.startsWith("image/")) {
-        throw new Error(
-          "Sirf image files select karein."
-        );
-      }
+async function uploadPhotos(files) {
+  const urls = [];
 
-      if (file.size > 5 * 1024 * 1024) {
-        throw new Error(
-          file.name + " 5MB se bari hai."
-        );
-      }
+  for (const file of Array.from(files || [])) {
 
-      const ext = file.name
-        .split(".")
-        .pop()
-        .toLowerCase()
-        .replace(/[^a-z0-9]/g, "") || "jpg";
+    // Video ko photo upload mein process nahi karna
+    if (!file.type.startsWith("image/")) {
+      continue;
+    }
 
-      const path =
-        `website/${crypto.randomUUID()}.${ext}`;
-
-      const { error } = await db.storage
-        .from("website-photos")
-        .upload(path, file, {
-          upsert: false,
-          contentType: file.type
-        });
-
-      if (error) {
-        throw new Error(
-          "Photo upload failed: " + error.message
-        );
-      }
-
-      const publicData = db.storage
-        .from("website-photos")
-        .getPublicUrl(path);
-
-      urls.push(
-        publicData.data.publicUrl
+    if (file.size > 5 * 1024 * 1024) {
+      throw new Error(
+        file.name + " 5MB se bari hai. Photo compress karein."
       );
     }
 
-    return urls;
+    const ext = file.name
+      .split(".")
+      .pop()
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, "") || "jpg";
+
+    const path =
+      `website/${crypto.randomUUID()}.${ext}`;
+
+    const { error } = await db.storage
+      .from("website-photos")
+      .upload(path, file, {
+        upsert: false,
+        contentType: file.type
+      });
+
+    if (error) {
+      throw new Error(
+        "Photo upload failed: " + error.message
+      );
+    }
+
+    const publicData = db.storage
+      .from("website-photos")
+      .getPublicUrl(path);
+
+    urls.push(publicData.data.publicUrl);
   }
+
+  return urls;
+}
+
 
   // ==========================================
   // VIDEO UPLOAD
