@@ -51,7 +51,6 @@
    $("f-name").value=item?.name||"";$("f-city").value=item?.city||"makkah";$("f-badge").value=item?.badge||"";
    $("f-description").value=item?.description||"";$("f-view").value=item?.view_text||"";$("f-price").value=item?.price||"";
    
-   // Handle videos array properly
    let vids = item?.videos;
    $("f-videos").value = Array.isArray(vids) ? vids.join(",") : (vids || "");
    
@@ -101,9 +100,11 @@
      let existingItem = id ? records[type==="hotel"?"hotels":"packages"].find(x=>x.id===id) : null;
      let finalImages = newImgs.length > 0 ? newImgs : (existingItem?.images || (existingItem?.image_url?[existingItem.image_url]:[]));
 
-     // Clean and split video URLs by comma
      let videoInput = $("f-videos").value.trim();
      let videoArray = videoInput ? videoInput.split(",").map(s => s.trim()).filter(Boolean) : [];
+
+     let pdfInput = $("f-pdfs").value.trim();
+     let pdfArray = pdfInput ? [pdfInput] : [];
 
      const row={
        name:$("f-name").value.trim(),
@@ -113,7 +114,7 @@
        image_url: finalImages[0] || null,
        images: finalImages,
        videos: videoArray,
-       pdfs: $("f-pdfs").value.trim()?[$("f-pdfs").value.trim()]:[],
+       pdfs: pdfArray,
        sort_order:Number($("f-order").value)||0,
        is_visible:$("f-visible").checked,
        updated_at:new Date().toISOString()
