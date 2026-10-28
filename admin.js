@@ -29,11 +29,12 @@
 
  function itemHtml(x,type){
    let imgs = x.images || (x.image_url ? [x.image_url] : []);
+   let vids = x.videos || [];
    return `<div class="border border-yellow-700/30 rounded-xl p-3 flex gap-3 items-start">
      <img src="${esc(imgs[0]||"")}" class="w-16 h-16 object-cover rounded-lg bg-black/30" onerror="this.style.display='none'">
      <div class="min-w-0 flex-1">
        <p class="font-bold">${esc(x.name)}</p>
-       <p class="text-xs text-slate-400">${type==="hotel"?esc(x.city):"Package"} · ${x.is_visible?"Visible":"Hidden"} · 📷 ${imgs.length} Pics</p>
+       <p class="text-xs text-slate-400">${type==="hotel"?esc(x.city):"Package"} · ${x.is_visible?"Visible":"Hidden"} · 📷 ${imgs.length} Pics · 🎬 ${vids.length} Videos</p>
        <div class="flex gap-2 mt-3">
          <button class="btn2 text-xs" data-edit="${type}:${x.id}">Edit</button>
          <button class="btn2 text-xs" data-toggle="${type}:${x.id}">${x.is_visible?"Hide":"Show"}</button>
@@ -49,8 +50,14 @@
    $("city-wrap").classList.toggle("hidden",type!=="hotel");$("view-wrap").classList.toggle("hidden",type!=="hotel");
    $("f-name").value=item?.name||"";$("f-city").value=item?.city||"makkah";$("f-badge").value=item?.badge||"";
    $("f-description").value=item?.description||"";$("f-view").value=item?.view_text||"";$("f-price").value=item?.price||"";
-   $("f-videos").value=Array.isArray(item?.videos)?item.videos.join(","):(item?.videos||"");
-   $("f-pdfs").value=Array.isArray(item?.pdfs)?item.pdfs[0]||"":(item?.pdfs||"");
+   
+   // Handle videos array properly
+   let vids = item?.videos;
+   $("f-videos").value = Array.isArray(vids) ? vids.join(",") : (vids || "");
+   
+   let pdfs = item?.pdfs;
+   $("f-pdfs").value = Array.isArray(pdfs) ? (pdfs[0] || "") : (pdfs || "");
+
    $("f-order").value=item?.sort_order??0;$("f-visible").checked=item?.is_visible??true;
    $("editor-msg").textContent="";$("editor-wrap").classList.remove("hidden");
  }
@@ -94,6 +101,10 @@
      let existingItem = id ? records[type==="hotel"?"hotels":"packages"].find(x=>x.id===id) : null;
      let finalImages = newImgs.length > 0 ? newImgs : (existingItem?.images || (existingItem?.image_url?[existingItem.image_url]:[]));
 
+     // Clean and split video URLs by comma
+     let videoInput = $("f-videos").value.trim();
+     let videoArray = videoInput ? videoInput.split(",").map(s => s.trim()).filter(Boolean) : [];
+
      const row={
        name:$("f-name").value.trim(),
        badge:$("f-badge").value.trim(),
@@ -101,7 +112,7 @@
        price:$("f-price").value.trim(),
        image_url: finalImages[0] || null,
        images: finalImages,
-       videos: $("f-videos").value.split(",").map(s=>s.trim()).filter(Boolean),
+       videos: videoArray,
        pdfs: $("f-pdfs").value.trim()?[$("f-pdfs").value.trim()]:[],
        sort_order:Number($("f-order").value)||0,
        is_visible:$("f-visible").checked,
