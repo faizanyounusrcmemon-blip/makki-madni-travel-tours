@@ -5,7 +5,7 @@
  if(!ready){$("config-warning").classList.remove("hidden");$("login-msg").textContent="Pehle cms-config.js configure karein."; $("login-form").addEventListener("submit",e=>e.preventDefault());return;}
  const db=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
  let records={hotels:[],packages:[]};
- const esc=s=>String(s?="" "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+ const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
  const table=t=>t==="hotel"?"website_hotels":"website_packages";
  const msg=(s)=>$("status").textContent=s;
 
@@ -91,7 +91,6 @@
      const files=$("f-files").files;
      let newImgs = files.length > 0 ? await uploadPhotos(files) : [];
      
-     // Purani images retain karein agar edit ho raha ho aur nayi files na select ki hon
      let existingItem = id ? records[type==="hotel"?"hotels":"packages"].find(x=>x.id===id) : null;
      let finalImages = newImgs.length > 0 ? newImgs : (existingItem?.images || (existingItem?.image_url?[existingItem.image_url]:[]));
 
