@@ -18,7 +18,13 @@
     return;
   }
 
-  const db = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+  const db = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY, {
+  auth: {
+    storage: window.sessionStorage,
+    persistSession: true,
+    autoRefreshToken: true
+  }
+});
   let records = { hotels: [], packages: [] };
 
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({
