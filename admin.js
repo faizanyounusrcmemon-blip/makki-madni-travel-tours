@@ -1,4 +1,4 @@
-(() => {
+﻿(() => {
   "use strict";
 
   const cfg = window.CMS_CONFIG || {};
@@ -18,13 +18,7 @@
     return;
   }
 
-  const db = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY, {
-  auth: {
-    storage: window.sessionStorage,
-    persistSession: true,
-    autoRefreshToken: true
-  }
-});
+  const db = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
   let records = { hotels: [], packages: [] };
 
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({

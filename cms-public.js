@@ -32,7 +32,7 @@
     encodeURIComponent(
       "Assalamu Alaikum Makki Madni Travel & Tours! Please share details/rates for " +
       name +
-      "."
+      ". (Website Inquiry)"
     );
 
   // Handles arrays and JSON strings returned from the database.
@@ -143,7 +143,7 @@
           type="button"
           onclick="window.closeMediaLightbox()"
           class="absolute -top-12 right-0 z-10 text-white text-sm font-bold bg-yellow-600 hover:bg-yellow-500 px-4 py-2 rounded-full">
-          ✕ Close
+          ? Close
         </button>
         <div id="lightbox-content"
           class="w-full max-h-[85vh] flex flex-col items-center justify-center overflow-y-auto">
@@ -272,7 +272,7 @@
         ${
           images.length > 1 || videos.length
             ? `<span class="absolute bottom-3 right-3 bg-black/90 text-yellow-300 text-xs font-bold px-3 py-2 rounded-lg border border-yellow-500/40">
-                 📷 ${images.length} Photos · 🎬 ${videos.length} Videos
+                 ?? ${images.length} Photos � ?? ${videos.length} Videos
                </span>`
             : ""
         }
@@ -287,7 +287,7 @@
       <div class="space-y-3 ${extraClass}">
         ${
           videos.length > 1
-            ? `<p class="text-xs font-bold text-yellow-400 uppercase tracking-wider">🎬 Videos & Virtual Tours (${videos.length})</p>`
+            ? `<p class="text-xs font-bold text-yellow-400 uppercase tracking-wider">?? Videos & Virtual Tours (${videos.length})</p>`
             : ""
         }
         ${videos.map((url) => {
