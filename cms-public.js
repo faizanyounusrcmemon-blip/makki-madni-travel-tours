@@ -11,16 +11,18 @@
   const wa = (name, kind) => "https://wa.me/923357476744?text=" +
     encodeURIComponent("Assalamu Alaikum Makki Madni Travel & Tours! Please share details/rates for " + name + ".");
 
-  // Global Lightbox Modal for Gallery view
-  if (!document.getElementById("media-lightbox")) {
-    const box = document.createElement("div");
-    box.id = "media-lightbox";
-    box.className = "hidden fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center p-4";
-    box.innerHTML = `<div class="relative max-w-4xl w-full max-h-[85vh] flex flex-col items-center">
-      <button onclick="document.getElementById('media-lightbox').classList.add('hidden')" class="absolute -top-12 right-0 text-white text-2xl font-bold bg-gold-500 text-navy-950 px-4 py-1 rounded-full cursor-pointer">✕ Close</button>
-      <div id="lightbox-content" class="w-full h-full flex items-center justify-center overflow-auto"></div>
-    </div>`;
-    document.body.appendChild(box);
+  // Init Lightbox on DOM ready
+  function initLightbox() {
+    if (!document.getElementById("media-lightbox")) {
+      const box = document.createElement("div");
+      box.id = "media-lightbox";
+      box.className = "hidden fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center p-4";
+      box.innerHTML = `<div class="relative max-w-4xl w-full max-h-[85vh] flex flex-col items-center">
+        <button onclick="document.getElementById('media-lightbox').classList.add('hidden')" class="absolute -top-12 right-0 text-white text-2xl font-bold bg-gold-500 text-navy-950 px-4 py-1 rounded-full cursor-pointer">✕ Close</button>
+        <div id="lightbox-content" class="w-full h-full flex items-center justify-center overflow-auto"></div>
+      </div>`;
+      document.body.appendChild(box);
+    }
   }
 
   window.openLightbox = function(imgsJson, videosJson, pdfsJson) {
@@ -87,6 +89,7 @@
   }
 
   async function load() {
+    initLightbox();
     try {
       const [hotels, packages] = await Promise.all([
         db.from("website_hotels").select("*").eq("is_visible", true).order("sort_order").order("created_at"),
