@@ -14,67 +14,6 @@
 <script src="/cms-config.js"></script>
 
 
-/* Compact Analytics + Supabase Resource Monitor */
-@media (min-width: 900px) {
-  #dashboard {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px;
-    align-items: start;
-  }
-
-  /* Dashboard ke baqi sections full width rahenge */
-  #dashboard > * {
-    grid-column: 1 / -1;
-    min-width: 0;
-  }
-
-  /* Visitor Analytics panel */
-  #dashboard > section:has(#an-today) {
-    grid-column: 1;
-    margin-bottom: 0 !important;
-    padding: 14px !important;
-    min-width: 0;
-  }
-
-  /* Supabase Resource Monitor panel */
-  #dashboard > section:has(#usage-refresh) {
-    grid-column: 2;
-    grid-row: 2;
-    margin-bottom: 0 !important;
-    padding: 14px !important;
-    min-width: 0;
-  }
-
-  /* Dono panels ke andar spacing kam */
-  #dashboard > section:has(#an-today) .section-card,
-  #dashboard > section:has(#usage-refresh) .section-card {
-    padding: 10px !important;
-    border-radius: 10px;
-  }
-
-  #dashboard > section:has(#an-today) h3,
-  #dashboard > section:has(#usage-refresh) h3 {
-    font-size: 15px !important;
-    line-height: 1.4;
-  }
-
-  #dashboard > section:has(#an-today) .text-lg,
-  #dashboard > section:has(#usage-refresh) .text-lg {
-    font-size: 15px !important;
-  }
-
-  #dashboard > section:has(#usage-refresh) .usage-bar {
-    height: 7px;
-  }
-}
-
-/* Mobile / tablet: panels stacked */
-@media (max-width: 899px) {
-  #dashboard {
-    display: block;
-  }
-}
 
 
 
