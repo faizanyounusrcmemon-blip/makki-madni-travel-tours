@@ -323,7 +323,7 @@
     });
 
     videos.forEach(url => {
-      mediaPreviews += `<video src="${esc(url)}" class="w-20 h-16 object-cover rounded-lg border border-yellow-700/40 shrink-0 bg-black" preload="metadata"></video>`;
+      mediaPreviews += `<video src="${esc(url)}" class="w-20 h-16 object-cover rounded-lg border border-yellow-700/40 shrink-0 bg-black" preload="metadata" controls></video>`;
     });
 
     if (!mediaPreviews) {
@@ -426,6 +426,16 @@
       `).join("");
     }
 
+    const oldVideos = getVideos(item);
+    if ($("preview-videos") && oldVideos.length) {
+      $("preview-videos").innerHTML = oldVideos.map(url => `
+        <div class="relative flex flex-col gap-2 bg-slate-900 p-2 rounded-lg border border-yellow-700/30">
+          <video src="${esc(url)}" class="w-full max-h-32 object-cover rounded bg-black" controls preload="metadata"></video>
+          <span class="text-xs text-slate-300 truncate">${esc(url)}</span>
+        </div>
+      `).join("");
+    }
+
     $("editor-wrap")?.classList.remove("hidden");
     document.body.style.overflow = "hidden";
   }
@@ -436,6 +446,39 @@
   }
 
   window.openEditor = openEditor;
+
+  // Live preview for newly selected Photos
+  $("f-files")?.addEventListener("change", function () {
+    const container = $("preview-images");
+    if (!container) return;
+    
+    const files = Array.from(this.files || []);
+    files.forEach(file => {
+      const url = URL.createObjectURL(file);
+      const div = document.createElement("div");
+      div.className = "relative";
+      div.innerHTML = `<img src="${url}" class="w-20 h-20 object-cover rounded-lg border border-yellow-700/40">`;
+      container.appendChild(div);
+    });
+  });
+
+  // Live preview for newly selected Videos
+  $("f-video-files")?.addEventListener("change", function () {
+    const container = $("preview-videos");
+    if (!container) return;
+
+    const files = Array.from(this.files || []);
+    files.forEach(file => {
+      const url = URL.createObjectURL(file);
+      const div = document.createElement("div");
+      div.className = "relative flex flex-col gap-2 bg-slate-900 p-2 rounded-lg border border-yellow-700/30";
+      div.innerHTML = `
+        <video src="${url}" class="w-full max-h-32 object-cover rounded bg-black" controls preload="metadata"></video>
+        <span class="text-xs text-slate-300 truncate">${esc(file.name)}</span>
+      `;
+      container.appendChild(div);
+    });
+  });
 
   async function uploadFile(file, folder, allowedTypes, maxBytes) {
     if (!allowedTypes.includes(file.type)) throw new Error(`${file.name}: Format supported nahi hai.`);
@@ -571,7 +614,7 @@
     }
   });
 
-$("editor")?.addEventListener("submit", async event => {
+  $("editor")?.addEventListener("submit", async event => {
     event.preventDefault();
     if (busy) return;
     busy = true;
@@ -604,7 +647,7 @@ $("editor")?.addEventListener("submit", async event => {
         image_url: finalImages[0] || null,
         images: finalImages,
         videos: finalVideos,
-        pdfs: [$("f-pdfs")?.value.trim()].filter(Boolean),
+        pdfs: [$("f-pdfs"]?.value.trim()].filter(Boolean),
         sort_order: Number($("f-order")?.value) || 0,
         is_visible: $("f-visible")?.checked ?? true,
         updated_at: new Date().toISOString()
