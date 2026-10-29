@@ -323,9 +323,10 @@
     });
 
     videos.forEach(url => {
-      mediaPreviews += `<video src="${esc(url)}" class="w-20 h-16 object-cover rounded-lg border border-yellow-700/40 shrink-0 bg-black" preload="metadata" controls></video>`;
+      mediaPreviews += `<video src="${esc(url)}" class="w-24 h-16 object-contain rounded-lg border border-yellow-700/40 shrink-0 bg-black" preload="metadata" controls></video>`;
     });
 
+    
     if (!mediaPreviews) {
       mediaPreviews = `<div class="w-16 h-16 rounded-lg bg-slate-900 border border-yellow-700/30 flex items-center justify-center shrink-0"><i class="fa-solid fa-image text-gold text-lg"></i></div>`;
     }
