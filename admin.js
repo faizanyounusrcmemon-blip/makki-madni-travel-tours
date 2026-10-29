@@ -3,22 +3,26 @@
   "use strict";
 
   const cfg = window.CMS_CONFIG || {};
-  const ready =
-    cfg.SUPABASE_URL &&
-    !cfg.SUPABASE_URL.includes("PASTE_") &&
-    cfg.SUPABASE_ANON_KEY &&
-    !cfg.SUPABASE_ANON_KEY.includes("PASTE_") &&
-    window.supabase;
-
   const $ = id => document.getElementById(id);
   const MB = 1024 * 1024;
   const GB = 1024 * MB;
 
+  const ready = Boolean(
+    cfg.SUPABASE_URL &&
+    !String(cfg.SUPABASE_URL).includes("PASTE_") &&
+    cfg.SUPABASE_ANON_KEY &&
+    !String(cfg.SUPABASE_ANON_KEY).includes("PASTE_") &&
+    window.supabase
+  );
+
   if (!ready) {
     $("config-warning")?.classList.remove("hidden");
+
     if ($("login-msg")) {
-      $("login-msg").textContent = "Pehle cms-config.js configure karein.";
+      $("login-msg").textContent =
+        "Pehle cms-config.js mein Supabase URL aur anon key configure karein.";
     }
+
     $("login-form")?.addEventListener("submit", e => e.preventDefault());
     return;
   }
@@ -30,7 +34,8 @@
       auth: {
         storage: window.sessionStorage,
         persistSession: true,
-        autoRefreshToken: true
+        autoRefreshToken: true,
+        persistSession: true
       }
     }
   );
@@ -41,18 +46,29 @@
     ziyarat: []
   };
 
-  const esc = s =>
-    String(s ?? "").replace(/[&<>"']/g, c => ({
+  let busy = false;
+
+  // --------------------------------------------------
+  // HELPERS
+  // --------------------------------------------------
+
+  function esc(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
       "&": "&amp;",
       "<": "&lt;",
       ">": "&gt;",
       '"': "&quot;",
       "'": "&#39;"
-    }[c]));
+    }[char]));
+  }
 
-  const $status = s => {
-    if ($("status")) $("status").textContent = s;
-  };
+  function setStatus(message) {
+    if ($("status")) $("status").textContent = message;
+  }
+
+  function setEditorMessage(message) {
+    if ($("editor-msg")) $("editor-msg").textContent = message;
+  }
 
   function table(type) {
     if (type === "hotel") return "website_hotels";
@@ -72,11 +88,48 @@
     return "Umrah Package";
   }
 
+  function normalizeArray(value) {
+    if (Array.isArray(value)) return value.filter(Boolean);
+
+    if (typeof value === "string" && value.trim()) {
+      try {
+        const parsed = JSON.parse(value);
+        if (Array.isArray(parsed)) return parsed.filter(Boolean);
+      } catch (_) {
+        return [value.trim()];
+      }
+    }
+
+    return [];
+  }
+
+  function getImages(item) {
+    const images = normalizeArray(item?.images);
+    if (images.length) return images;
+
+    return item?.image_url ? [item.image_url] : [];
+  }
+
+  function getVideos(item) {
+    return normalizeArray(item?.videos);
+  }
+
+  function getPdfs(item) {
+    return normalizeArray(item?.pdfs);
+  }
+
+  function setField(id, value) {
+    const element = $(id);
+    if (element) element.value = value ?? "";
+  }
+
   function fmtBytes(bytes) {
     const n = Math.max(0, Number(bytes) || 0);
+
     if (n < 1024) return `${n} B`;
     if (n < MB) return `${(n / 1024).toFixed(1)} KB`;
     if (n < GB) return `${(n / MB).toFixed(2)} MB`;
+
     return `${(n / GB).toFixed(2)} GB`;
   }
 
@@ -90,7 +143,7 @@
     const freeEl = $(`${prefix}-free`);
     const pctEl = $(`${prefix}-percent`);
     const barEl = $(`${prefix}-bar`);
-    const note = $(`${prefix}-note`);
+    const noteEl = $(`${prefix}-note`);
 
     if (usedEl) usedEl.textContent = fmtBytes(used);
     if (freeEl) freeEl.textContent = fmtBytes(Math.max(0, limit - used));
@@ -101,11 +154,20 @@
       barEl.classList.toggle("usage-danger", pct >= 90);
     }
 
-    if (note && extra) note.textContent = extra;
+    if (noteEl && extra) noteEl.textContent = extra;
   }
+
+  function setVisible(element, visible) {
+    if (element) element.classList.toggle("hidden", !visible);
+  }
+
+  // --------------------------------------------------
+  // SUPABASE RESOURCE MONITOR
+  // --------------------------------------------------
 
   async function loadUsage() {
     const status = $("usage-status");
+
     if (status) status.textContent = "Usage data load ho raha hai...";
 
     try {
@@ -114,8 +176,9 @@
       if (error || !data) {
         if (status) {
           status.textContent =
-            "Usage load nahi hua. admin_usage_monitor aur website_admins check karein.";
+            "Usage load nahi hua. admin_usage_monitor RPC aur admin permissions check karein.";
         }
+
         console.error("admin_usage_monitor:", error);
         return;
       }
@@ -124,7 +187,7 @@
         "db-usage",
         Number(data.database_bytes || 0),
         500 * MB,
-        "Database size ka estimate."
+        "Database size estimate; actual billing usage se farq ho sakta hai."
       );
 
       paintUsage(
@@ -138,101 +201,114 @@
         status.textContent =
           `Last checked: ${new Date(data.measured_at || Date.now()).toLocaleString()}`;
       }
-    } catch (err) {
-      console.error(err);
-      if (status) status.textContent = "Usage load karne mein error hua.";
+    } catch (error) {
+      console.error("Usage monitor error:", error);
+
+      if (status) {
+        status.textContent = "Usage load karte waqt error hua.";
+      }
     }
   }
 
-  // Analytics panel: admin.html mein manually add karna zaroori nahi.
+  // --------------------------------------------------
+  // WEBSITE ANALYTICS
+  // --------------------------------------------------
+
   function ensureAnalyticsPanel() {
     const dashboard = $("dashboard");
+
     if (!dashboard || $("website-analytics-panel")) return;
 
     const panel = document.createElement("section");
     panel.id = "website-analytics-panel";
     panel.className =
-      "mb-6 rounded-2xl border border-yellow-600/40 bg-slate-950/80 p-4 md:p-6";
+      "panel mb-6 p-4 md:p-6";
 
     panel.innerHTML = `
       <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
         <div>
-          <h2 class="text-xl md:text-2xl font-bold text-amber-300">
+          <p class="text-xs text-slate-400">WEBSITE PERFORMANCE</p>
+          <h2 class="text-xl md:text-2xl font-bold gold mt-1">
             Website Visitor Analytics
           </h2>
-          <p class="text-sm text-slate-400 mt-1">
-            Visitors aur media views ka tracking dashboard
+          <p class="text-sm text-slate-300 mt-1">
+            Visitors, page visits aur photo/video views
           </p>
         </div>
-        <button id="analytics-refresh"
-          class="btn2 rounded-lg px-4 py-2" type="button">
-          Refresh Analytics
+        <button id="analytics-refresh" class="btn2" type="button">
+          ↻ Refresh Analytics
         </button>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
-        <div class="rounded-xl border border-yellow-700/30 p-4">
-          <p class="text-sm text-slate-400">Today Visitors</p>
-          <p id="an-today" class="text-3xl font-bold text-amber-300 mt-2">—</p>
+        <div class="section-card">
+          <p class="text-sm text-slate-300">Today Visitors</p>
+          <p id="an-today" class="text-3xl font-bold gold mt-2">—</p>
         </div>
-        <div class="rounded-xl border border-yellow-700/30 p-4">
-          <p class="text-sm text-slate-400">Monthly Visitors</p>
-          <p id="an-month" class="text-3xl font-bold text-amber-300 mt-2">—</p>
+
+        <div class="section-card">
+          <p class="text-sm text-slate-300">Monthly Visitors</p>
+          <p id="an-month" class="text-3xl font-bold gold mt-2">—</p>
         </div>
-        <div class="rounded-xl border border-yellow-700/30 p-4">
-          <p class="text-sm text-slate-400">Yearly Visitors</p>
-          <p id="an-year" class="text-3xl font-bold text-amber-300 mt-2">—</p>
+
+        <div class="section-card">
+          <p class="text-sm text-slate-300">Yearly Visitors</p>
+          <p id="an-year" class="text-3xl font-bold gold mt-2">—</p>
         </div>
-        <div class="rounded-xl border border-yellow-700/30 p-4">
-          <p class="text-sm text-slate-400">Total Visitors</p>
-          <p id="an-total" class="text-3xl font-bold text-amber-300 mt-2">—</p>
+
+        <div class="section-card">
+          <p class="text-sm text-slate-300">Total Visitors</p>
+          <p id="an-total" class="text-3xl font-bold gold mt-2">—</p>
         </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-        <div class="rounded-xl border border-yellow-700/30 p-4">
-          <h3 class="font-bold text-amber-200 mb-2">Photo & Video Views</h3>
-          <p id="an-media" class="text-3xl font-bold text-white">—</p>
+        <div class="section-card">
+          <h3 class="font-bold gold mb-2">Photo & Video Views</h3>
+          <p id="an-media" class="text-3xl font-bold">—</p>
           <p class="text-xs text-slate-400 mt-2">
-            Media tracking active hone ke baad counts show honge.
+            Total media views returned by the analytics RPC.
           </p>
         </div>
-        <div class="rounded-xl border border-yellow-700/30 p-4">
-          <h3 class="font-bold text-amber-200 mb-2">Currently Active Visitors</h3>
-          <p id="an-active" class="text-3xl font-bold text-white">—</p>
+
+        <div class="section-card">
+          <h3 class="font-bold gold mb-2">Currently Active Visitors</h3>
+          <p id="an-active" class="text-3xl font-bold">—</p>
           <p id="an-active-note" class="text-xs text-slate-400 mt-2">
-            Active visitor count ke liye SQL mein active-session tracking chahiye.
+            Active visitors ke liye SQL mein session tracking zaroori hai.
           </p>
         </div>
       </div>
 
-      <div class="rounded-xl border border-yellow-700/30 p-4 mt-4">
-        <h3 class="font-bold text-amber-200 mb-3">Daily Visitors — Last 30 Days</h3>
+      <div class="section-card mt-4">
+        <h3 class="font-bold gold mb-3">Daily Visits — Last 30 Days</h3>
         <div id="an-chart" class="space-y-3">
-          <p class="text-sm text-slate-400">Analytics load hone ka intezar karein.</p>
+          <p class="text-sm text-slate-400">Analytics load ho rahi hai...</p>
         </div>
       </div>
 
-      <div class="rounded-xl border border-yellow-700/30 p-4 mt-4">
-        <h3 class="font-bold text-amber-200 mb-3">Page-wise Visits</h3>
-        <div id="an-pages" class="overflow-x-auto text-sm text-slate-300">
-          Page-wise report ke liye SQL RPC mein pages data add karna hoga.
+      <div class="section-card mt-4">
+        <h3 class="font-bold gold mb-3">Page-wise Visits</h3>
+        <div id="an-pages" class="overflow-x-auto text-sm">
+          <p class="text-slate-400">Analytics load ho rahi hai...</p>
         </div>
       </div>
 
-      <div class="rounded-xl border border-yellow-700/30 p-4 mt-4">
-        <h3 class="font-bold text-amber-200 mb-3">Individual Photo & Video Views</h3>
-        <div id="an-media-list" class="overflow-x-auto text-sm text-slate-300">
-          Media views load ho rahe hain...
+      <div class="section-card mt-4">
+        <h3 class="font-bold gold mb-3">Individual Photo & Video Views</h3>
+        <div id="an-media-list" class="overflow-x-auto text-sm">
+          <p class="text-slate-400">Analytics load ho rahi hai...</p>
         </div>
       </div>
 
-      <p id="an-status" class="text-xs text-slate-400 mt-4">
-        Analytics load ho raha hai...
+      <p id="an-status" role="status" aria-live="polite"
+        class="text-xs text-amber-200 mt-4">
+        Analytics load ho rahi hai...
       </p>
     `;
 
     dashboard.prepend(panel);
+
     $("analytics-refresh")?.addEventListener("click", loadAnalytics);
   }
 
@@ -242,27 +318,31 @@
 
     if (!Array.isArray(daily) || !daily.length) {
       container.innerHTML =
-        '<p class="text-sm text-slate-400">Abhi daily visitor data available nahi hai.</p>';
+        '<p class="text-sm text-slate-400">Daily visitor data abhi available nahi hai.</p>';
       return;
     }
 
-    const max = Math.max(1, ...daily.map(x => Number(x.views || 0)));
+    const max = Math.max(
+      1,
+      ...daily.map(item => Number(item.views || 0))
+    );
 
-    container.innerHTML = daily.map(x => {
-      const value = Number(x.views || 0);
-      const width = Math.max(1, (value / max) * 100);
+    container.innerHTML = daily.map(item => {
+      const value = Number(item.views || 0);
+      const width = Math.max(0, (value / max) * 100);
 
       return `
         <div>
           <div class="flex justify-between gap-3 text-xs mb-1">
-            <span>${esc(x.day || "")}</span>
-            <span>${value} visits</span>
+            <span>${esc(item.day || "")}</span>
+            <span>${value.toLocaleString()} visits</span>
           </div>
           <div class="h-2 rounded-full bg-slate-800 overflow-hidden">
             <div class="h-full rounded-full bg-amber-400"
               style="width:${width}%"></div>
           </div>
-        </div>`;
+        </div>
+      `;
     }).join("");
   }
 
@@ -279,7 +359,7 @@
     container.innerHTML = `
       <table class="w-full text-left">
         <thead>
-          <tr class="border-b border-yellow-700/30 text-amber-200">
+          <tr class="border-b border-yellow-700/30 gold">
             <th class="p-2">Content</th>
             <th class="p-2">Category</th>
             <th class="p-2">Media</th>
@@ -287,21 +367,59 @@
           </tr>
         </thead>
         <tbody>
-          ${media.map(x => `
+          ${media.map(item => `
             <tr class="border-b border-slate-800">
-              <td class="p-2 break-words">${esc(x.content_name || x.media_url || "Media")}</td>
-              <td class="p-2">${esc(x.content_type || "—")}</td>
-              <td class="p-2">${esc(x.media_type || "—")}</td>
-              <td class="p-2 text-right font-bold text-amber-300">${Number(x.views || 0)}</td>
+              <td class="p-2 break-words">
+                ${esc(item.content_name || item.media_url || "Media")}
+              </td>
+              <td class="p-2">${esc(item.content_type || "—")}</td>
+              <td class="p-2">${esc(item.media_type || "—")}</td>
+              <td class="p-2 text-right font-bold gold">
+                ${Number(item.views || 0).toLocaleString()}
+              </td>
             </tr>
           `).join("")}
         </tbody>
-      </table>`;
+      </table>
+    `;
+  }
+
+  function drawPagesTable(pages) {
+    const container = $("an-pages");
+    if (!container) return;
+
+    if (!Array.isArray(pages) || !pages.length) {
+      container.innerHTML =
+        '<p class="text-slate-400">Page-wise report SQL RPC mein available nahi hai.</p>';
+      return;
+    }
+
+    container.innerHTML = `
+      <table class="w-full text-left">
+        <thead>
+          <tr class="border-b border-yellow-700/30 gold">
+            <th class="p-2">Page</th>
+            <th class="p-2 text-right">Visits</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${pages.map(page => `
+            <tr class="border-b border-slate-800">
+              <td class="p-2 break-all">${esc(page.page_path || "/")}</td>
+              <td class="p-2 text-right">
+                ${Number(page.visits || 0).toLocaleString()}
+              </td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    `;
   }
 
   async function loadAnalytics() {
     const status = $("an-status");
-    if (status) status.textContent = "Analytics load ho raha hai...";
+
+    if (status) status.textContent = "Analytics load ho rahi hai...";
 
     try {
       const { data, error } = await db.rpc("admin_website_analytics");
@@ -309,25 +427,33 @@
       if (error || !data) {
         if (status) {
           status.textContent =
-            "Analytics load nahi hua. admin_website_analytics SQL function aur website_admins permissions check karein.";
+            "Analytics load nahi hui. admin_website_analytics RPC aur admin permissions check karein.";
         }
+
         console.error("admin_website_analytics:", error);
         return;
       }
 
-      if ($("an-today")) $("an-today").textContent =
-        Number(data.today_visits || 0).toLocaleString();
+      if ($("an-today")) {
+        $("an-today").textContent =
+          Number(data.today_visits || 0).toLocaleString();
+      }
 
-      if ($("an-month")) $("an-month").textContent =
-        Number(data.month_visits || 0).toLocaleString();
+      if ($("an-month")) {
+        $("an-month").textContent =
+          Number(data.month_visits || 0).toLocaleString();
+      }
 
-      if ($("an-total")) $("an-total").textContent =
-        Number(data.total_visits || 0).toLocaleString();
+      if ($("an-total")) {
+        $("an-total").textContent =
+          Number(data.total_visits || 0).toLocaleString();
+      }
 
-      if ($("an-media")) $("an-media").textContent =
-        Number(data.media_views || 0).toLocaleString();
+      if ($("an-media")) {
+        $("an-media").textContent =
+          Number(data.media_views || 0).toLocaleString();
+      }
 
-      // Yearly number tabhi show hoga jab SQL RPC yearly_visits return kare.
       if ($("an-year")) {
         $("an-year").textContent =
           data.yearly_visits == null
@@ -335,7 +461,6 @@
             : Number(data.yearly_visits).toLocaleString();
       }
 
-      // Active visitors tabhi show honge jab RPC active_visitors return kare.
       if ($("an-active")) {
         $("an-active").textContent =
           data.active_visitors == null
@@ -344,247 +469,188 @@
       }
 
       if (data.active_visitors != null && $("an-active-note")) {
-        $("an-active-note").textContent = "SQL se returned active visitor count.";
+        $("an-active-note").textContent =
+          "Count SQL RPC se return hua hai.";
       }
 
       drawDailyChart(data.daily || []);
       drawMediaTable(data.media || []);
-
-      // Page-wise visits tabhi render honge jab SQL pages array return kare.
-      const pagesEl = $("an-pages");
-      if (pagesEl) {
-        if (Array.isArray(data.pages) && data.pages.length) {
-          pagesEl.innerHTML = `
-            <table class="w-full text-left">
-              <thead><tr class="border-b border-yellow-700/30 text-amber-200">
-                <th class="p-2">Page</th><th class="p-2 text-right">Visits</th>
-              </tr></thead>
-              <tbody>
-                ${data.pages.map(p => `
-                  <tr class="border-b border-slate-800">
-                    <td class="p-2">${esc(p.page_path || "/")}</td>
-                    <td class="p-2 text-right">${Number(p.visits || 0)}</td>
-                  </tr>`).join("")}
-              </tbody>
-            </table>`;
-        } else {
-          pagesEl.textContent =
-            "Page-wise report ke liye admin_website_analytics SQL function mein pages array add karein.";
-        }
-      }
+      drawPagesTable(data.pages || []);
 
       if (status) {
         status.textContent =
           `Analytics refreshed: ${new Date().toLocaleString()}`;
       }
-    } catch (err) {
-      console.error(err);
-      if (status) status.textContent = "Analytics load karte waqt error hua.";
+    } catch (error) {
+      console.error("Analytics error:", error);
+
+      if (status) {
+        status.textContent = "Analytics load karte waqt error hua.";
+      }
     }
   }
 
-  async function showSession() {
-    const { data, error } = await db.auth.getSession();
+  // --------------------------------------------------
+  // CONTENT CARD HTML
+  // --------------------------------------------------
 
-    if (error) {
-      $("login-panel")?.classList.remove("hidden");
-      $("dashboard")?.classList.add("hidden");
-      if ($("login-msg")) $("login-msg").textContent = error.message;
-      return;
-    }
-
-    const session = data?.session;
-
-    if (!session) {
-      $("login-panel")?.classList.remove("hidden");
-      $("dashboard")?.classList.add("hidden");
-      return;
-    }
-
-    const { data: admin, error: adminError } = await db
-      .from("website_admins")
-      .select("user_id")
-      .eq("user_id", session.user.id)
-      .maybeSingle();
-
-    if (adminError || !admin) {
-      await db.auth.signOut();
-      $("login-panel")?.classList.remove("hidden");
-      $("dashboard")?.classList.add("hidden");
-      if ($("login-msg")) $("login-msg").textContent = "Admin access nahi hai.";
-      return;
-    }
-
-    $("login-panel")?.classList.add("hidden");
-    $("dashboard")?.classList.remove("hidden");
-
-    ensureAnalyticsPanel();
-
-    await Promise.all([
-      load(),
-      loadUsage(),
-      loadAnalytics()
-    ]);
-  }
-
-  async function load() {
-    $status("Content load ho raha hai...");
-
-    const [h, p, z] = await Promise.all([
-      db.from("website_hotels").select("*")
-        .order("sort_order").order("created_at"),
-      db.from("website_packages").select("*")
-        .order("sort_order").order("created_at"),
-      db.from("website_ziyarat").select("*")
-        .order("sort_order").order("created_at")
-    ]);
-
-    if (h.error || p.error || z.error) {
-      const err = h.error || p.error || z.error;
-      $status("Load error: " + err.message);
-      console.error("Content load error:", err);
-      return;
-    }
-
-    records.hotels = h.data || [];
-    records.packages = p.data || [];
-    records.ziyarat = z.data || [];
-
-    if ($("hotels-list")) {
-      $("hotels-list").innerHTML =
-        records.hotels.map(x => itemHtml(x, "hotel")).join("") ||
-        '<p class="text-sm text-slate-400">Abhi hotels add nahi kiye.</p>';
-    }
-
-    if ($("packages-list")) {
-      $("packages-list").innerHTML =
-        records.packages.map(x => itemHtml(x, "package")).join("") ||
-        '<p class="text-sm text-slate-400">Abhi packages add nahi kiye.</p>';
-    }
-
-    ensureZiyaratSections();
-
-    const makkah = records.ziyarat.filter(x => x.city === "makkah");
-    const madinah = records.ziyarat.filter(x => x.city === "madinah");
-
-    $("ziyarat-makkah-list").innerHTML =
-      makkah.map(x => itemHtml(x, "ziyarat")).join("") ||
-      '<p class="text-sm text-slate-400">Abhi Makkah Ziyarat add nahi ki.</p>';
-
-    $("ziyarat-madinah-list").innerHTML =
-      madinah.map(x => itemHtml(x, "ziyarat")).join("") ||
-      '<p class="text-sm text-slate-400">Abhi Madinah Ziyarat add nahi ki.</p>';
-
-    $status("Content successfully load ho gaya.");
-  }
-
-  function ensureZiyaratSections() {
-    const dashboard = $("dashboard");
-    if (!dashboard) return;
-
-    let wrap = $("ziyarat-admin-sections");
-
-    if (!wrap) {
-      wrap = document.createElement("section");
-      wrap.id = "ziyarat-admin-sections";
-      wrap.className =
-        "my-6 rounded-2xl border border-yellow-700/40 bg-slate-950/60 p-4 md:p-6";
-
-      wrap.innerHTML = `
-        <h2 class="text-xl md:text-2xl font-bold text-amber-300 mb-5">
-          Makkah & Madinah Ziyarat Management
-        </h2>
-
-        <div class="mb-6">
-          <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
-            <h3 class="text-lg font-bold text-amber-200">Makkah Ziyarat</h3>
-            <button id="new-makkah-ziyarat" class="btn2 px-4 py-2" type="button">
-              + Add Makkah Ziyarat
-            </button>
-          </div>
-          <div id="ziyarat-makkah-list" class="grid grid-cols-1 lg:grid-cols-2 gap-3"></div>
-        </div>
-
-        <div>
-          <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
-            <h3 class="text-lg font-bold text-amber-200">Madinah Ziyarat</h3>
-            <button id="new-madinah-ziyarat" class="btn2 px-4 py-2" type="button">
-              + Add Madinah Ziyarat
-            </button>
-          </div>
-          <div id="ziyarat-madinah-list" class="grid grid-cols-1 lg:grid-cols-2 gap-3"></div>
-        </div>
-      `;
-
-      dashboard.appendChild(wrap);
-
-      $("new-makkah-ziyarat").addEventListener("click", () => {
-        openEditor("ziyarat", null, "makkah");
-      });
-
-      $("new-madinah-ziyarat").addEventListener("click", () => {
-        openEditor("ziyarat", null, "madinah");
-      });
-    }
-  }
-
-  function itemHtml(x, type) {
-    const imgs = Array.isArray(x.images)
-      ? x.images
-      : (x.image_url ? [x.image_url] : []);
-
-    const vids = Array.isArray(x.videos)
-      ? x.videos
-      : (x.videos ? [x.videos] : []);
+  function itemHtml(item, type) {
+    const images = getImages(item);
+    const videos = getVideos(item);
 
     const category = type === "hotel"
-      ? `Hotel • ${esc(x.city)}`
+      ? `Hotel • ${esc(item.city || "—")}`
       : type === "ziyarat"
-        ? `Ziyarat • ${esc(x.city)}`
+        ? `Ziyarat • ${esc(item.city || "—")}`
         : "Umrah Package";
 
+    const photoCount = images.length;
+    const videoCount = videos.length;
+
+    const thumbnail = images[0]
+      ? `<img src="${esc(images[0])}"
+          class="w-16 h-16 object-cover rounded-lg bg-black/30 shrink-0"
+          alt="" loading="lazy"
+          onerror="this.style.display='none'">`
+      : `<div class="w-16 h-16 rounded-lg bg-slate-900 border border-yellow-700/30 flex items-center justify-center shrink-0">
+           <span class="text-2xl">🕋</span>
+         </div>`;
+
     return `
-      <div class="border border-yellow-700/30 rounded-xl p-3 flex gap-3 items-start">
-        <img src="${esc(imgs[0] || "")}"
-          class="w-16 h-16 object-cover rounded-lg bg-black/30"
-          alt="" onerror="this.style.display='none'">
+      <article class="border border-yellow-700/30 rounded-xl p-3 flex gap-3 items-start">
+        ${thumbnail}
 
         <div class="min-w-0 flex-1">
-          <p class="font-bold text-white">${esc(x.name)}</p>
+          <p class="font-bold text-white break-words">${esc(item.name || "Untitled")}</p>
+
           <p class="text-xs text-slate-400 mt-1">
-            ${category} • ${x.is_visible ? "Visible" : "Hidden"}
-            • 📷 ${imgs.length} Photos • 🎬 ${vids.length} Videos
+            ${category}
           </p>
+
+          <div class="flex flex-wrap gap-2 mt-2 text-xs">
+            <span class="status-pill">${item.is_visible ? "Visible" : "Hidden"}</span>
+            <span class="status-pill">📷 ${photoCount}</span>
+            <span class="status-pill">🎬 ${videoCount}</span>
+          </div>
 
           <div class="flex flex-wrap gap-2 mt-3">
             <button class="btn2 text-xs"
-              data-edit="${type}:${x.id}" type="button">Edit</button>
+              data-edit="${type}:${esc(item.id)}" type="button">
+              Edit
+            </button>
 
             <button class="btn2 text-xs"
-              data-toggle="${type}:${x.id}" type="button">
-              ${x.is_visible ? "Hide" : "Show"}
+              data-toggle="${type}:${esc(item.id)}" type="button">
+              ${item.is_visible ? "Hide" : "Show"}
             </button>
 
             <button
               class="text-xs text-red-300 border border-red-800/60 rounded-lg px-3 py-2"
-              data-delete="${type}:${x.id}" type="button">Delete</button>
+              data-delete="${type}:${esc(item.id)}" type="button">
+              Delete
+            </button>
           </div>
         </div>
-      </div>`;
+      </article>
+    `;
   }
 
-  function setField(id, value) {
-    const el = $(id);
-    if (el) el.value = value ?? "";
+  // --------------------------------------------------
+  // LOAD CONTENT FROM SUPABASE
+  // --------------------------------------------------
+
+  async function load() {
+    setStatus("Hotels, packages aur ziyarat load ho rahe hain...");
+
+    try {
+      const results = await Promise.all([
+        db.from("website_hotels")
+          .select("*")
+          .order("sort_order", { ascending: true })
+          .order("created_at", { ascending: true }),
+
+        db.from("website_packages")
+          .select("*")
+          .order("sort_order", { ascending: true })
+          .order("created_at", { ascending: true }),
+
+        db.from("website_ziyarat")
+          .select("*")
+          .order("sort_order", { ascending: true })
+          .order("created_at", { ascending: true })
+      ]);
+
+      const [hotelsResult, packagesResult, ziyaratResult] = results;
+
+      if (hotelsResult.error) throw new Error(
+        "Hotels: " + hotelsResult.error.message
+      );
+
+      if (packagesResult.error) throw new Error(
+        "Packages: " + packagesResult.error.message
+      );
+
+      if (ziyaratResult.error) throw new Error(
+        "Ziyarat: " + ziyaratResult.error.message
+      );
+
+      records.hotels = hotelsResult.data || [];
+      records.packages = packagesResult.data || [];
+      records.ziyarat = ziyaratResult.data || [];
+
+      if ($("hotels-list")) {
+        $("hotels-list").innerHTML =
+          records.hotels.map(item => itemHtml(item, "hotel")).join("") ||
+          '<p class="text-sm text-slate-400">Abhi hotels add nahi kiye.</p>';
+      }
+
+      if ($("packages-list")) {
+        $("packages-list").innerHTML =
+          records.packages.map(item => itemHtml(item, "package")).join("") ||
+          '<p class="text-sm text-slate-400">Abhi Umrah packages add nahi kiye.</p>';
+      }
+
+      renderZiyarat();
+
+      setStatus("Hotels, packages aur ziyarat successfully load ho gaye.");
+    } catch (error) {
+      console.error("Content load error:", error);
+      setStatus("Content load error: " + error.message);
+    }
   }
 
-  async function openEditor(type, item = null, defaultCity = "makkah") {
+  function renderZiyarat() {
+    const makkahList = $("makkah-ziyarat-list");
+    const madinahList = $("madinah-ziyarat-list");
+
+    const makkah = records.ziyarat.filter(item => item.city === "makkah");
+    const madinah = records.ziyarat.filter(item => item.city === "madinah");
+
+    if (makkahList) {
+      makkahList.innerHTML =
+        makkah.map(item => itemHtml(item, "ziyarat")).join("") ||
+        '<p class="text-sm text-slate-400">Abhi Makkah Ziyarat add nahi ki.</p>';
+    }
+
+    if (madinahList) {
+      madinahList.innerHTML =
+        madinah.map(item => itemHtml(item, "ziyarat")).join("") ||
+        '<p class="text-sm text-slate-400">Abhi Madinah Ziyarat add nahi ki.</p>';
+    }
+  }
+
+  // --------------------------------------------------
+  // EDITOR
+  // --------------------------------------------------
+
+  function openEditor(type, item = null, defaultCity = "makkah") {
     if (!$("editor")) {
-      alert("Editor form nahi mila. admin.html file check karein.");
+      setStatus("Editor form nahi mila. admin.html check karein.");
       return;
     }
 
     $("editor").reset();
+
     setField("record-id", item?.id || "");
     setField("record-type", type);
 
@@ -593,8 +659,8 @@
         `${item ? "Edit " : "Add "}${typeLabel(type)}`;
     }
 
-    $("city-wrap")?.classList.toggle("hidden", type === "package");
-    $("view-wrap")?.classList.toggle("hidden", type !== "hotel");
+    setVisible($("city-wrap"), type !== "package");
+    setVisible($("view-wrap"), type === "hotel");
 
     setField("f-name", item?.name || "");
     setField("f-city", item?.city || defaultCity);
@@ -604,51 +670,111 @@
     setField("f-price", item?.price || "");
     setField("f-order", item?.sort_order ?? 0);
 
-    const vids = item?.videos;
-    setField(
-      "f-videos",
-      (Array.isArray(vids) ? vids : vids ? [vids] : []).join("\n")
-    );
+    setField("f-videos", getVideos(item).join("\n"));
+    setField("f-pdfs", getPdfs(item)[0] || "");
 
-    const pdfs = item?.pdfs;
-    setField("f-pdfs", Array.isArray(pdfs) ? (pdfs[0] || "") : (pdfs || ""));
+    if ($("f-visible")) {
+      $("f-visible").checked = item?.is_visible ?? true;
+    }
 
-    if ($("f-visible")) $("f-visible").checked = item?.is_visible ?? true;
     if ($("f-files")) $("f-files").value = "";
     if ($("f-video-files")) $("f-video-files").value = "";
-    if ($("preview-images")) $("preview-images").innerHTML = "";
-    if ($("preview-videos")) $("preview-videos").innerHTML = "";
-    if ($("editor-msg")) $("editor-msg").textContent = "";
+
+    if ($("preview-images")) {
+      $("preview-images").innerHTML = "";
+    }
+
+    if ($("preview-videos")) {
+      $("preview-videos").innerHTML = "";
+    }
+
+    setEditorMessage("");
+
+    // Existing images remain unchanged unless new images are uploaded.
+    const oldImages = getImages(item);
+
+    if ($("preview-images") && oldImages.length) {
+      $("preview-images").innerHTML = oldImages.map(url => `
+        <div class="relative">
+          <img src="${esc(url)}"
+            alt="Existing image"
+            class="w-20 h-20 object-cover rounded-lg border border-yellow-700/40"
+            loading="lazy"
+            onerror="this.style.display='none'">
+        </div>
+      `).join("");
+    }
 
     $("editor-wrap")?.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeEditor() {
+    $("editor-wrap")?.classList.add("hidden");
+    document.body.style.overflow = "";
+    setEditorMessage("");
+  }
+
+  // Exposed for the Add Ziyarat buttons in admin.html.
+  window.openEditor = openEditor;
+
+  // --------------------------------------------------
+  // STORAGE UPLOADS
+  // --------------------------------------------------
+
+  function randomFileName(file) {
+    const ext = file.name.split(".").pop()
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, "") || "file";
+
+    return `${crypto.randomUUID()}.${ext}`;
+  }
+
+  async function uploadFile(file, folder, allowedTypes, maxBytes) {
+    if (!allowedTypes.includes(file.type)) {
+      throw new Error(`${file.name}: File format supported nahi hai.`);
+    }
+
+    if (file.size > maxBytes) {
+      throw new Error(
+        `${file.name}: File limit ${fmtBytes(maxBytes)} hai. File compress karein.`
+      );
+    }
+
+    const path = `${folder}/${randomFileName(file)}`;
+
+    const { data, error } = await db.storage
+      .from("website-photos")
+      .upload(path, file, {
+        upsert: false,
+        contentType: file.type
+      });
+
+    if (error) {
+      throw new Error(`Upload failed (${file.name}): ${error.message}`);
+    }
+
+    const { data: publicData } = db.storage
+      .from("website-photos")
+      .getPublicUrl(data.path);
+
+    if (!publicData?.publicUrl) {
+      throw new Error(`${file.name}: Public URL generate nahi hua.`);
+    }
+
+    return publicData.publicUrl;
   }
 
   async function uploadPhotos(files) {
     const urls = [];
 
     for (const file of Array.from(files || [])) {
-      if (!file.type.startsWith("image/")) continue;
-
-      if (file.size > 5 * MB) {
-        throw new Error(`${file.name} 5MB se bari hai. Photo compress karein.`);
-      }
-
-      const ext = file.name.split(".").pop()
-        .toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
-
-      const path = `website/${crypto.randomUUID()}.${ext}`;
-
-      const { error } = await db.storage.from("website-photos").upload(
-        path,
+      urls.push(await uploadFile(
         file,
-        { upsert: false, contentType: file.type }
-      );
-
-      if (error) throw new Error("Photo upload failed: " + error.message);
-
-      urls.push(
-        db.storage.from("website-photos").getPublicUrl(path).data.publicUrl
-      );
+        "website",
+        ["image/jpeg", "image/png", "image/webp", "image/gif"],
+        5 * MB
+      ));
     }
 
     return urls;
@@ -658,72 +784,61 @@
     const urls = [];
 
     for (const file of Array.from(files || [])) {
-      if (!["video/mp4", "video/webm", "video/ogg"].includes(file.type)) {
-        throw new Error(`${file.name}: MP4, WebM ya OGG video use karein.`);
-      }
-
-      if (file.size > 50 * MB) {
-        throw new Error(`${file.name} 50MB se bari hai. Video compress karein.`);
-      }
-
-      const ext = file.name.split(".").pop()
-        .toLowerCase().replace(/[^a-z0-9]/g, "") || "mp4";
-
-      const path = `website/videos/${crypto.randomUUID()}.${ext}`;
-
-      const { error } = await db.storage.from("website-photos").upload(
-        path,
+      urls.push(await uploadFile(
         file,
-        { upsert: false, contentType: file.type }
-      );
-
-      if (error) throw new Error("Video upload failed: " + error.message);
-
-      urls.push(
-        db.storage.from("website-photos").getPublicUrl(path).data.publicUrl
-      );
+        "website/videos",
+        ["video/mp4", "video/webm", "video/ogg"],
+        50 * MB
+      ));
     }
 
     return urls;
   }
 
+  // --------------------------------------------------
+  // FILE PREVIEWS
+  // --------------------------------------------------
+
   function previewImages() {
+    const container = $("preview-images");
+    if (!container) return;
+
+    // Preserve existing image previews, then append newly selected files.
     const files = Array.from($("f-files")?.files || []);
-    if (!$("preview-images")) return;
 
-    $("preview-images").innerHTML = "";
-
-    for (const file of files) {
-      if (!file.type.startsWith("image/")) continue;
+    files.forEach(file => {
+      if (!file.type.startsWith("image/")) return;
 
       const url = URL.createObjectURL(file);
-      const img = document.createElement("img");
+      const image = document.createElement("img");
 
-      img.src = url;
-      img.alt = file.name;
-      img.className =
+      image.src = url;
+      image.alt = file.name;
+      image.title = file.name;
+      image.className =
         "w-20 h-20 object-cover rounded-lg border border-yellow-700/40";
-      img.onload = () => URL.revokeObjectURL(url);
 
-      $("preview-images").appendChild(img);
-    }
+      image.onload = () => URL.revokeObjectURL(url);
+
+      container.appendChild(image);
+    });
   }
 
   function previewVideos() {
-    const files = Array.from($("f-video-files")?.files || []);
-    if (!$("preview-videos")) return;
+    const container = $("preview-videos");
+    if (!container) return;
 
-    $("preview-videos").innerHTML = "";
+    container.innerHTML = "";
 
-    for (const file of files) {
-      if (!file.type.startsWith("video/")) continue;
+    Array.from($("f-video-files")?.files || []).forEach(file => {
+      if (!file.type.startsWith("video/")) return;
 
       const url = URL.createObjectURL(file);
-      const wrap = document.createElement("div");
-      wrap.className = "border border-yellow-700/30 rounded-xl p-3";
+      const wrapper = document.createElement("div");
+      wrapper.className = "border border-yellow-700/30 rounded-xl p-3";
 
       const title = document.createElement("p");
-      title.className = "text-sm text-amber-200 mb-2";
+      title.className = "text-sm gold mb-2";
       title.textContent = file.name;
 
       const video = document.createElement("video");
@@ -731,223 +846,430 @@
       video.controls = true;
       video.preload = "metadata";
       video.className = "w-full max-h-64 rounded-lg bg-black";
+
       video.onloadedmetadata = () => URL.revokeObjectURL(url);
 
-      wrap.append(title, video);
-      $("preview-videos").appendChild(wrap);
+      wrapper.append(title, video);
+      container.appendChild(wrapper);
+    });
+  }
+
+  // --------------------------------------------------
+  // LOGIN / ADMIN AUTHORIZATION
+  // --------------------------------------------------
+
+  async function showSession() {
+    try {
+      const { data, error } = await db.auth.getSession();
+
+      if (error) throw error;
+
+      const session = data?.session;
+
+      if (!session) {
+        setVisible($("login-panel"), true);
+        setVisible($("dashboard"), false);
+        return;
+      }
+
+      const { data: admin, error: adminError } = await db
+        .from("website_admins")
+        .select("user_id")
+        .eq("user_id", session.user.id)
+        .maybeSingle();
+
+      if (adminError || !admin) {
+        await db.auth.signOut();
+
+        setVisible($("login-panel"), true);
+        setVisible($("dashboard"), false);
+
+        if ($("login-msg")) {
+          $("login-msg").textContent =
+            "Is account ko website admin ki permission nahi hai.";
+        }
+
+        return;
+      }
+
+      setVisible($("login-panel"), false);
+      setVisible($("dashboard"), true);
+
+      ensureAnalyticsPanel();
+
+      await Promise.all([
+        load(),
+        loadUsage(),
+        loadAnalytics()
+      ]);
+    } catch (error) {
+      console.error("Session check error:", error);
+
+      setVisible($("login-panel"), true);
+      setVisible($("dashboard"), false);
+
+      if ($("login-msg")) {
+        $("login-msg").textContent =
+          "Login session verify nahi hui. Dobara login karein.";
+      }
     }
   }
 
-  $("login-form")?.addEventListener("submit", async e => {
-    e.preventDefault();
+  $("login-form")?.addEventListener("submit", async event => {
+    event.preventDefault();
 
-    if ($("login-msg")) $("login-msg").textContent = "Logging in...";
+    const button = $("login-form").querySelector('[type="submit"]');
 
-    const { error } = await db.auth.signInWithPassword({
-      email: $("email").value.trim(),
-      password: $("password").value
-    });
+    if (button) {
+      button.disabled = true;
+      button.textContent = "Checking...";
+    }
 
-    if (!error) {
+    if ($("login-msg")) {
+      $("login-msg").textContent = "Secure login ho raha hai...";
+    }
+
+    try {
+      const { error } = await db.auth.signInWithPassword({
+        email: $("email")?.value.trim() || "",
+        password: $("password")?.value || ""
+      });
+
+      if (error) throw error;
+
       if ($("login-msg")) $("login-msg").textContent = "";
+
       await showSession();
-    } else {
-      $("login-msg").textContent = error.message;
+    } catch (error) {
+      console.error("Login error:", error);
+
+      if ($("login-msg")) {
+        $("login-msg").textContent =
+          error.message || "Login failed.";
+      }
+    } finally {
+      if (button) {
+        button.disabled = false;
+        button.innerHTML = '<i class="fa-solid fa-lock"></i> Secure Login';
+      }
     }
   });
 
   $("logout")?.addEventListener("click", async () => {
-    await db.auth.signOut();
-    await showSession();
+    try {
+      const { error } = await db.auth.signOut();
+      if (error) throw error;
+
+      closeEditor();
+      await showSession();
+    } catch (error) {
+      console.error("Logout error:", error);
+      setStatus("Logout error: " + error.message);
+    }
   });
 
-  $("refresh")?.addEventListener("click", async () => {
-    await Promise.all([load(), loadUsage(), loadAnalytics()]);
+  // Keep the UI in sync if the auth session expires or changes.
+  db.auth.onAuthStateChange(event => {
+    if (event === "SIGNED_OUT") {
+      setVisible($("login-panel"), true);
+      setVisible($("dashboard"), false);
+    }
   });
 
-  $("usage-refresh")?.addEventListener("click", loadUsage);
+  // --------------------------------------------------
+  // BUTTONS
+  // --------------------------------------------------
 
-  $("new-hotel")?.addEventListener("click", () => openEditor("hotel"));
-  $("new-package")?.addEventListener("click", () => openEditor("package"));
-
-  $("close-editor")?.addEventListener("click", () => {
-    $("editor-wrap")?.classList.add("hidden");
+  $("new-hotel")?.addEventListener("click", () => {
+    openEditor("hotel");
   });
 
-  $("cancel-editor")?.addEventListener("click", () => {
-    $("editor-wrap")?.classList.add("hidden");
+  $("new-package")?.addEventListener("click", () => {
+    openEditor("package");
+  });
+
+  $("new-ziyarat")?.addEventListener("click", () => {
+    openEditor("ziyarat", null, "makkah");
+  });
+
+  $("new-ziyarat-secondary")?.addEventListener("click", () => {
+    openEditor("ziyarat", null, "makkah");
+  });
+
+  $("close-editor")?.addEventListener("click", closeEditor);
+  $("cancel-editor")?.addEventListener("click", closeEditor);
+
+  $("editor-wrap")?.addEventListener("click", event => {
+    if (event.target === $("editor-wrap")) closeEditor();
+  });
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && !$("editor-wrap")?.classList.contains("hidden")) {
+      closeEditor();
+    }
   });
 
   $("f-files")?.addEventListener("change", previewImages);
   $("f-video-files")?.addEventListener("change", previewVideos);
 
-  document.addEventListener("click", async e => {
-    const target = e.target;
+  $("usage-refresh")?.addEventListener("click", loadUsage);
+
+  $("refresh")?.addEventListener("click", async () => {
+    await Promise.all([
+      load(),
+      loadUsage(),
+      loadAnalytics()
+    ]);
+  });
+
+  // --------------------------------------------------
+  // EDIT / VISIBILITY / DELETE
+  // --------------------------------------------------
+
+  document.addEventListener("click", async event => {
+    const target = event.target;
+
     if (!(target instanceof Element)) return;
 
-    const ed = target.closest("[data-edit]");
+    const editButton = target.closest("[data-edit]");
 
-    if (ed) {
-      const [type, id] = ed.dataset.edit.split(":");
-      const item = recordArray(type).find(x => String(x.id) === id);
+    if (editButton) {
+      const [type, ...idParts] = editButton.dataset.edit.split(":");
+      const id = idParts.join(":");
 
-      if (item) openEditor(type, item);
+      const item = recordArray(type).find(
+        record => String(record.id) === id
+      );
+
+      if (item) {
+        openEditor(type, item, item.city || "makkah");
+      }
+
       return;
     }
 
-    const tg = target.closest("[data-toggle]");
+    const toggleButton = target.closest("[data-toggle]");
 
-    if (tg) {
-      const [type, id] = tg.dataset.toggle.split(":");
-      const item = recordArray(type).find(x => String(x.id) === id);
+    if (toggleButton) {
+      const [type, ...idParts] = toggleButton.dataset.toggle.split(":");
+      const id = idParts.join(":");
+
+      const item = recordArray(type).find(
+        record => String(record.id) === id
+      );
 
       if (!item) return;
 
-      tg.disabled = true;
+      toggleButton.disabled = true;
 
-      const { error } = await db.from(table(type))
-        .update({ is_visible: !item.is_visible })
-        .eq("id", id);
+      try {
+        const { error } = await db
+          .from(table(type))
+          .update({
+            is_visible: !item.is_visible,
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", id);
 
-      if (error) {
-        $status("Update error: " + error.message);
+        if (error) throw error;
+
+        await load();
+        setStatus(`${typeLabel(type)} ki visibility update ho gayi.`);
+      } catch (error) {
+        console.error("Visibility update error:", error);
+        setStatus("Visibility update error: " + error.message);
+      } finally {
+        toggleButton.disabled = false;
       }
 
-      await load();
       return;
     }
 
-    const del = target.closest("[data-delete]");
+    const deleteButton = target.closest("[data-delete]");
 
-    if (del) {
-      const [type, id] = del.dataset.delete.split(":");
+    if (deleteButton) {
+      const [type, ...idParts] = deleteButton.dataset.delete.split(":");
+      const id = idParts.join(":");
 
-      if (!confirm("Kya aap waqai is content ko delete karna chahte hain?")) {
-        return;
+      const item = recordArray(type).find(
+        record => String(record.id) === id
+      );
+
+      if (!item) return;
+
+      const confirmed = window.confirm(
+        `Kya aap "${item.name}" ko permanently delete karna chahte hain?`
+      );
+
+      if (!confirmed) return;
+
+      deleteButton.disabled = true;
+
+      try {
+        const { error } = await db
+          .from(table(type))
+          .delete()
+          .eq("id", id);
+
+        if (error) throw error;
+
+        await load();
+
+        setStatus(`${typeLabel(type)} delete ho gaya.`);
+      } catch (error) {
+        console.error("Delete error:", error);
+        setStatus("Delete error: " + error.message);
+      } finally {
+        deleteButton.disabled = false;
       }
-
-      const { error } = await db.from(table(type)).delete().eq("id", id);
-
-      if (error) {
-        $status("Delete error: " + error.message);
-        return;
-      }
-
-      await load();
-      $status("Content delete ho gaya.");
     }
   });
 
-  $("editor")?.addEventListener("submit", async e => {
-    e.preventDefault();
+  // --------------------------------------------------
+  // SAVE / UPDATE
+  // --------------------------------------------------
 
-    const type = $("record-type").value;
-    const t = table(type);
-    const id = $("record-id").value;
-    const btn = $("editor").querySelector('[type="submit"]');
+  $("editor")?.addEventListener("submit", async event => {
+    event.preventDefault();
 
-    if (btn) {
-      btn.disabled = true;
-      btn.textContent = "Saving...";
+    if (busy) return;
+
+    const type = $("record-type")?.value;
+    const id = $("record-id")?.value;
+    const submitButton = $("editor").querySelector('[type="submit"]');
+
+    if (!["hotel", "package", "ziyarat"].includes(type)) {
+      setEditorMessage("Content type valid nahi hai.");
+      return;
     }
 
-    if ($("editor-msg")) $("editor-msg").textContent = "";
+    busy = true;
+
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = "Saving...";
+    }
+
+    setEditorMessage("");
 
     try {
       const existingItem = id
-        ? recordArray(type).find(x => String(x.id) === id)
+        ? recordArray(type).find(item => String(item.id) === String(id))
         : null;
 
-      const newImgs = $("f-files")?.files.length
-        ? await uploadPhotos($("f-files").files)
+      const existingImages = getImages(existingItem);
+      const existingVideos = getVideos(existingItem);
+
+      // Existing photos are preserved unless new photos are selected.
+      const selectedPhotos = Array.from($("f-files")?.files || []);
+      const uploadedImages = selectedPhotos.length
+        ? await uploadPhotos(selectedPhotos)
         : [];
 
-      const existingImages = Array.isArray(existingItem?.images)
-        ? existingItem.images
-        : existingItem?.image_url
-          ? [existingItem.image_url]
-          : [];
+      const finalImages = uploadedImages.length
+        ? [...existingImages, ...uploadedImages]
+        : existingImages;
 
-      // Nayi photos upload na hon to purani photos preserve rahengi.
-      const finalImages = newImgs.length ? newImgs : existingImages;
+      // Keep existing videos and add manually entered URLs plus uploaded videos.
+      const manualVideos = ($("f-videos")?.value || "")
+        .split(/\n/)
+        .map(value => value.trim())
+        .filter(Boolean);
 
-      const videoInput = $("f-videos")?.value.trim() || "";
-      const manualVideos = videoInput
-        ? videoInput.split(/[\n,]+/).map(s => s.trim()).filter(Boolean)
-        : [];
-
-      const existingVideos = Array.isArray(existingItem?.videos)
-        ? existingItem.videos
-        : existingItem?.videos
-          ? [existingItem.videos]
-          : [];
-
-      const uploadedVideos = $("f-video-files")?.files.length
-        ? await uploadVideos($("f-video-files").files)
+      const selectedVideos = Array.from($("f-video-files")?.files || []);
+      const uploadedVideos = selectedVideos.length
+        ? await uploadVideos(selectedVideos)
         : [];
 
       const finalVideos = [
         ...new Set([
-          ...existingVideos.filter(v => manualVideos.includes(v)),
+          ...existingVideos,
           ...manualVideos,
           ...uploadedVideos
         ])
       ];
 
       const pdfInput = $("f-pdfs")?.value.trim() || "";
+      const finalPdfs = pdfInput ? [pdfInput] : [];
+
+      const name = $("f-name")?.value.trim() || "";
+      const description = $("f-description")?.value.trim() || "";
+
+      if (!name) {
+        throw new Error("Name / Title enter karein.");
+      }
+
+      if (!description) {
+        throw new Error("Description enter karein.");
+      }
 
       const row = {
-        name: $("f-name").value.trim(),
+        name,
         badge: $("f-badge")?.value.trim() || "",
-        description: $("f-description")?.value.trim() || "",
+        description,
         price: $("f-price")?.value.trim() || "",
         image_url: finalImages[0] || null,
         images: finalImages,
         videos: finalVideos,
-        pdfs: pdfInput ? [pdfInput] : [],
+        pdfs: finalPdfs,
         sort_order: Number($("f-order")?.value) || 0,
         is_visible: $("f-visible")?.checked ?? true,
         updated_at: new Date().toISOString()
       };
 
-      if (!row.name) throw new Error("Name enter karein.");
+      if (type === "hotel" || type === "ziyarat") {
+        const city = $("f-city")?.value;
+
+        if (!["makkah", "madinah"].includes(city)) {
+          throw new Error("Makkah ya Madinah select karein.");
+        }
+
+        row.city = city;
+      }
 
       if (type === "hotel") {
-        row.city = $("f-city").value;
         row.view_text = $("f-view")?.value.trim() || "";
       }
 
-      if (type === "ziyarat") {
-        row.city = $("f-city").value;
+      const query = db.from(table(type));
 
-        if (!["makkah", "madinah"].includes(row.city)) {
-          throw new Error("Ziyarat ke liye Makkah ya Madinah select karein.");
-        }
-      }
+      const result = id
+        ? await query.update(row).eq("id", id)
+        : await query.insert(row);
 
-      const res = id
-        ? await db.from(t).update(row).eq("id", id)
-        : await db.from(t).insert(row);
+      if (result.error) throw result.error;
 
-      if (res.error) throw res.error;
+      closeEditor();
 
-      $("editor-wrap")?.classList.add("hidden");
+      await Promise.all([
+        load(),
+        loadUsage(),
+        loadAnalytics()
+      ]);
 
-      await Promise.all([load(), loadUsage(), loadAnalytics()]);
+      setStatus(
+        `${typeLabel(type)} ${id ? "update" : "add"} ho gaya.`
+      );
+    } catch (error) {
+      console.error("Save error:", error);
 
-      $status("Content successfully save ho gaya.");
-    } catch (err) {
-      console.error("Save error:", err);
-      if ($("editor-msg")) {
-        $("editor-msg").textContent = err.message || "Save failed.";
-      }
+      setEditorMessage(
+        error.message || "Save nahi ho saka. Dobara try karein."
+      );
     } finally {
-      if (btn) {
-        btn.disabled = false;
-        btn.textContent = "Save Changes";
+      busy = false;
+
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.innerHTML =
+          '<i class="fa-solid fa-floppy-disk"></i> Save Changes';
       }
     }
   });
+
+  // --------------------------------------------------
+  // INITIAL STARTUP
+  // --------------------------------------------------
 
   showSession();
 })();
