@@ -1,57 +1,601 @@
+
 <!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#050a18">
 <title>Website Admin | Makki Madni Travel &amp; Tours</title>
+
 <script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/cms-config.js"></script>
+
 <style>
-*{box-sizing:border-box}html{min-height:100%}
-body{font-family:Montserrat,sans-serif;color:#f8fafc;min-height:100vh;margin:0;background:linear-gradient(180deg,rgba(3,7,18,.68),rgba(3,7,18,.78) 50%,rgba(3,7,18,.91)),url("https://images.unsplash.com/photo-1564769625905-50e93615e769?auto=format&fit=crop&w=2000&q=90");background-color:#050a18;background-position:center;background-size:cover;background-repeat:no-repeat;background-attachment:fixed}
-.gold{color:#e6ca65}.panel{background:rgba(5,10,28,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(212,175,55,.45);border-radius:18px;box-shadow:0 15px 45px rgba(0,0,0,.3)}
-.field{display:block;width:100%;background:rgba(3,7,18,.92);border:1px solid #6b5a2a;border-radius:9px;padding:12px;color:white;outline:none;font-family:Montserrat,sans-serif}.field:focus{border-color:#e6ca65;box-shadow:0 0 0 2px rgba(212,175,55,.16)}
-.btn{display:inline-flex;justify-content:center;align-items:center;gap:8px;background:linear-gradient(135deg,#f3e5ab,#d4af37,#aa7c11);color:#030712;font-weight:800;border:1px solid #e6ca65;border-radius:9px;padding:11px 16px;cursor:pointer}.btn:disabled{opacity:.55;cursor:not-allowed}
-.btn2{display:inline-flex;justify-content:center;align-items:center;gap:7px;background:rgba(3,7,18,.45);border:1px solid #d4af37;color:#f3e5ab;border-radius:9px;padding:9px 12px;cursor:pointer;text-decoration:none}.hidden{display:none!important}header{background:rgba(3,7,18,.78);border-bottom:1px solid rgba(212,175,55,.35)}
-.password-wrap{position:relative}.password-wrap .field{padding-right:78px}.password-toggle{position:absolute;top:50%;right:9px;transform:translateY(-50%);padding:7px 8px;color:#e6ca65;font-size:12px;font-weight:800;background:transparent;border:0;cursor:pointer}
-video{background:#000}.usage-bar{height:10px;background:rgba(148,163,184,.2);border-radius:999px;overflow:hidden}.usage-fill{height:100%;width:0;background:linear-gradient(90deg,#e6ca65,#b88b22);border-radius:999px;transition:width .3s}.usage-fill.usage-danger{background:linear-gradient(90deg,#fb923c,#ef4444)}
+*{box-sizing:border-box}
+html{min-height:100%;scroll-behavior:smooth}
+body{
+  font-family:Montserrat,sans-serif;
+  color:#f8fafc;
+  min-height:100vh;
+  margin:0;
+  background:
+    linear-gradient(180deg,rgba(3,7,18,.76),rgba(3,7,18,.86) 50%,rgba(3,7,18,.94)),
+    url("https://images.unsplash.com/photo-1564769625905-50e93615e769?auto=format&fit=crop&w=2000&q=90");
+  background-color:#050a18;
+  background-position:center;
+  background-size:cover;
+  background-repeat:no-repeat;
+  background-attachment:fixed
+}
+.gold{color:#f0d477}
+.gold-border{border-color:rgba(212,175,55,.45)}
+.panel{
+  background:rgba(5,10,28,.90);
+  backdrop-filter:blur(13px);
+  -webkit-backdrop-filter:blur(13px);
+  border:1px solid rgba(212,175,55,.42);
+  border-radius:18px;
+  box-shadow:0 15px 45px rgba(0,0,0,.30)
+}
+.field{
+  display:block;
+  width:100%;
+  background:rgba(3,7,18,.94);
+  border:1px solid #6b5a2a;
+  border-radius:9px;
+  padding:12px;
+  color:#fff;
+  outline:none;
+  font-family:Montserrat,sans-serif;
+  min-width:0
+}
+.field:focus{
+  border-color:#f0d477;
+  box-shadow:0 0 0 2px rgba(212,175,55,.16)
+}
+.field::placeholder{color:#94a3b8}
+.field option{background:#081226;color:white}
+.btn{
+  display:inline-flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+  background:linear-gradient(135deg,#fff0b7,#d4af37,#aa7c11);
+  color:#030712;
+  font-weight:800;
+  border:1px solid #f0d477;
+  border-radius:9px;
+  padding:11px 16px;
+  cursor:pointer;
+  text-decoration:none;
+  transition:transform .2s,filter .2s
+}
+.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.btn2{
+  display:inline-flex;
+  justify-content:center;
+  align-items:center;
+  gap:7px;
+  background:rgba(3,7,18,.55);
+  border:1px solid #d4af37;
+  color:#f3e5ab;
+  border-radius:9px;
+  padding:9px 12px;
+  cursor:pointer;
+  text-decoration:none;
+  transition:background .2s
+}
+.btn2:hover{background:rgba(212,175,55,.13)}
+.hidden{display:none!important}
+header{
+  background:rgba(3,7,18,.88);
+  border-bottom:1px solid rgba(212,175,55,.40);
+  backdrop-filter:blur(12px)
+}
+.password-wrap{position:relative}
+.password-wrap .field{padding-right:78px}
+.password-toggle{
+  position:absolute;
+  top:50%;
+  right:9px;
+  transform:translateY(-50%);
+  padding:7px 8px;
+  color:#f0d477;
+  font-size:12px;
+  font-weight:800;
+  background:transparent;
+  border:0;
+  cursor:pointer
+}
+video{background:#000;max-width:100%}
+.usage-bar{
+  height:10px;
+  background:rgba(148,163,184,.2);
+  border-radius:999px;
+  overflow:hidden
+}
+.usage-fill{
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,#f0d477,#b88b22);
+  border-radius:999px;
+  transition:width .3s
+}
+.usage-fill.usage-danger{
+  background:linear-gradient(90deg,#fb923c,#ef4444)
+}
+.section-card{
+  background:rgba(0,0,0,.20);
+  border:1px solid rgba(212,175,55,.28);
+  border-radius:14px;
+  padding:16px;
+  min-width:0
+}
+.section-card h3{line-height:1.5}
+.small-note{font-size:12px;line-height:1.7;color:#cbd5e1}
+.status-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:5px 9px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:700;
+  border:1px solid rgba(212,175,55,.35);
+  color:#f3e5ab;
+  background:rgba(212,175,55,.08)
+}
+#editor-wrap{overscroll-behavior:contain}
+@media(max-width:640px){
+  body{background-attachment:scroll}
+  .panel{border-radius:14px}
+  .mobile-full{width:100%}
+  .btn,.btn2{font-size:12px}
+}
 </style>
 </head>
+
 <body>
-<header class="px-4 py-5"><div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3"><div><p class="gold text-xs tracking-[.25em]">MAKKI MADNI TRAVEL &amp; TOURS</p><h1 class="text-xl md:text-2xl font-bold mt-1" style="font-family:Cinzel,serif">Website Content Manager</h1><p class="text-xs text-slate-400 mt-1">Hotels • Umrah Packages • Photos • Videos • PDF</p></div><a href="/" class="btn2">← View Website</a></div></header>
+<header class="px-4 py-5">
+  <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <p class="gold text-xs tracking-[.22em] font-bold">MAKKI MADNI TRAVEL &amp; TOURS</p>
+      <h1 class="text-xl md:text-2xl font-bold mt-1" style="font-family:Cinzel,serif">
+        Website Content Manager
+      </h1>
+      <p class="text-xs text-slate-300 mt-2">
+        Hotels • Umrah Packages • Ziyarat • Photos • Videos • PDF
+      </p>
+    </div>
+    <a href="/" class="btn2"><i class="fa-solid fa-arrow-up-right-from-square"></i> View Website</a>
+  </div>
+</header>
+
 <main class="max-w-6xl mx-auto p-4 md:p-7">
-<div id="config-warning" class="panel p-5 mb-5 hidden"><h2 class="gold font-bold mb-2">Supabase Setup Required</h2><p class="text-sm text-slate-300">cms-config.js mein Project URL aur anon/public key check karein.</p></div>
-<section id="login-panel" class="panel max-w-lg mx-auto p-6 md:p-8 mt-8"><div class="text-center mb-6"><div class="mx-auto mb-4 flex items-center justify-center rounded-full" style="width:76px;height:76px;border:1px solid #d4af37;background:rgba(212,175,55,.10);font-size:34px">🕋</div><h2 class="text-xl md:text-2xl font-bold gold mb-2">Admin Login</h2><p class="text-xs text-slate-400">Makki Madni Travel Website Management</p></div>
-<form id="login-form" class="space-y-4"><label class="block text-sm">Email<input class="field mt-2" id="email" type="email" required placeholder="Admin email" autocomplete="username"></label><label class="block text-sm">Password<div class="password-wrap mt-2"><input class="field" id="password" type="password" required placeholder="Enter password" autocomplete="current-password"><button type="button" id="toggle-password" class="password-toggle">SHOW</button></div></label><button class="btn w-full" type="submit">🔐 Secure Login</button></form><p id="login-msg" class="text-sm mt-4 text-amber-200"></p></section>
-<section id="dashboard" class="hidden">
-<div class="flex flex-wrap gap-3 items-center justify-between my-6"><div><h2 class="text-2xl font-bold gold">Manage Website Content</h2><p class="text-sm text-slate-300 mt-1">Hotels aur Packages mein multiple pictures, videos aur PDFs add karein.</p></div><button id="logout" class="btn2" type="button">Logout</button></div>
-<div class="panel p-4 md:p-5 mb-5"><div class="flex flex-wrap items-center justify-between gap-3 mb-4"><div><h3 class="gold font-bold text-lg">📊 Supabase Resource Monitor</h3><p class="text-xs text-slate-400 mt-1">Actual current database size estimate aur Storage files ka total.</p></div><button id="usage-refresh" class="btn2" type="button">↻ Refresh Usage</button></div>
-<div class="grid md:grid-cols-2 gap-4">
-<div class="rounded-xl border border-yellow-700/30 p-4 bg-black/20"><div class="flex items-start justify-between gap-2"><div><p class="font-bold">🗄️ Database</p><p class="text-xs text-slate-400 mt-1">Free plan limit: 500 MiB</p></div><span id="db-usage-percent" class="gold text-sm font-bold">—</span></div><div class="usage-bar mt-4"><div id="db-usage-bar" class="usage-fill"></div></div><div class="grid grid-cols-2 gap-3 mt-4"><div><p class="text-xs text-slate-400">Used</p><p id="db-usage-used" class="text-lg font-bold">—</p></div><div><p class="text-xs text-slate-400">Remaining (approx.)</p><p id="db-usage-free" class="text-lg font-bold">—</p></div></div><p id="db-usage-note" class="text-xs text-slate-400 mt-3"></p></div>
-<div class="rounded-xl border border-yellow-700/30 p-4 bg-black/20"><div class="flex items-start justify-between gap-2"><div><p class="font-bold">🖼️ Photos &amp; Videos Storage</p><p class="text-xs text-slate-400 mt-1">Free plan limit: 1 GiB</p></div><span id="storage-usage-percent" class="gold text-sm font-bold">—</span></div><div class="usage-bar mt-4"><div id="storage-usage-bar" class="usage-fill"></div></div><div class="grid grid-cols-2 gap-3 mt-4"><div><p class="text-xs text-slate-400">File-size total</p><p id="storage-usage-used" class="text-lg font-bold">—</p></div><div><p class="text-xs text-slate-400">Remaining (approx.)</p><p id="storage-usage-free" class="text-lg font-bold">—</p></div></div><p id="storage-usage-note" class="text-xs text-slate-400 mt-3"></p></div>
-</div><p id="usage-status" class="text-xs text-amber-200 mt-4">Usage data abhi load nahi hui.</p><p class="text-xs text-slate-500 mt-2">Note: yeh current-size estimate hai; Supabase billing/usage metrics ke saath update timing ki wajah se farq ho sakta hai.</p></div>
-<div class="flex flex-wrap gap-3 mb-5"><button class="btn" id="new-hotel" type="button">+ Add Hotel</button><button class="btn" id="new-package" type="button">+ Add Package</button><button class="btn2" id="refresh" type="button">↻ Refresh List</button></div><div id="status" class="text-sm mb-4 text-amber-200"></div>
-<div class="grid md:grid-cols-2 gap-5"><section class="panel p-4 md:p-5"><h3 class="gold font-bold text-lg mb-3">🕋 Makkah &amp; Madinah Hotels</h3><div id="hotels-list" class="space-y-3"></div></section><section class="panel p-4 md:p-5"><h3 class="gold font-bold text-lg mb-3">✈ Umrah Packages</h3><div id="packages-list" class="space-y-3"></div></section></div>
-</section></main>
-<div id="editor-wrap" class="hidden fixed inset-0 z-50 bg-black/80 overflow-y-auto p-3 md:p-8"><div class="panel max-w-2xl mx-auto p-5 md:p-7 my-4"><div class="flex justify-between items-center gap-3 mb-5"><h2 id="editor-title" class="text-xl font-bold gold">Edit Content</h2><button id="close-editor" class="btn2" type="button">Close ✕</button></div>
-<form id="editor" class="space-y-4"><input type="hidden" id="record-id"><input type="hidden" id="record-type">
-<label class="block text-sm">Name / Title<input id="f-name" class="field mt-1" required placeholder="Hotel or package name"></label>
-<div id="city-wrap"><label class="block text-sm">City<select id="f-city" class="field mt-1"><option value="makkah">Makkah</option><option value="madinah">Madinah</option></select></label></div>
-<label class="block text-sm">Badge / Short Label<input id="f-badge" class="field mt-1" placeholder="5-Star Luxury VIP"></label>
-<label class="block text-sm">Description<textarea id="f-description" class="field mt-1" rows="4" required placeholder="Details..."></textarea></label>
-<div id="view-wrap"><label class="block text-sm">View / Location Text<input id="f-view" class="field mt-1" placeholder="Haram / Kaaba view"></label></div>
-<label class="block text-sm">Price / Rate<input id="f-price" class="field mt-1" placeholder="PKR 250,000 / Direct Quote"></label>
-<label class="block text-sm">📷 Upload Multiple Pictures<input id="f-files" class="field mt-1" type="file" multiple accept="image/png,image/jpeg,image/webp"><p class="text-xs text-slate-400 mt-1">Multiple pictures select karein. Maximum 5MB per picture.</p></label><div id="preview-images" class="flex flex-wrap gap-2"></div>
-<div class="border border-yellow-700/30 rounded-xl p-4"><h3 class="gold font-bold mb-3">🎬 Upload Hotel / Package Videos</h3><label class="block text-sm">Select Video Files<input id="f-video-files" class="field mt-2" type="file" multiple accept="video/mp4,video/webm,video/ogg"></label><p class="text-xs text-slate-400 mt-2">MP4, WebM aur OGG supported hain. Maximum 50MB per video.</p><p class="text-xs text-amber-200 mt-1">Video upload ke liye Supabase Storage permission zaroori hai.</p></div><div id="preview-videos" class="space-y-3"></div>
-<label class="block text-sm">Video URLs<textarea id="f-videos" class="field mt-1" rows="4" placeholder="YouTube ya direct video URL. Har URL alag line mein."></textarea><p class="text-xs text-slate-400 mt-1">YouTube link ya direct MP4 URL paste karein.</p></label>
-<label class="block text-sm">PDF Brochure URL (Optional)<input id="f-pdfs" class="field mt-1" type="url" placeholder="https://..."></label>
-<label class="block text-sm">Display Order<input id="f-order" class="field mt-1" type="number" value="0"></label>
-<label class="flex items-center gap-3"><input id="f-visible" type="checkbox" checked class="w-5 h-5 accent-yellow-500"><span>Website par show karein</span></label>
-<div class="flex flex-wrap gap-3"><button class="btn flex-1" type="submit">Save Changes</button><button id="cancel-editor" class="btn2" type="button">Cancel</button></div><p id="editor-msg" class="text-sm text-amber-200"></p></form></div></div>
+
+  <!-- CONFIGURATION WARNING -->
+  <div id="config-warning" class="panel p-5 mb-5 hidden">
+    <h2 class="gold font-bold mb-2">
+      <i class="fa-solid fa-triangle-exclamation"></i> Supabase Setup Required
+    </h2>
+    <p class="text-sm text-slate-200">
+      Apni <code>cms-config.js</code> file mein Supabase Project URL aur anon/public key check karein.
+    </p>
+  </div>
+
+  <!-- LOGIN -->
+  <section id="login-panel" class="panel max-w-lg mx-auto p-6 md:p-8 mt-8">
+    <div class="text-center mb-6">
+      <div class="mx-auto mb-4 flex items-center justify-center rounded-full"
+        style="width:78px;height:78px;border:1px solid #d4af37;background:rgba(212,175,55,.12);font-size:34px">
+        🕋
+      </div>
+      <p class="gold text-xs tracking-[.22em] mb-2">SECURE ADMIN AREA</p>
+      <h2 class="text-xl md:text-2xl font-bold gold mb-2">Admin Login</h2>
+      <p class="text-sm text-slate-300">Makki Madni Travel Website Management</p>
+    </div>
+
+    <form id="login-form" class="space-y-4">
+      <label class="block text-sm font-semibold">
+        Email
+        <input class="field mt-2" id="email" type="email" required
+          placeholder="Admin email" autocomplete="username">
+      </label>
+
+      <label class="block text-sm font-semibold">
+        Password
+        <div class="password-wrap mt-2">
+          <input class="field" id="password" type="password" required
+            placeholder="Enter password" autocomplete="current-password">
+          <button type="button" id="toggle-password" class="password-toggle">SHOW</button>
+        </div>
+      </label>
+
+      <button class="btn w-full" type="submit">
+        <i class="fa-solid fa-lock"></i> Secure Login
+      </button>
+    </form>
+
+    <p id="login-msg" role="status" aria-live="polite" class="text-sm mt-4 text-amber-200"></p>
+    <p class="text-xs text-slate-500 mt-5 text-center">
+      Authorized website administrators only.
+    </p>
+  </section>
+
+  <!-- ADMIN DASHBOARD -->
+  <section id="dashboard" class="hidden">
+
+    <div class="flex flex-wrap gap-3 items-center justify-between my-6">
+      <div>
+        <p class="gold text-xs tracking-[.2em] font-bold">CONTROL PANEL</p>
+        <h2 class="text-2xl font-bold gold mt-1">Manage Website Content</h2>
+        <p class="text-sm text-slate-300 mt-2">
+          Website ke hotels, packages aur ziyarat details manage karein.
+        </p>
+      </div>
+      <button id="logout" class="btn2" type="button">
+        <i class="fa-solid fa-right-from-bracket"></i> Logout
+      </button>
+    </div>
+
+    <!-- RESOURCE MONITOR -->
+    <section class="panel p-4 md:p-5 mb-5">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div>
+          <h3 class="gold font-bold text-lg">📊 Supabase Resource Monitor</h3>
+          <p class="text-xs text-slate-300 mt-1">
+            Database size estimate aur Storage files ka total.
+          </p>
+        </div>
+        <button id="usage-refresh" class="btn2" type="button">
+          <i class="fa-solid fa-rotate"></i> Refresh Usage
+        </button>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-4">
+
+        <div class="section-card">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <p class="font-bold">🗄️ Database</p>
+              <p class="text-xs text-slate-300 mt-1">Reference limit: 500 MiB</p>
+            </div>
+            <span id="db-usage-percent" class="gold text-sm font-bold">—</span>
+          </div>
+
+          <div class="usage-bar mt-4">
+            <div id="db-usage-bar" class="usage-fill"></div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 mt-4">
+            <div>
+              <p class="text-xs text-slate-300">Used</p>
+              <p id="db-usage-used" class="text-lg font-bold mt-1">—</p>
+            </div>
+            <div>
+              <p class="text-xs text-slate-300">Remaining (approx.)</p>
+              <p id="db-usage-free" class="text-lg font-bold mt-1">—</p>
+            </div>
+          </div>
+          <p id="db-usage-note" class="small-note mt-3"></p>
+        </div>
+
+        <div class="section-card">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <p class="font-bold">🖼️ Photos &amp; Videos Storage</p>
+              <p class="text-xs text-slate-300 mt-1">Reference limit: 1 GiB</p>
+            </div>
+            <span id="storage-usage-percent" class="gold text-sm font-bold">—</span>
+          </div>
+
+          <div class="usage-bar mt-4">
+            <div id="storage-usage-bar" class="usage-fill"></div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 mt-4">
+            <div>
+              <p class="text-xs text-slate-300">File-size total</p>
+              <p id="storage-usage-used" class="text-lg font-bold mt-1">—</p>
+            </div>
+            <div>
+              <p class="text-xs text-slate-300">Remaining (approx.)</p>
+              <p id="storage-usage-free" class="text-lg font-bold mt-1">—</p>
+            </div>
+          </div>
+          <p id="storage-usage-note" class="small-note mt-3"></p>
+        </div>
+
+      </div>
+
+      <p id="usage-status" role="status" aria-live="polite" class="text-xs text-amber-200 mt-4">
+        Usage data abhi load nahi hui.
+      </p>
+      <p class="text-xs text-slate-400 mt-2">
+        Note: actual limits aur billing metrics Supabase plan ke mutabiq verify karein.
+        Yeh display estimate ho sakta hai.
+      </p>
+    </section>
+
+    <!-- CONTENT ACTIONS -->
+    <section class="panel p-4 md:p-5 mb-5">
+      <h3 class="gold font-bold text-lg mb-2">Content Management</h3>
+      <p class="text-xs text-slate-300 mb-4">
+        Naya record add karne ke liye relevant button select karein.
+      </p>
+
+      <div class="flex flex-wrap gap-3">
+        <button class="btn" id="new-hotel" type="button">
+          <i class="fa-solid fa-hotel"></i> Add Hotel
+        </button>
+
+        <button class="btn" id="new-package" type="button">
+          <i class="fa-solid fa-kaaba"></i> Add Umrah Package
+        </button>
+
+        <button class="btn" id="new-ziyarat" type="button">
+          <i class="fa-solid fa-mosque"></i> Add Ziyarat
+        </button>
+
+        <button class="btn2" id="refresh" type="button">
+          <i class="fa-solid fa-rotate"></i> Refresh List
+        </button>
+      </div>
+
+      <p class="small-note mt-4">
+        Ziyarat ka city select karte waqt Makkah ya Madinah choose karein.
+        Photos, videos aur PDFs ka upload tabhi kaam karega jab aapka
+        <code>admin.js</code> aur Supabase Storage policies us feature ko support karte hon.
+      </p>
+    </section>
+
+    <div id="status" role="status" aria-live="polite" class="text-sm mb-4 text-amber-200"></div>
+
+    <!-- HOTELS AND PACKAGES -->
+    <div class="grid lg:grid-cols-2 gap-5">
+
+      <section class="panel p-4 md:p-5">
+        <div class="flex items-center justify-between gap-3 mb-4">
+          <div>
+            <p class="text-xs text-slate-400">ACCOMMODATION</p>
+            <h3 class="gold font-bold text-lg">🕋 Makkah &amp; Madinah Hotels</h3>
+          </div>
+          <span class="status-pill">Hotels</span>
+        </div>
+        <div id="hotels-list" class="space-y-3">
+          <p class="text-sm text-slate-400">Hotels load hone ka intezar karein...</p>
+        </div>
+      </section>
+
+      <section class="panel p-4 md:p-5">
+        <div class="flex items-center justify-between gap-3 mb-4">
+          <div>
+            <p class="text-xs text-slate-400">TRAVEL OFFERS</p>
+            <h3 class="gold font-bold text-lg">✈ Umrah Packages</h3>
+          </div>
+          <span class="status-pill">Packages</span>
+        </div>
+        <div id="packages-list" class="space-y-3">
+          <p class="text-sm text-slate-400">Packages load hone ka intezar karein...</p>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ZIYARAT MANAGEMENT -->
+    <section class="panel p-4 md:p-5 mt-5">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div>
+          <p class="text-xs text-slate-400">SACRED PLACES</p>
+          <h3 class="gold font-bold text-lg">🕌 Makkah &amp; Madinah Ziyarat</h3>
+          <p class="text-xs text-slate-300 mt-1">
+            Dono cities ki ziyarat listings yahan manage hongi.
+          </p>
+        </div>
+        <button id="new-ziyarat-secondary" class="btn2" type="button">
+          <i class="fa-solid fa-plus"></i> Add Ziyarat
+        </button>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-5">
+        <div class="section-card">
+          <h4 class="gold font-bold mb-3">🕋 Makkah Ziyarat</h4>
+          <div id="makkah-ziyarat-list" class="space-y-3">
+            <p class="text-sm text-slate-400">
+              Ziyarat list ke liye admin.js support zaroori hai.
+            </p>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <h4 class="gold font-bold mb-3">🕌 Madinah Ziyarat</h4>
+          <div id="madinah-ziyarat-list" class="space-y-3">
+            <p class="text-sm text-slate-400">
+              Ziyarat list ke liye admin.js support zaroori hai.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <p class="text-xs text-slate-400 mt-5 text-center">
+      Makki Madni Travel &amp; Tours • Website Administration
+    </p>
+
+  </section>
+</main>
+
+<!-- CONTENT EDITOR -->
+<div id="editor-wrap" class="hidden fixed inset-0 z-50 bg-black/85 overflow-y-auto p-3 md:p-8">
+  <div class="panel max-w-2xl mx-auto p-5 md:p-7 my-4">
+
+    <div class="flex justify-between items-center gap-3 mb-5">
+      <div>
+        <p class="text-xs text-slate-400">CONTENT EDITOR</p>
+        <h2 id="editor-title" class="text-xl font-bold gold mt-1">Edit Content</h2>
+      </div>
+      <button id="close-editor" class="btn2" type="button">Close ✕</button>
+    </div>
+
+    <form id="editor" class="space-y-4">
+      <input type="hidden" id="record-id">
+      <input type="hidden" id="record-type">
+
+      <label class="block text-sm font-semibold">
+        Name / Title
+        <input id="f-name" class="field mt-2" required placeholder="Hotel, package or ziyarat name">
+      </label>
+
+      <div id="city-wrap">
+        <label class="block text-sm font-semibold">
+          City
+          <select id="f-city" class="field mt-2">
+            <option value="makkah">Makkah</option>
+            <option value="madinah">Madinah</option>
+          </select>
+        </label>
+      </div>
+
+      <label class="block text-sm font-semibold">
+        Badge / Short Label
+        <input id="f-badge" class="field mt-2" placeholder="5-Star Luxury VIP">
+      </label>
+
+      <label class="block text-sm font-semibold">
+        Description
+        <textarea id="f-description" class="field mt-2" rows="4" required placeholder="Details, facilities, location..."></textarea>
+      </label>
+
+      <div id="view-wrap">
+        <label class="block text-sm font-semibold">
+          View / Location Text
+          <input id="f-view" class="field mt-2" placeholder="Haram / Kaaba view">
+        </label>
+      </div>
+
+      <label class="block text-sm font-semibold">
+        Price / Rate
+        <input id="f-price" class="field mt-2" placeholder="PKR 250,000 / Direct Quote">
+      </label>
+
+      <div class="section-card">
+        <h3 class="gold font-bold mb-3">📷 Photos</h3>
+        <label class="block text-sm font-semibold">
+          Upload Multiple Pictures
+          <input id="f-files" class="field mt-2" type="file" multiple accept="image/png,image/jpeg,image/webp,image/gif">
+        </label>
+        <p class="small-note mt-2">
+          Multiple pictures select kar sakte hain. Original code ke mutabiq
+          per-file limit aur upload support admin.js mein enforce honi chahiye.
+        </p>
+        <div id="preview-images" class="flex flex-wrap gap-2 mt-3"></div>
+      </div>
+
+      <div class="section-card">
+        <h3 class="gold font-bold mb-3">🎬 Videos</h3>
+        <label class="block text-sm font-semibold">
+          Select Video Files
+          <input id="f-video-files" class="field mt-2" type="file" multiple accept="video/mp4,video/webm,video/ogg">
+        </label>
+        <p class="small-note mt-2">
+          MP4, WebM aur OGG supported formats hain. Upload limit aur Storage permission
+          backend/admin.js aur Supabase policies ke mutabiq honi chahiye.
+        </p>
+        <div id="preview-videos" class="space-y-3 mt-3"></div>
+      </div>
+
+      <label class="block text-sm font-semibold">
+        Video URLs
+        <textarea id="f-videos" class="field mt-2" rows="4" placeholder="YouTube ya direct video URL. Har URL alag line mein."></textarea>
+        <p class="small-note mt-2">YouTube link ya direct video URL paste karein.</p>
+      </label>
+
+      <label class="block text-sm font-semibold">
+        PDF Brochure URL (Optional)
+        <input id="f-pdfs" class="field mt-2" type="url" placeholder="https://...">
+      </label>
+
+      <label class="block text-sm font-semibold">
+        Display Order
+        <input id="f-order" class="field mt-2" type="number" value="0" step="1">
+      </label>
+
+      <label class="flex items-center gap-3 rounded-lg border border-yellow-700/30 p-3">
+        <input id="f-visible" type="checkbox" checked class="w-5 h-5 accent-yellow-500">
+        <span class="text-sm font-semibold">Website par show karein</span>
+      </label>
+
+      <div class="flex flex-wrap gap-3 pt-2">
+        <button class="btn flex-1" type="submit">
+          <i class="fa-solid fa-floppy-disk"></i> Save Changes
+        </button>
+        <button id="cancel-editor" class="btn2" type="button">Cancel</button>
+      </div>
+
+      <p id="editor-msg" role="status" aria-live="polite" class="text-sm text-amber-200"></p>
+    </form>
+  </div>
+</div>
+
 <script>
-document.addEventListener("DOMContentLoaded",function(){const p=document.getElementById("password"),b=document.getElementById("toggle-password");if(p&&b)b.addEventListener("click",function(){const hidden=p.type==="password";p.type=hidden?"text":"password";b.textContent=hidden?"HIDE":"SHOW";});});
+document.addEventListener("DOMContentLoaded", function () {
+  const password = document.getElementById("password");
+  const toggle = document.getElementById("toggle-password");
+  const configWarning = document.getElementById("config-warning");
+
+  if (password && toggle) {
+    toggle.addEventListener("click", function () {
+      const shouldShow = password.type === "password";
+      password.type = shouldShow ? "text" : "password";
+      toggle.textContent = shouldShow ? "HIDE" : "SHOW";
+      toggle.setAttribute("aria-label", shouldShow ? "Hide password" : "Show password");
+    });
+  }
+
+  // Basic configuration warning only.
+  // Actual login/config validation must also exist in admin.js.
+  const config = window.CMS_CONFIG;
+  const validConfig = !!(
+    config &&
+    typeof config.url === "string" &&
+    typeof config.anonKey === "string" &&
+    config.url.trim() &&
+    config.anonKey.trim()
+  );
+
+  if (configWarning && !validConfig) {
+    configWarning.classList.remove("hidden");
+  }
+
+  // Add Ziyarat buttons reuse the same editor entry point.
+  // admin.js must implement openEditor("ziyarat") for this action.
+  function requestZiyaratEditor() {
+    if (typeof window.openEditor === "function") {
+      window.openEditor("ziyarat");
+    } else {
+      const message = document.getElementById("status");
+      if (message) {
+        message.textContent =
+          "Ziyarat editor ke liye admin.js mein website_ziyarat support add karna zaroori hai.";
+      }
+    }
+  }
+
+  const ziyaratButtons = [
+    document.getElementById("new-ziyarat"),
+    document.getElementById("new-ziyarat-secondary")
+  ];
+
+  ziyaratButtons.forEach(function (button) {
+    if (button) button.addEventListener("click", requestZiyaratEditor);
+  });
+});
 </script>
+
 <script src="/admin.js"></script>
-</body></html>
+</body>
+</html>
