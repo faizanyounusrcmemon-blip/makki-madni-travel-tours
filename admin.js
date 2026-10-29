@@ -243,29 +243,29 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
         <div class="section-card">
           <p class="text-sm text-slate-300">Today Visitors</p>
-          <p id="an-today" class="text-3xl font-bold gold mt-2">—</p>
+          <p id="an-today" class="text-3xl font-bold gold mt-2">?</p>
         </div>
 
         <div class="section-card">
           <p class="text-sm text-slate-300">Monthly Visitors</p>
-          <p id="an-month" class="text-3xl font-bold gold mt-2">—</p>
+          <p id="an-month" class="text-3xl font-bold gold mt-2">?</p>
         </div>
 
         <div class="section-card">
           <p class="text-sm text-slate-300">Yearly Visitors</p>
-          <p id="an-year" class="text-3xl font-bold gold mt-2">—</p>
+          <p id="an-year" class="text-3xl font-bold gold mt-2">?</p>
         </div>
 
         <div class="section-card">
           <p class="text-sm text-slate-300">Total Visitors</p>
-          <p id="an-total" class="text-3xl font-bold gold mt-2">—</p>
+          <p id="an-total" class="text-3xl font-bold gold mt-2">?</p>
         </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
         <div class="section-card">
           <h3 class="font-bold gold mb-2">Photo & Video Views</h3>
-          <p id="an-media" class="text-3xl font-bold">—</p>
+          <p id="an-media" class="text-3xl font-bold">?</p>
           <p class="text-xs text-slate-400 mt-2">
             Total media views returned by the analytics RPC.
           </p>
@@ -273,7 +273,7 @@
 
         <div class="section-card">
           <h3 class="font-bold gold mb-2">Currently Active Visitors</h3>
-          <p id="an-active" class="text-3xl font-bold">—</p>
+          <p id="an-active" class="text-3xl font-bold">?</p>
           <p id="an-active-note" class="text-xs text-slate-400 mt-2">
             Active visitors ke liye SQL mein session tracking zaroori hai.
           </p>
@@ -281,7 +281,7 @@
       </div>
 
       <div class="section-card mt-4">
-        <h3 class="font-bold gold mb-3">Daily Visits — Last 30 Days</h3>
+        <h3 class="font-bold gold mb-3">Daily Visits ? Last 30 Days</h3>
         <div id="an-chart" class="space-y-3">
           <p class="text-sm text-slate-400">Analytics load ho rahi hai...</p>
         </div>
@@ -396,8 +396,8 @@
               <td class="p-2 break-words">
                 ${esc(item.content_name || item.media_url || "Media")}
               </td>
-              <td class="p-2">${esc(item.content_type || "—")}</td>
-              <td class="p-2">${esc(item.media_type || "—")}</td>
+              <td class="p-2">${esc(item.content_type || "?")}</td>
+              <td class="p-2">${esc(item.media_type || "?")}</td>
               <td class="p-2 text-right font-bold gold">
                 ${Number(item.views || 0).toLocaleString()}
               </td>
@@ -523,9 +523,9 @@
     const videos = getVideos(item);
 
     const category = type === "hotel"
-      ? `Hotel • ${esc(item.city || "—")}`
+      ? `Hotel ? ${esc(item.city || "?")}`
       : type === "ziyarat"
-        ? `Ziyarat • ${esc(item.city || "—")}`
+        ? `Ziyarat ? ${esc(item.city || "?")}`
         : "Umrah Package";
 
     const photoCount = images.length;
@@ -553,8 +553,8 @@
 
           <div class="flex flex-wrap gap-2 mt-2 text-xs">
             <span class="status-pill">${item.is_visible ? "Visible" : "Hidden"}</span>
-            <span class="status-pill">?? ${photoCount}</span>
-            <span class="status-pill">?? ${videoCount}</span>
+            <span class="status-pill"><i class="fa-solid fa-image mr-1"></i> ${photoCount}</span>
+            <span class="status-pill"><i class="fa-solid fa-video mr-1"></i> ${videoCount}</span>
           </div>
 
           <div class="flex flex-wrap gap-2 mt-3">
