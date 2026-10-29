@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -12,10 +11,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/cms-config.js"></script>
-
-
-
-
 
 <style>
 *{box-sizing:border-box}
@@ -161,9 +156,6 @@ video{background:#000;max-width:100%}
   .btn,.btn2{font-size:12px}
 }
 
-
-/* ===== ANALYTICS + RESOURCE MONITOR: COMPACT SIDE-BY-SIDE ===== */
-
 #dashboard .monitor-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -171,84 +163,65 @@ video{background:#000;max-width:100%}
   align-items: start;
   margin: 18px 0 22px;
 }
-
 #dashboard .monitor-row > .panel {
   min-width: 0;
   margin: 0 !important;
   padding: 16px !important;
   border-radius: 14px;
 }
-
 #dashboard .monitor-row h2,
 #dashboard .monitor-row h3 {
   font-size: 16px !important;
   line-height: 1.5;
 }
-
 #dashboard .monitor-row .section-card {
   padding: 12px;
   border-radius: 11px;
 }
-
 #dashboard .monitor-row .text-3xl {
   font-size: 24px;
   line-height: 1.3;
 }
-
 #dashboard .monitor-row .text-lg {
   font-size: 16px;
 }
-
 #dashboard .monitor-row .usage-bar {
   height: 8px;
 }
-
 #dashboard .monitor-row .small-note {
   font-size: 11px;
   line-height: 1.6;
 }
-
 #dashboard .monitor-row .btn2 {
   padding: 8px 10px;
   font-size: 11px;
 }
-
 #dashboard .monitor-row .grid {
   min-width: 0;
 }
-
 #dashboard .monitor-row table {
   min-width: 300px;
 }
-
 #dashboard .monitor-row #an-chart > div {
   margin-bottom: 10px;
 }
-
-/* Tablet and mobile: stack panels */
 @media (max-width: 900px) {
   #dashboard .monitor-row {
     grid-template-columns: minmax(0, 1fr);
     gap: 14px;
   }
 }
-
-/* Small mobile */
 @media (max-width: 480px) {
   #dashboard .monitor-row > .panel {
     padding: 12px !important;
   }
-
   #dashboard .monitor-row .text-3xl {
     font-size: 21px;
   }
-
   #dashboard .monitor-row .section-card {
     padding: 10px;
   }
 }
-
-
 </style>
 </head>
 
@@ -261,7 +234,7 @@ video{background:#000;max-width:100%}
         Website Content Manager
       </h1>
       <p class="text-xs text-slate-300 mt-2">
-        Hotels • Umrah Packages • Ziyarat • Photos • Videos • PDF
+        <i class="fa-solid fa-hotel mr-1"></i> Hotels &bull; <i class="fa-solid fa-kaaba mr-1"></i> Umrah Packages &bull; <i class="fa-solid fa-mosque mr-1"></i> Ziyarat &bull; <i class="fa-solid fa-images mr-1"></i> Photos &bull; <i class="fa-solid fa-video mr-1"></i> Videos &bull; <i class="fa-solid fa-file-pdf mr-1"></i> PDF
       </p>
     </div>
     <a href="/" class="btn2"><i class="fa-solid fa-arrow-up-right-from-square"></i> View Website</a>
@@ -270,13 +243,12 @@ video{background:#000;max-width:100%}
 
 <main class="max-w-6xl mx-auto p-4 md:p-7">
 
-
   <!-- LOGIN -->
   <section id="login-panel" class="panel max-w-lg mx-auto p-6 md:p-8 mt-8">
     <div class="text-center mb-6">
       <div class="mx-auto mb-4 flex items-center justify-center rounded-full"
-        style="width:78px;height:78px;border:1px solid #d4af37;background:rgba(212,175,55,.12);font-size:34px">
-        ??
+        style="width:78px;height:78px;border:1px solid #d4af37;background:rgba(212,175,55,.12);font-size:30px;color:#f0d477">
+        <i class="fa-solid fa-lock"></i>
       </div>
       <p class="gold text-xs tracking-[.22em] mb-2">SECURE ADMIN AREA</p>
       <h2 class="text-xl md:text-2xl font-bold gold mb-2">Admin Login</h2>
@@ -330,7 +302,7 @@ video{background:#000;max-width:100%}
     <section class="panel p-4 md:p-5 mb-5">
       <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div>
-          <h3 class="gold font-bold text-lg">?? Supabase Resource Monitor</h3>
+          <h3 class="gold font-bold text-lg"><i class="fa-solid fa-server mr-1"></i> Supabase Resource Monitor</h3>
           <p class="text-xs text-slate-300 mt-1">
             Database size estimate aur Storage files ka total.
           </p>
@@ -345,10 +317,10 @@ video{background:#000;max-width:100%}
         <div class="section-card">
           <div class="flex items-start justify-between gap-2">
             <div>
-              <p class="font-bold">??? Database</p>
+              <p class="font-bold"><i class="fa-solid fa-database mr-1"></i> Database</p>
               <p class="text-xs text-slate-300 mt-1">Reference limit: 500 MiB</p>
             </div>
-            <span id="db-usage-percent" class="gold text-sm font-bold">—</span>
+            <span id="db-usage-percent" class="gold text-sm font-bold">â€”</span>
           </div>
 
           <div class="usage-bar mt-4">
@@ -358,11 +330,11 @@ video{background:#000;max-width:100%}
           <div class="grid grid-cols-2 gap-3 mt-4">
             <div>
               <p class="text-xs text-slate-300">Used</p>
-              <p id="db-usage-used" class="text-lg font-bold mt-1">—</p>
+              <p id="db-usage-used" class="text-lg font-bold mt-1">â€”</p>
             </div>
             <div>
               <p class="text-xs text-slate-300">Remaining (approx.)</p>
-              <p id="db-usage-free" class="text-lg font-bold mt-1">—</p>
+              <p id="db-usage-free" class="text-lg font-bold mt-1">â€”</p>
             </div>
           </div>
           <p id="db-usage-note" class="small-note mt-3"></p>
@@ -371,10 +343,10 @@ video{background:#000;max-width:100%}
         <div class="section-card">
           <div class="flex items-start justify-between gap-2">
             <div>
-              <p class="font-bold">??? Photos &amp; Videos Storage</p>
+              <p class="font-bold"><i class="fa-solid fa-photo-film mr-1"></i> Photos &amp; Videos Storage</p>
               <p class="text-xs text-slate-300 mt-1">Reference limit: 1 GiB</p>
             </div>
-            <span id="storage-usage-percent" class="gold text-sm font-bold">—</span>
+            <span id="storage-usage-percent" class="gold text-sm font-bold">â€”</span>
           </div>
 
           <div class="usage-bar mt-4">
@@ -384,11 +356,11 @@ video{background:#000;max-width:100%}
           <div class="grid grid-cols-2 gap-3 mt-4">
             <div>
               <p class="text-xs text-slate-300">File-size total</p>
-              <p id="storage-usage-used" class="text-lg font-bold mt-1">—</p>
+              <p id="storage-usage-used" class="text-lg font-bold mt-1">â€”</p>
             </div>
             <div>
               <p class="text-xs text-slate-300">Remaining (approx.)</p>
-              <p id="storage-usage-free" class="text-lg font-bold mt-1">—</p>
+              <p id="storage-usage-free" class="text-lg font-bold mt-1">â€”</p>
             </div>
           </div>
           <p id="storage-usage-note" class="small-note mt-3"></p>
@@ -398,10 +370,6 @@ video{background:#000;max-width:100%}
 
       <p id="usage-status" role="status" aria-live="polite" class="text-xs text-amber-200 mt-4">
         Usage data abhi load nahi hui.
-      </p>
-      <p class="text-xs text-slate-400 mt-2">
-        Note: actual limits aur billing metrics Supabase plan ke mutabiq verify karein.
-        Yeh display estimate ho sakta hai.
       </p>
     </section>
 
@@ -429,12 +397,6 @@ video{background:#000;max-width:100%}
           <i class="fa-solid fa-rotate"></i> Refresh List
         </button>
       </div>
-
-      <p class="small-note mt-4">
-        Ziyarat ka city select karte waqt Makkah ya Madinah choose karein.
-        Photos, videos aur PDFs ka upload tabhi kaam karega jab aapka
-        <code>admin.js</code> aur Supabase Storage policies us feature ko support karte hon.
-      </p>
     </section>
 
     <div id="status" role="status" aria-live="polite" class="text-sm mb-4 text-amber-200"></div>
@@ -446,7 +408,7 @@ video{background:#000;max-width:100%}
         <div class="flex items-center justify-between gap-3 mb-4">
           <div>
             <p class="text-xs text-slate-400">ACCOMMODATION</p>
-            <h3 class="gold font-bold text-lg">?? Makkah &amp; Madinah Hotels</h3>
+            <h3 class="gold font-bold text-lg"><i class="fa-solid fa-hotel mr-1"></i> Makkah &amp; Madinah Hotels</h3>
           </div>
           <span class="status-pill">Hotels</span>
         </div>
@@ -459,7 +421,7 @@ video{background:#000;max-width:100%}
         <div class="flex items-center justify-between gap-3 mb-4">
           <div>
             <p class="text-xs text-slate-400">TRAVEL OFFERS</p>
-            <h3 class="gold font-bold text-lg">? Umrah Packages</h3>
+            <h3 class="gold font-bold text-lg"><i class="fa-solid fa-kaaba mr-1"></i> Umrah Packages</h3>
           </div>
           <span class="status-pill">Packages</span>
         </div>
@@ -475,7 +437,7 @@ video{background:#000;max-width:100%}
       <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div>
           <p class="text-xs text-slate-400">SACRED PLACES</p>
-          <h3 class="gold font-bold text-lg">?? Makkah &amp; Madinah Ziyarat</h3>
+          <h3 class="gold font-bold text-lg"><i class="fa-solid fa-mosque mr-1"></i> Makkah &amp; Madinah Ziyarat</h3>
           <p class="text-xs text-slate-300 mt-1">
             Dono cities ki ziyarat listings yahan manage hongi.
           </p>
@@ -487,27 +449,23 @@ video{background:#000;max-width:100%}
 
       <div class="grid md:grid-cols-2 gap-5">
         <div class="section-card">
-          <h4 class="gold font-bold mb-3">?? Makkah Ziyarat</h4>
+          <h4 class="gold font-bold mb-3"><i class="fa-solid fa-kaaba mr-1"></i> Makkah Ziyarat</h4>
           <div id="makkah-ziyarat-list" class="space-y-3">
-            <p class="text-sm text-slate-400">
-              Ziyarat list ke liye admin.js support zaroori hai.
-            </p>
+            <p class="text-sm text-slate-400">Ziyarat list load ho rahi hai...</p>
           </div>
         </div>
 
         <div class="section-card">
-          <h4 class="gold font-bold mb-3">?? Madinah Ziyarat</h4>
+          <h4 class="gold font-bold mb-3"><i class="fa-solid fa-mosque mr-1"></i> Madinah Ziyarat</h4>
           <div id="madinah-ziyarat-list" class="space-y-3">
-            <p class="text-sm text-slate-400">
-              Ziyarat list ke liye admin.js support zaroori hai.
-            </p>
+            <p class="text-sm text-slate-400">Ziyarat list load ho rahi hai...</p>
           </div>
         </div>
       </div>
     </section>
 
     <p class="text-xs text-slate-400 mt-5 text-center">
-      Makki Madni Travel &amp; Tours • Website Administration
+      Makki Madni Travel &amp; Tours &bull; Website Administration
     </p>
 
   </section>
@@ -522,7 +480,7 @@ video{background:#000;max-width:100%}
         <p class="text-xs text-slate-400">CONTENT EDITOR</p>
         <h2 id="editor-title" class="text-xl font-bold gold mt-1">Edit Content</h2>
       </div>
-      <button id="close-editor" class="btn2" type="button">Close ?</button>
+      <button id="close-editor" class="btn2" type="button">Close <i class="fa-solid fa-xmark ml-1"></i></button>
     </div>
 
     <form id="editor" class="space-y-4">
@@ -567,35 +525,26 @@ video{background:#000;max-width:100%}
       </label>
 
       <div class="section-card">
-        <h3 class="gold font-bold mb-3">?? Photos</h3>
+        <h3 class="gold font-bold mb-3"><i class="fa-solid fa-image mr-1"></i> Photos</h3>
         <label class="block text-sm font-semibold">
           Upload Multiple Pictures
           <input id="f-files" class="field mt-2" type="file" multiple accept="image/png,image/jpeg,image/webp,image/gif">
         </label>
-        <p class="small-note mt-2">
-          Multiple pictures select kar sakte hain. Original code ke mutabiq
-          per-file limit aur upload support admin.js mein enforce honi chahiye.
-        </p>
         <div id="preview-images" class="flex flex-wrap gap-2 mt-3"></div>
       </div>
 
       <div class="section-card">
-        <h3 class="gold font-bold mb-3">?? Videos</h3>
+        <h3 class="gold font-bold mb-3"><i class="fa-solid fa-video mr-1"></i> Videos</h3>
         <label class="block text-sm font-semibold">
           Select Video Files
           <input id="f-video-files" class="field mt-2" type="file" multiple accept="video/mp4,video/webm,video/ogg">
         </label>
-        <p class="small-note mt-2">
-          MP4, WebM aur OGG supported formats hain. Upload limit aur Storage permission
-          backend/admin.js aur Supabase policies ke mutabiq honi chahiye.
-        </p>
         <div id="preview-videos" class="space-y-3 mt-3"></div>
       </div>
 
       <label class="block text-sm font-semibold">
         Video URLs
         <textarea id="f-videos" class="field mt-2" rows="4" placeholder="YouTube ya direct video URL. Har URL alag line mein."></textarea>
-        <p class="small-note mt-2">YouTube link ya direct video URL paste karein.</p>
       </label>
 
       <label class="block text-sm font-semibold">
@@ -640,44 +589,28 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Basic configuration warning only.
-  // Actual login/config validation must also exist in admin.js.
   const config = window.CMS_CONFIG;
-  const validConfig = !!(
+  const validConfig = Boolean(
     config &&
-
-const config = window.CMS_CONFIG;
-
-const validConfig = Boolean(
-  config &&
-  typeof config.SUPABASE_URL === "string" &&
-  config.SUPABASE_URL.trim() &&
-  typeof config.SUPABASE_ANON_KEY === "string" &&
-  config.SUPABASE_ANON_KEY.trim() &&
-  !config.SUPABASE_URL.includes("PASTE_") &&
-  !config.SUPABASE_ANON_KEY.includes("PASTE_")
-);
-
-if (configWarning) {
-  configWarning.classList.toggle("hidden", validConfig);
-}
-
+    typeof config.SUPABASE_URL === "string" &&
+    config.SUPABASE_URL.trim() &&
+    typeof config.SUPABASE_ANON_KEY === "string" &&
+    config.SUPABASE_ANON_KEY.trim() &&
+    !config.SUPABASE_URL.includes("PASTE_") &&
+    !config.SUPABASE_ANON_KEY.includes("PASTE_")
   );
 
-  if (configWarning && !validConfig) {
-    configWarning.classList.remove("hidden");
+  if (configWarning) {
+    configWarning.classList.toggle("hidden", validConfig);
   }
 
-  // Add Ziyarat buttons reuse the same editor entry point.
-  // admin.js must implement openEditor("ziyarat") for this action.
   function requestZiyaratEditor() {
     if (typeof window.openEditor === "function") {
       window.openEditor("ziyarat");
     } else {
       const message = document.getElementById("status");
       if (message) {
-        message.textContent =
-          "Ziyarat editor ke liye admin.js mein website_ziyarat support add karna zaroori hai.";
+        message.textContent = "Ziyarat editor ke liye admin.js mein website_ziyarat support add karna zaroori hai.";
       }
     }
   }
