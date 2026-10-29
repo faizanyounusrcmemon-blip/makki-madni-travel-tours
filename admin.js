@@ -323,7 +323,7 @@
     });
 
     videos.forEach(url => {
-      mediaPreviews += `<video src="${esc(url)}" class="w-24 h-16 object-contain rounded-lg border border-yellow-700/40 shrink-0 bg-black" preload="metadata" controls></video>`;
+      mediaPreviews += `<video src="${esc(url)}" class="w-16 h-16 object-cover rounded-lg border border-yellow-700/40 shrink-0 bg-black" preload="metadata"></video>`;
     });
 
     
