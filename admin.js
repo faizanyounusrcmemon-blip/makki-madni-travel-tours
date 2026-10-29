@@ -320,9 +320,8 @@
     const videoCount = videos.length;
 
     const thumbnail = images[0]
-      ? `<img src="${esc(images[0])}" class="w-16 h-16 object-cover rounded-lg bg-black/30 shrink-0" alt="" loading="lazy" onerror="this.style.display='none'">`
-      : `<div class="w-16 h-16 rounded-lg bg-slate-900 border border-yellow-700/30 flex items-center justify-center shrink-0"><i class="fa-solid fa-image text-gold text-lg"></i></div>`;
-
+      ? `<img src="${esc(images[0])}" class="w-16 h-16 object-cover rounded-lg bg-black/30 shrink-0 border border-yellow-700/40" alt="Hotel Photo" loading="lazy" onerror="this.src='https:images.unsplash.com/photo-1564769625905-50e93615e769?auto=format&fit=crop&w=100&q=80'">`
+      : `<div class="w-16 h-16 rounded-lg bg-slate-900 border border-yellow-700/30 flex items-center justify-center shrink-0"><i class="fa-solid fa-hotel text-amber-300 text-lg"></i></div>`;
     return `
       <article class="border border-yellow-700/30 rounded-xl p-3 flex gap-3 items-start">
         ${thumbnail}
