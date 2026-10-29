@@ -316,27 +316,40 @@
         ? `<i class="fa-solid fa-mosque mr-1"></i> Ziyarat • ${esc(item.city || "—")}`
         : `<i class="fa-solid fa-kaaba mr-1"></i> Umrah Package`;
 
-    const photoCount = images.length;
-    const videoCount = videos.length;
+    let mediaPreviews = "";
+    
+    images.forEach(url => {
+      mediaPreviews += `<img src="${esc(url)}" class="w-16 h-16 object-cover rounded-lg border border-yellow-700/40 shrink-0" alt="Photo" loading="lazy" onerror="this.style.display='none'">`;
+    });
 
-    const thumbnail = images[0]
-      ? `<img src="${esc(images[0])}" class="w-16 h-16 object-cover rounded-lg bg-black/30 shrink-0 border border-yellow-700/40" alt="Hotel Photo" loading="lazy" onerror="this.src='https:images.unsplash.com/photo-1564769625905-50e93615e769?auto=format&fit=crop&w=100&q=80'">`
-      : `<div class="w-16 h-16 rounded-lg bg-slate-900 border border-yellow-700/30 flex items-center justify-center shrink-0"><i class="fa-solid fa-hotel text-amber-300 text-lg"></i></div>`;
+    videos.forEach(url => {
+      mediaPreviews += `<video src="${esc(url)}" class="w-20 h-16 object-cover rounded-lg border border-yellow-700/40 shrink-0 bg-black" preload="metadata"></video>`;
+    });
+
+    if (!mediaPreviews) {
+      mediaPreviews = `<div class="w-16 h-16 rounded-lg bg-slate-900 border border-yellow-700/30 flex items-center justify-center shrink-0"><i class="fa-solid fa-image text-gold text-lg"></i></div>`;
+    }
+
     return `
-      <article class="border border-yellow-700/30 rounded-xl p-3 flex gap-3 items-start">
-        ${thumbnail}
+      <article class="border border-yellow-700/30 rounded-xl p-3 flex flex-col sm:flex-row gap-4 items-start">
+        <div class="flex flex-wrap gap-2 max-w-xs overflow-x-auto">
+          ${mediaPreviews}
+        </div>
+
         <div class="min-w-0 flex-1">
-          <p class="font-bold text-white break-words">${esc(item.name || "Untitled")}</p>
+          <p class="font-bold text-white text-base break-words">${esc(item.name || "Untitled")}</p>
           <p class="text-xs text-slate-400 mt-1">${category}</p>
+          
           <div class="flex flex-wrap gap-2 mt-2 text-xs">
             <span class="status-pill">${item.is_visible ? "Visible" : "Hidden"}</span>
-            <span class="status-pill"><i class="fa-solid fa-image mr-1"></i> ${photoCount}</span>
-            <span class="status-pill"><i class="fa-solid fa-video mr-1"></i> ${videoCount}</span>
+            <span class="status-pill"><i class="fa-solid fa-image mr-1"></i> ${images.length} Photos</span>
+            <span class="status-pill"><i class="fa-solid fa-video mr-1"></i> ${videos.length} Videos</span>
           </div>
+
           <div class="flex flex-wrap gap-2 mt-3">
-            <button class="btn2 text-xs" data-edit="${type}:${esc(item.id)}" type="button">Edit</button>
-            <button class="btn2 text-xs" data-toggle="${type}:${esc(item.id)}" type="button">${item.is_visible ? "Hide" : "Show"}</button>
-            <button class="text-xs text-red-300 border border-red-800/60 rounded-lg px-3 py-2" data-delete="${type}:${esc(item.id)}" type="button">Delete</button>
+            <button class="btn2 text-xs px-3 py-1.5" data-edit="${type}:${esc(item.id)}" type="button"><i class="fa-solid fa-pen-to-square mr-1"></i> Edit</button>
+            <button class="btn2 text-xs px-3 py-1.5" data-toggle="${type}:${esc(item.id)}" type="button">${item.is_visible ? '<i class="fa-solid fa-eye-slash mr-1"></i> Hide' : '<i class="fa-solid fa-eye mr-1"></i> Show'}</button>
+            <button class="text-xs text-red-300 border border-red-800/60 rounded-lg px-3 py-1.5 hover:bg-red-950/40 transition" data-delete="${type}:${esc(item.id)}" type="button"><i class="fa-solid fa-trash mr-1"></i> Delete</button>
           </div>
         </div>
       </article>
@@ -501,6 +514,62 @@
   $("new-ziyarat-secondary")?.addEventListener("click", () => openEditor("ziyarat", null, "makkah"));
   $("close-editor")?.addEventListener("click", closeEditor);
   $("cancel-editor")?.addEventListener("click", closeEditor);
+
+  // Global click handler for Edit, Hide/Show, and Delete actions
+  document.addEventListener("click", async event => {
+    const target = event.target.closest("button");
+    if (!target) return;
+
+    if (target.dataset.edit) {
+      const [type, id] = target.dataset.edit.split(":");
+      const item = recordArray(type).find(r => String(r.id) === String(id));
+      if (item) openEditor(type, item, item.city || "makkah");
+      return;
+    }
+
+    if (target.dataset.toggle) {
+      const [type, id] = target.dataset.toggle.split(":");
+      const item = recordArray(type).find(r => String(r.id) === String(id));
+      if (!item) return;
+
+      target.disabled = true;
+      try {
+        const { error } = await db.from(table(type)).update({
+          is_visible: !item.is_visible,
+          updated_at: new Date().toISOString()
+        }).eq("id", id);
+
+        if (error) throw error;
+        await load();
+        setStatus("Visibility successfully update ho gayi.");
+      } catch (error) {
+        setStatus("Error: " + error.message);
+      } finally {
+        target.disabled = false;
+      }
+      return;
+    }
+
+    if (target.dataset.delete) {
+      const [type, id] = target.dataset.delete.split(":");
+      const item = recordArray(type).find(r => String(r.id) === String(id));
+      if (!item) return;
+
+      if (!window.confirm(`Kya aap "${item.name}" ko delete karna chahte hain?`)) return;
+
+      target.disabled = true;
+      try {
+        const { error } = await db.from(table(type)).delete().eq("id", id);
+        if (error) throw error;
+        await load();
+        setStatus("Record successfully delete ho gaya.");
+      } catch (error) {
+        setStatus("Error: " + error.message);
+      } finally {
+        target.disabled = false;
+      }
+    }
+  });
 
   $("editor")?.addEventListener("submit", async event => {
     event.preventDefault();
