@@ -182,7 +182,7 @@ video{background:#000;max-width:100%}
     <div class="text-center mb-6">
       <div class="mx-auto mb-4 flex items-center justify-center rounded-full"
         style="width:78px;height:78px;border:1px solid #d4af37;background:rgba(212,175,55,.12);font-size:34px">
-        ??
+        🔒
       </div>
       <p class="gold text-xs tracking-[.22em] mb-2">SECURE ADMIN AREA</p>
       <h2 class="text-xl md:text-2xl font-bold gold mb-2">Admin Login</h2>
@@ -232,59 +232,94 @@ video{background:#000;max-width:100%}
       </button>
     </div>
 
-    <!-- COMPACT RESOURCE MONITOR -->
-    <section class="panel p-3 md:p-4 mb-4">
-      <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-        <div>
-          <h3 class="gold font-bold text-base">?? Supabase Resource Monitor</h3>
-        </div>
-        <button id="usage-refresh" class="btn2 !py-1.5 !px-2.5 text-xs" type="button">
-          <i class="fa-solid fa-rotate"></i> Refresh
-        </button>
-      </div>
+    <!-- ANALYTICS & RESOURCE MONITOR (SIDE BY SIDE ROW) -->
+    <div class="grid lg:grid-cols-2 gap-4 mb-4">
 
-      <div class="grid md:grid-cols-2 gap-3">
-
-        <div class="section-card">
-          <div class="flex items-center justify-between gap-2">
-            <span class="font-bold text-sm">??? Database <span class="text-xs font-normal text-slate-300">(Limit: 500 MiB)</span></span>
-            <span id="db-usage-percent" class="gold text-xs font-bold">—</span>
+      <!-- WEBSITE VISITOR ANALYTICS (COMPACT) -->
+      <section class="panel p-3 md:p-4">
+        <div class="flex items-center justify-between gap-2 mb-3">
+          <div>
+            <p class="gold text-[10px] tracking-[.15em] font-bold">PERFORMANCE</p>
+            <h3 class="font-bold text-base">📊 Visitor Analytics</h3>
           </div>
-
-          <div class="usage-bar mt-2">
-            <div id="db-usage-bar" class="usage-fill"></div>
-          </div>
-
-          <div class="flex justify-between items-center mt-2 text-xs text-slate-300">
-            <span>Used: <strong id="db-usage-used" class="text-white">—</strong></span>
-            <span>Free: <strong id="db-usage-free" class="text-white">—</strong></span>
-          </div>
+          <button id="analytics-refresh" class="btn2 !py-1 !px-2 text-xs" type="button">
+            <i class="fa-solid fa-rotate"></i> Refresh
+          </button>
         </div>
 
-        <div class="section-card">
-          <div class="flex items-center justify-between gap-2">
-            <span class="font-bold text-sm">??? Photos &amp; Videos <span class="text-xs font-normal text-slate-300">(Limit: 1 GiB)</span></span>
-            <span id="storage-usage-percent" class="gold text-xs font-bold">—</span>
+        <div class="grid grid-cols-4 gap-2 text-center mb-3">
+          <div class="section-card !p-2">
+            <p class="text-[10px] text-slate-300">Today</p>
+            <p id="stat-today" class="text-sm font-bold gold mt-0.5">—</p>
           </div>
-
-          <div class="usage-bar mt-2">
-            <div id="storage-usage-bar" class="usage-fill"></div>
+          <div class="section-card !p-2">
+            <p class="text-[10px] text-slate-300">Monthly</p>
+            <p id="stat-month" class="text-sm font-bold gold mt-0.5">—</p>
           </div>
-
-          <div class="flex justify-between items-center mt-2 text-xs text-slate-300">
-            <span>Used: <strong id="storage-usage-used" class="text-white">—</strong></span>
-            <span>Free: <strong id="storage-usage-free" class="text-white">—</strong></span>
+          <div class="section-card !p-2">
+            <p class="text-[10px] text-slate-300">Yearly</p>
+            <p id="stat-year" class="text-sm font-bold gold mt-0.5">—</p>
+          </div>
+          <div class="section-card !p-2">
+            <p class="text-[10px] text-slate-300">Total</p>
+            <p id="stat-total" class="text-sm font-bold gold mt-0.5">—</p>
           </div>
         </div>
 
-      </div>
+        <div class="flex items-center justify-between text-xs text-slate-300 px-1">
+          <span>Media Views: <strong id="stat-media" class="text-white">—</strong></span>
+          <span id="analytics-time" class="text-[10px] text-slate-400"></span>
+        </div>
+      </section>
 
-      <div class="flex flex-wrap items-center justify-between gap-2 mt-2">
-        <p id="usage-status" role="status" aria-live="polite" class="text-xs text-amber-200">
-          Usage data abhi load nahi hui.
+      <!-- SUPABASE RESOURCE MONITOR (COMPACT) -->
+      <section class="panel p-3 md:p-4">
+        <div class="flex items-center justify-between gap-2 mb-3">
+          <div>
+            <p class="gold text-[10px] tracking-[.15em] font-bold">STORAGE & DB</p>
+            <h3 class="font-bold text-base">🗄️ Supabase Monitor</h3>
+          </div>
+          <button id="usage-refresh" class="btn2 !py-1 !px-2 text-xs" type="button">
+            <i class="fa-solid fa-rotate"></i> Refresh
+          </button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 mb-2">
+          <div class="section-card !p-2">
+            <div class="flex justify-between text-xs mb-1">
+              <span class="font-bold">Database</span>
+              <span id="db-usage-percent" class="gold font-bold">—</span>
+            </div>
+            <div class="usage-bar">
+              <div id="db-usage-bar" class="usage-fill"></div>
+            </div>
+            <div class="flex justify-between text-[10px] text-slate-300 mt-1">
+              <span>Used: <strong id="db-usage-used" class="text-white">—</strong></span>
+              <span>Free: <strong id="db-usage-free" class="text-white">—</strong></span>
+            </div>
+          </div>
+
+          <div class="section-card !p-2">
+            <div class="flex justify-between text-xs mb-1">
+              <span class="font-bold">Photos/Videos</span>
+              <span id="storage-usage-percent" class="gold font-bold">—</span>
+            </div>
+            <div class="usage-bar">
+              <div id="storage-usage-bar" class="usage-fill"></div>
+            </div>
+            <div class="flex justify-between text-[10px] text-slate-300 mt-1">
+              <span>Used: <strong id="storage-usage-used" class="text-white">—</strong></span>
+              <span>Free: <strong id="storage-usage-free" class="text-white">—</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <p id="usage-status" role="status" aria-live="polite" class="text-[10px] text-amber-200 px-1">
+          Usage data load nahi hui.
         </p>
-      </div>
-    </section>
+      </section>
+
+    </div>
 
     <!-- CONTENT ACTIONS -->
     <section class="panel p-4 md:p-5 mb-5">
@@ -327,7 +362,7 @@ video{background:#000;max-width:100%}
         <div class="flex items-center justify-between gap-3 mb-4">
           <div>
             <p class="text-xs text-slate-400">ACCOMMODATION</p>
-            <h3 class="gold font-bold text-lg">?? Makkah &amp; Madinah Hotels</h3>
+            <h3 class="gold font-bold text-lg">🏨 Makkah &amp; Madinah Hotels</h3>
           </div>
           <span class="status-pill">Hotels</span>
         </div>
@@ -340,7 +375,7 @@ video{background:#000;max-width:100%}
         <div class="flex items-center justify-between gap-3 mb-4">
           <div>
             <p class="text-xs text-slate-400">TRAVEL OFFERS</p>
-            <h3 class="gold font-bold text-lg">? Umrah Packages</h3>
+            <h3 class="gold font-bold text-lg">🕋 Umrah Packages</h3>
           </div>
           <span class="status-pill">Packages</span>
         </div>
@@ -356,7 +391,7 @@ video{background:#000;max-width:100%}
       <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div>
           <p class="text-xs text-slate-400">SACRED PLACES</p>
-          <h3 class="gold font-bold text-lg">?? Makkah &amp; Madinah Ziyarat</h3>
+          <h3 class="gold font-bold text-lg">🕌 Makkah &amp; Madinah Ziyarat</h3>
           <p class="text-xs text-slate-300 mt-1">
             Dono cities ki ziyarat listings yahan manage hongi.
           </p>
@@ -368,7 +403,7 @@ video{background:#000;max-width:100%}
 
       <div class="grid md:grid-cols-2 gap-5">
         <div class="section-card">
-          <h4 class="gold font-bold mb-3">?? Makkah Ziyarat</h4>
+          <h4 class="gold font-bold mb-3">🕋 Makkah Ziyarat</h4>
           <div id="makkah-ziyarat-list" class="space-y-3">
             <p class="text-sm text-slate-400">
               Ziyarat list ke liye admin.js support zaroori hai.
@@ -377,7 +412,7 @@ video{background:#000;max-width:100%}
         </div>
 
         <div class="section-card">
-          <h4 class="gold font-bold mb-3">?? Madinah Ziyarat</h4>
+          <h4 class="gold font-bold mb-3">🕌 Madinah Ziyarat</h4>
           <div id="madinah-ziyarat-list" class="space-y-3">
             <p class="text-sm text-slate-400">
               Ziyarat list ke liye admin.js support zaroori hai.
@@ -403,7 +438,7 @@ video{background:#000;max-width:100%}
         <p class="text-xs text-slate-400">CONTENT EDITOR</p>
         <h2 id="editor-title" class="text-xl font-bold gold mt-1">Edit Content</h2>
       </div>
-      <button id="close-editor" class="btn2" type="button">Close ?</button>
+      <button id="close-editor" class="btn2" type="button">Close ✕</button>
     </div>
 
     <form id="editor" class="space-y-4">
@@ -448,7 +483,7 @@ video{background:#000;max-width:100%}
       </label>
 
       <div class="section-card">
-        <h3 class="gold font-bold mb-3">?? Photos</h3>
+        <h3 class="gold font-bold mb-3">📷 Photos</h3>
         <label class="block text-sm font-semibold">
           Upload Multiple Pictures
           <input id="f-files" class="field mt-2" type="file" multiple accept="image/png,image/jpeg,image/webp,image/gif">
@@ -461,7 +496,7 @@ video{background:#000;max-width:100%}
       </div>
 
       <div class="section-card">
-        <h3 class="gold font-bold mb-3">?? Videos</h3>
+        <h3 class="gold font-bold mb-3">🎥 Videos</h3>
         <label class="block text-sm font-semibold">
           Select Video Files
           <input id="f-video-files" class="field mt-2" type="file" multiple accept="video/mp4,video/webm,video/ogg">
@@ -521,8 +556,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Basic configuration warning only.
-  // Actual login/config validation must also exist in admin.js.
   const config = window.CMS_CONFIG;
   const validConfig = !!(
     config &&
@@ -536,8 +569,6 @@ document.addEventListener("DOMContentLoaded", function () {
     configWarning.classList.remove("hidden");
   }
 
-  // Add Ziyarat buttons reuse the same editor entry point.
-  // admin.js must implement openEditor("ziyarat") for this action.
   function requestZiyaratEditor() {
     if (typeof window.openEditor === "function") {
       window.openEditor("ziyarat");
