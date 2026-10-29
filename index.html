@@ -1,510 +1,1039 @@
-﻿<!DOCTYPE html>
+
+<!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
-<head> <meta name="google-site-verification" content="DRvsPqeWNOLdoitNhONwNTNSyqxaJdATjD1etKXiO3s" />
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAKKI MADNI Travel & Tours | Luxury Umrah & Hajj Services Karachi</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- CMS configuration: set your Supabase project URL and anon key in cms-config.js -->
-    <script src="/cms-config.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="/cms-public.js"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        navy: {
-                            950: '#030712',
-                            900: '#050a18',
-                            800: '#0a1128',
-                            700: '#111d42',
-                            600: '#1c2d5a'
-                        },
-                        gold: {
-                            100: '#fef3c7',
-                            300: '#f3e5ab',
-                            400: '#e6ca65',
-                            500: '#d4af37',
-                            600: '#aa7c11',
-                            700: '#855d08'
-                        }
-                    },
-                    fontFamily: {
-                        cinzel: ['Cinzel', 'serif'],
-                        playfair: ['Playfair Display', 'serif'],
-                        sans: ['Montserrat', 'sans-serif']
-                    }
-                }
+<head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="DRvsPqeWNOLdoitNhONwNTNSyqxaJdATjD1etKXiO3s">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>MAKKI MADNI Travel & Tours | Luxury Umrah & Hajj Services Karachi</title>
+  <meta name="description" content="Discover Umrah packages, Makkah hotels, Madinah hotels and Ziyarat tours with Makki Madni Travel & Tours, Garden West Karachi. Contact us for your sacred journey.">
+  <meta name="theme-color" content="#050a18">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- CMS configuration: keep your existing cms-config.js -->
+  <script src="/cms-config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/cms-public.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: {
+              950: '#030712',
+              900: '#050a18',
+              800: '#0a1128',
+              700: '#111d42',
+              600: '#1c2d5a'
+            },
+            gold: {
+              100: '#fef3c7',
+              300: '#f3e5ab',
+              400: '#e6ca65',
+              500: '#d4af37',
+              600: '#aa7c11',
+              700: '#855d08'
             }
+          },
+          fontFamily: {
+            cinzel: ['Cinzel', 'serif'],
+            playfair: ['Playfair Display', 'serif'],
+            sans: ['Montserrat', 'sans-serif']
+          }
         }
-    </script>
+      }
+    };
+  </script>
 
-    <style>
-        .gold-gradient-text {
-            background: linear-gradient(135deg, #FFF5C0 0%, #D4AF37 40%, #AA7C11 70%, #F3E5AB 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(212, 175, 55, 0.25);
-        }
-        
-        .gold-border-glow {
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
-            border: 1px solid rgba(212, 175, 55, 0.4);
-        }
+  <style>
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 90px;
+    }
 
-        .gold-button {
-            background: linear-gradient(135deg, #d4af37 0%, #aa7c11 100%);
-            transition: all 0.3s ease;
-        }
+    body {
+      overflow-x: hidden;
+    }
 
-        .gold-button:hover {
-            background: linear-gradient(135deg, #f3e5ab 0%, #d4af37 100%);
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
-            transform: translateY(-2px);
-        }
+    .gold-gradient-text {
+      background: linear-gradient(135deg, #FFF5C0 0%, #D4AF37 40%, #AA7C11 70%, #F3E5AB 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 30px rgba(212, 175, 55, 0.25);
+    }
 
-        .bg-islamic-pattern {
-            background-color: #050a18;
-            background-image: radial-gradient(rgba(212, 175, 55, 0.08) 1px, transparent 0);
-            background-size: 24px 24px;
-        }
+    .gold-border-glow {
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+    }
 
-        #home > div:first-child {
-            position: absolute;
-            inset: 0;
-            overflow: hidden;
-        }
-        #makkah-hero-image {
-            display: block;
-            min-width: 100%;
-            min-height: 100%;
-            object-fit: cover;
-            object-position: center 45%;
-        }
-        @media (max-width: 640px) {
-            #makkah-hero-image { object-position: center center; }
-        }
-    </style>
+    .gold-button {
+      background: linear-gradient(135deg, #d4af37 0%, #aa7c11 100%);
+      transition: all 0.3s ease;
+    }
+
+    .gold-button:hover {
+      background: linear-gradient(135deg, #f3e5ab 0%, #d4af37 100%);
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .bg-islamic-pattern {
+      background-color: #050a18;
+      background-image: radial-gradient(rgba(212, 175, 55, 0.08) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+
+    .section-heading-line {
+      width: 100px;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #d4af37, transparent);
+      margin: 18px auto 0;
+    }
+
+    .section-intro {
+      max-width: 760px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-overlay {
+      background: linear-gradient(
+        to bottom,
+        rgba(3, 7, 18, 0.55),
+        rgba(5, 10, 24, 0.58) 45%,
+        rgba(3, 7, 18, 0.96)
+      );
+    }
+
+    #makkah-hero-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 45%;
+    }
+
+    .nav-link {
+      transition: color .2s ease;
+      white-space: nowrap;
+    }
+
+    .nav-link:hover {
+      color: #e6ca65;
+    }
+
+    .content-grid:empty::after {
+      content: "Content is being updated. Please check again shortly.";
+      display: block;
+      color: #cbd5e1;
+      text-align: center;
+      padding: 24px;
+      grid-column: 1 / -1;
+    }
+
+    .premium-panel {
+      background: linear-gradient(145deg, rgba(10, 17, 40, .97), rgba(3, 7, 18, .98));
+      border: 1px solid rgba(212, 175, 55, .3);
+      box-shadow: 0 15px 45px rgba(0, 0, 0, .25);
+    }
+
+    .mobile-link {
+      display: block;
+      padding: 8px 0;
+    }
+
+    @media (max-width: 640px) {
+      #makkah-hero-image {
+        object-position: center center;
+      }
+
+      #home {
+        min-height: 850px;
+      }
+
+      .hero-title {
+        font-size: clamp(2.8rem, 13vw, 4.7rem);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
 </head>
+
 <body class="bg-navy-900 text-slate-100 font-sans antialiased bg-islamic-pattern selection:bg-gold-500 selection:text-navy-900">
 
-    <!-- TOP ANNOUNCEMENT BAR -->
-    <div class="bg-navy-950 border-b border-gold-500/20 py-2 px-4 text-xs md:text-sm text-gold-300">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-2 text-center md:text-left">
-            <div class="flex items-center gap-4 flex-wrap justify-center">
-                <span><i class="fa-solid fa-location-dot text-gold-500 mr-1.5"></i> Garden West, Karachi, Pakistan</span>
-                <span class="hidden md:inline text-gold-500/40">|</span>
-                <span><i class="fa-solid fa-clock text-gold-500 mr-1.5"></i> Mon - Sat: 11:00 AM - 9:00 PM</span>
-            </div>
-            <div class="flex items-center gap-4">
-                <a href="tel:03357476744" class="hover:text-gold-400 transition"><i class="fa-solid fa-phone text-gold-500 mr-1"></i> 0335-7476744</a>
-                <span class="text-gold-500/40">|</span>
-                <a href="https://wa.me/923357476744" target="_blank" class="hover:text-gold-400 transition text-emerald-400 font-semibold"><i class="fa-brands fa-whatsapp mr-1"></i> Official WhatsApp</a>
-            </div>
-        </div>
+  <!-- TOP ANNOUNCEMENT BAR -->
+  <div class="bg-navy-950 border-b border-gold-500/20 py-2 px-4 text-xs md:text-sm text-gold-300">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-2 text-center md:text-left">
+      <div class="flex items-center gap-4 flex-wrap justify-center">
+        <span>
+          <i class="fa-solid fa-location-dot text-gold-500 mr-1.5"></i>
+          Garden West, Karachi, Pakistan
+        </span>
+        <span class="hidden md:inline text-gold-500/40">|</span>
+        <span>
+          <i class="fa-solid fa-clock text-gold-500 mr-1.5"></i>
+          Mon - Sat: 11:00 AM - 9:00 PM
+        </span>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <a href="tel:+923357476744" class="hover:text-gold-400 transition">
+          <i class="fa-solid fa-phone text-gold-500 mr-1"></i>
+          0335-7476744
+        </a>
+
+        <span class="text-gold-500/40">|</span>
+
+        <a href="https://wa.me/923357476744" target="_blank" rel="noopener noreferrer" class="hover:text-gold-400 transition text-emerald-400 font-semibold">
+          <i class="fa-brands fa-whatsapp mr-1"></i>
+          Official WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN HEADER -->
+  <header class="sticky top-0 z-40 bg-navy-900/95 backdrop-blur-md border-b border-gold-500/30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-20 flex items-center justify-between gap-4">
+
+      <a href="#home" class="flex flex-col items-start group shrink-0" aria-label="Makki Madni Travel home">
+        <span class="font-cinzel text-xl sm:text-2xl font-black tracking-widest gold-gradient-text uppercase group-hover:scale-[1.02] transition-transform">
+          MAKKI MADNI
+        </span>
+        <span class="text-[10px] sm:text-xs font-semibold tracking-[0.3em] text-gold-400 uppercase -mt-1">
+          Travel & Tours
+        </span>
+      </a>
+
+      <nav class="hidden xl:flex items-center gap-4 text-xs font-semibold tracking-wide">
+        <a href="#home" class="nav-link text-gold-400">Home</a>
+        <a href="#about" class="nav-link text-slate-300">About</a>
+        <a href="#packages" class="nav-link text-slate-300">Packages</a>
+        <a href="#makkah-hotels" class="nav-link text-slate-300">Makkah Hotels</a>
+        <a href="#madinah-hotels" class="nav-link text-slate-300">Madinah Hotels</a>
+        <a href="#makkah-ziyarat" class="nav-link text-slate-300">Makkah Ziyarat</a>
+        <a href="#madinah-ziyarat" class="nav-link text-slate-300">Madinah Ziyarat</a>
+        <a href="#gallery" class="nav-link text-slate-300">Gallery</a>
+        <a href="#contact" class="nav-link text-slate-300">Contact</a>
+      </nav>
+
+      <a href="https://wa.me/923357476744?text=Assalamu%20Alaikum!%20I%20want%20to%20inquire%20about%20Umrah%20Packages.%20(Ref%3A%20Website)"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="hidden sm:flex gold-button px-4 py-3 rounded-full text-navy-950 font-bold text-xs uppercase tracking-wider items-center gap-2 shrink-0">
+        <i class="fa-brands fa-whatsapp text-lg"></i>
+        Inquire Now
+      </a>
+
+      <button
+        id="mobile-menu-btn"
+        type="button"
+        class="xl:hidden text-gold-400 p-2 focus:outline-none"
+        aria-label="Open navigation menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu">
+        <i id="mobile-menu-icon" class="fa-solid fa-bars text-2xl"></i>
+      </button>
     </div>
 
-    <!-- MAIN HEADER / NAVIGATION -->
-    <header class="sticky top-0 z-40 bg-navy-900/95 backdrop-blur-md border-b border-gold-500/30 transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <a href="#" class="flex flex-col items-start group">
-                <span class="font-cinzel text-xl sm:text-2xl font-black tracking-widest gold-gradient-text uppercase group-hover:scale-[1.02] transition-transform">
-                    MAKKI MADNI
-                </span>
-                <span class="text-[10px] sm:text-xs font-semibold tracking-[0.3em] text-gold-400/90 uppercase -mt-1">
-                    Travel & Tours
-                </span>
-            </a>
+    <!-- MOBILE MENU -->
+    <div id="mobile-menu" class="hidden xl:hidden bg-navy-950 border-t border-gold-500/30 px-6 py-5">
+      <nav class="space-y-1">
+        <a href="#home" class="mobile-link text-gold-400 font-semibold">Home</a>
+        <a href="#about" class="mobile-link text-slate-200">About Us</a>
+        <a href="#packages" class="mobile-link text-slate-200">Umrah Packages</a>
+        <a href="#makkah-hotels" class="mobile-link text-slate-200">Makkah Hotels</a>
+        <a href="#madinah-hotels" class="mobile-link text-slate-200">Madinah Hotels</a>
+        <a href="#makkah-ziyarat" class="mobile-link text-slate-200">Makkah Ziyarat</a>
+        <a href="#madinah-ziyarat" class="mobile-link text-slate-200">Madinah Ziyarat</a>
+        <a href="#gallery" class="mobile-link text-slate-200">Gallery</a>
+        <a href="#calculator" class="mobile-link text-slate-200">Umrah Calculator</a>
+        <a href="#contact" class="mobile-link text-slate-200">Contact Us</a>
 
-            <nav class="hidden lg:flex items-center space-x-6 text-sm font-medium tracking-wide">
-                <a href="#home" class="text-gold-400 hover:text-gold-300 transition-colors">Home</a>
-                <a href="#about" class="hover:text-gold-400 transition-colors text-slate-300">About Us</a>
-                <a href="#packages" class="hover:text-gold-400 transition-colors text-slate-300">Umrah Packages</a>
-                <a href="#makkah-hotels" class="hover:text-gold-400 transition-colors text-slate-300">Makkah Hotels</a>
-                <a href="#madinah-hotels" class="hover:text-gold-400 transition-colors text-slate-300">Madinah Hotels</a>
-                <a href="#ziyarat" class="hover:text-gold-400 transition-colors text-slate-300">Ziyarat</a>
-                <a href="#gallery" class="hover:text-gold-400 transition-colors text-slate-300">Gallery</a>
-                <a href="#contact" class="hover:text-gold-400 transition-colors text-slate-300">Contact</a>
-            </nav>
+        <a href="https://wa.me/923357476744"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="mt-4 gold-button px-5 py-3 rounded-xl text-navy-950 font-bold text-sm flex items-center justify-center gap-2">
+          <i class="fa-brands fa-whatsapp text-lg"></i>
+          WhatsApp Inquiry
+        </a>
+      </nav>
+    </div>
+  </header>
 
-            <div class="hidden sm:flex items-center space-x-3">
-<a href="https://wa.me/923357476744?text=Assalamu%20Alaikum!%20I%20want%20to%20inquire%20about%20Umrah%20Packages.%20(Ref:%20Website)" 
-   target="_blank" 
-   class="gold-button px-5 py-2.5 rounded-full text-navy-950 font-bold text-xs uppercase tracking-wider flex items-center gap-2">
-    <i class="fa-brands fa-whatsapp text-lg"></i> Inquire Now
-</a>
-            </div>
+  <!-- 1. HERO SECTION -->
+  <section id="home" class="relative min-h-[90vh] flex items-center justify-center overflow-hidden py-16">
+    <div class="absolute inset-0 z-0 bg-navy-950">
+      <img
+        id="makkah-hero-image"
+        src="https://images.unsplash.com/photo-1564769625905-50e93615e769?auto=format&fit=crop&w=2000&q=90"
+        data-fallback="https://upload.wikimedia.org/wikipedia/commons/e/e7/Kaaba_Masjid_Haraam_Makkah.jpg"
+        alt="Holy Kaaba and Masjid al-Haram in Makkah"
+        fetchpriority="high"
+        class="w-full h-full object-cover"
+        onerror="if(this.dataset.fallback && this.src !== this.dataset.fallback){this.src=this.dataset.fallback;}else{this.style.display='none';}">
+      <div class="absolute inset-0 hero-overlay"></div>
+    </div>
 
-            <button id="mobile-menu-btn" class="lg:hidden text-gold-400 p-2 focus:outline-none">
-                <i class="fa-solid fa-bars text-2xl"></i>
+    <div class="relative z-10 max-w-5xl mx-auto text-center px-4 sm:px-6">
+      <div class="mb-5">
+        <p class="font-playfair text-gold-300 text-lg sm:text-2xl tracking-widest opacity-95 drop-shadow">
+          بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
+        </p>
+      </div>
+
+      <h1 class="font-cinzel hero-title text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tight uppercase leading-none mb-3">
+        <span class="gold-gradient-text drop-shadow-2xl">MAKKI MADNI</span>
+      </h1>
+
+      <p class="font-cinzel text-xl sm:text-3xl md:text-4xl tracking-[0.2em] sm:tracking-[0.35em] text-slate-100 font-bold uppercase mb-6 border-b-2 border-gold-500/40 pb-4 inline-block drop-shadow">
+        TRAVEL & TOURS
+      </p>
+
+      <p class="text-slate-100 text-base sm:text-xl md:text-2xl max-w-3xl mx-auto font-light leading-relaxed mb-8 drop-shadow">
+        Your Sacred Journey to Makkah & Madinah — Guided by Trust, Comfort and Personal Service in Karachi.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+        <a href="#calculator" class="gold-button px-8 py-4 rounded-full text-navy-950 font-extrabold text-sm uppercase tracking-widest shadow-xl w-full sm:w-auto">
+          <i class="fa-solid fa-calculator mr-2"></i>
+          Custom Umrah Calculator
+        </a>
+
+        <a href="https://wa.me/923357476744?text=Assalamu%20Alaikum%20Makki%20Madni%20Travel!%20I%20would%20like%20information%20about%20Umrah%20packages."
+           target="_blank"
+           rel="noopener noreferrer"
+           class="bg-navy-800/90 hover:bg-navy-700 border border-gold-500/50 text-gold-300 px-8 py-4 rounded-full font-bold text-sm uppercase tracking-widest backdrop-blur-md transition w-full sm:w-auto flex items-center justify-center gap-2">
+          <i class="fa-brands fa-whatsapp text-emerald-400 text-lg"></i>
+          Direct WhatsApp Inquiry
+        </a>
+      </div>
+
+      <!-- QUICK FINDER -->
+      <div class="premium-panel backdrop-blur-md p-5 sm:p-6 rounded-2xl text-left max-w-4xl mx-auto">
+        <p class="text-xs font-bold uppercase tracking-widest text-gold-400 mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          Quick Package & Hotel Finder
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div>
+            <label for="quick-month" class="block text-xs text-slate-300 mb-2">Travel Season</label>
+            <select id="quick-month" class="w-full bg-navy-900 border border-gold-500/30 rounded-lg p-3 text-xs text-slate-100 focus:border-gold-500 focus:outline-none">
+              <option>Any Available Month</option>
+              <option>Rabi ul Awwal</option>
+              <option>Rajab / Sha'ban</option>
+              <option>Ramadan</option>
+              <option>Regular Season</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="quick-duration" class="block text-xs text-slate-300 mb-2">Duration</label>
+            <select id="quick-duration" class="w-full bg-navy-900 border border-gold-500/30 rounded-lg p-3 text-xs text-slate-100 focus:border-gold-500 focus:outline-none">
+              <option>7 Days</option>
+              <option>10 Days</option>
+              <option>14 Days</option>
+              <option>21 Days</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="quick-category" class="block text-xs text-slate-300 mb-2">Hotel Category</label>
+            <select id="quick-category" class="w-full bg-navy-900 border border-gold-500/30 rounded-lg p-3 text-xs text-slate-100 focus:border-gold-500 focus:outline-none">
+              <option>5-Star VIP Haram View</option>
+              <option>4-Star Walking Distance</option>
+              <option>3-Star Economy Comfort</option>
+            </select>
+          </div>
+
+          <div class="flex items-end">
+            <button type="button" onclick="sendQuickFilterWhatsApp()" class="w-full gold-button py-3 rounded-lg text-navy-950 font-bold text-xs uppercase tracking-wider">
+              Find Availability
             </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8 flex flex-wrap justify-center gap-3 text-xs sm:text-sm">
+        <a href="#makkah-hotels" class="px-4 py-2 rounded-full border border-gold-500/40 bg-navy-950/70 text-gold-200 hover:bg-navy-800">Makkah Hotels</a>
+        <a href="#madinah-hotels" class="px-4 py-2 rounded-full border border-gold-500/40 bg-navy-950/70 text-gold-200 hover:bg-navy-800">Madinah Hotels</a>
+        <a href="#makkah-ziyarat" class="px-4 py-2 rounded-full border border-gold-500/40 bg-navy-950/70 text-gold-200 hover:bg-navy-800">Makkah Ziyarat</a>
+        <a href="#madinah-ziyarat" class="px-4 py-2 rounded-full border border-gold-500/40 bg-navy-950/70 text-gold-200 hover:bg-navy-800">Madinah Ziyarat</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUST BADGES -->
+  <section class="bg-navy-950 border-y border-gold-500/20 py-8">
+    <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+      <div class="p-3">
+        <i class="fa-solid fa-kaaba text-3xl text-gold-400 mb-3"></i>
+        <h2 class="font-cinzel text-sm font-bold text-slate-100">Umrah Guidance</h2>
+        <p class="text-xs text-slate-400 mt-2">Personal assistance for your journey</p>
+      </div>
+
+      <div class="p-3">
+        <i class="fa-solid fa-hotel text-3xl text-gold-400 mb-3"></i>
+        <h2 class="font-cinzel text-sm font-bold text-slate-100">Hotel Options</h2>
+        <p class="text-xs text-slate-400 mt-2">Ask us about current availability</p>
+      </div>
+
+      <div class="p-3">
+        <i class="fa-solid fa-plane-departure text-3xl text-gold-400 mb-3"></i>
+        <h2 class="font-cinzel text-sm font-bold text-slate-100">Travel Support</h2>
+        <p class="text-xs text-slate-400 mt-2">Discuss flights and transfers</p>
+      </div>
+
+      <div class="p-3">
+        <i class="fa-solid fa-handshake-angle text-3xl text-gold-400 mb-3"></i>
+        <h2 class="font-cinzel text-sm font-bold text-slate-100">Karachi Office</h2>
+        <p class="text-xs text-slate-400 mt-2">Garden West customer assistance</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. ABOUT / MADINAH INTRODUCTION -->
+  <section id="about" class="py-20 bg-navy-900 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+        <div class="relative rounded-2xl overflow-hidden gold-border-glow group">
+          <img
+            src="https://images.unsplash.com/photo-1565552070098-fd83a8dd7196?q=80&w=1200&auto=format&fit=crop"
+            alt="Masjid an-Nabawi in Madinah"
+            loading="lazy"
+            class="w-full h-[320px] sm:h-[450px] object-cover group-hover:scale-105 transition duration-700"
+            onerror="this.style.display='none'">
+
+          <div class="absolute inset-0 bg-gradient-to-t from-navy-950 via-transparent to-transparent"></div>
+
+          <div class="absolute bottom-6 left-6 right-6">
+            <span class="inline-block bg-gold-500/20 border border-gold-400/40 text-gold-300 text-xs px-3 py-1 rounded-full uppercase tracking-wider mb-3">
+              Al Madinah Al Munawwarah
+            </span>
+
+            <h2 class="font-cinzel text-2xl sm:text-3xl font-bold text-white">
+              The Peaceful City of Madinah
+            </h2>
+          </div>
         </div>
 
-        <div id="mobile-menu" class="hidden lg:hidden bg-navy-950 border-b border-gold-500/30 px-6 py-6 space-y-4">
-            <a href="#home" class="block text-gold-400 font-semibold mobile-link">Home</a>
-            <a href="#about" class="block text-slate-200 hover:text-gold-400 mobile-link">About Us</a>
-            <a href="#packages" class="block text-slate-200 hover:text-gold-400 mobile-link">Umrah Packages</a>
-            <a href="#makkah-hotels" class="block text-slate-200 hover:text-gold-400 mobile-link">Makkah Hotels</a>
-            <a href="#madinah-hotels" class="block text-slate-200 hover:text-gold-400 mobile-link">Madinah Hotels</a>
-            <a href="#ziyarat" class="block text-slate-200 hover:text-gold-400 mobile-link">Ziyarat Tours</a>
-            <a href="#gallery" class="block text-slate-200 hover:text-gold-400 mobile-link">Gallery</a>
-            <a href="#contact" class="block text-slate-200 hover:text-gold-400 mobile-link">Contact Us</a>
-        </div>
-    </header>
+        <div class="space-y-6">
+          <div class="border-l-2 border-gold-500 pl-4">
+            <p class="text-gold-400 font-cinzel text-sm uppercase tracking-widest font-semibold">
+              Faith, Peace & Service
+            </p>
 
-    <!-- 1. HERO SECTION -->
-    <section id="home" class="relative min-h-[90vh] flex items-center justify-center overflow-hidden py-16">
-        <div class="absolute inset-0 z-0 bg-navy-950">
-            <img
-                 id="makkah-hero-image"
-                 src="https://images.unsplash.com/photo-1564769625905-50e93615e769?auto=format&fit=crop&w=2000&q=90"
-                 data-fallback="https://upload.wikimedia.org/wikipedia/commons/e/e7/Kaaba_Masjid_Haraam_Makkah.jpg"
-                 alt="Holy Kaaba and Masjid al-Haram in Makkah Al Mukarramah"
-                 fetchpriority="high"
-                 class="w-full h-full object-cover object-center transform scale-105"
-                 onerror="if(this.dataset.fallback && this.src !== this.dataset.fallback){this.src=this.dataset.fallback;}else{this.style.display='none';}">
-            <div class="absolute inset-0 bg-gradient-to-t from-navy-950/95 via-navy-900/55 to-navy-950/55"></div>
-        </div>
+            <h2 class="font-playfair text-3xl sm:text-4xl font-bold text-white mt-2">
+              Your Sacred Journey Deserves Thoughtful Planning
+            </h2>
+          </div>
 
-        <div class="relative z-10 max-w-5xl mx-auto text-center px-4 sm:px-6">
-            <div class="mb-4">
-                <p class="font-playfair text-gold-300 text-lg sm:text-2xl tracking-widest opacity-95 drop-shadow">
-                    بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
+          <p class="text-slate-300 text-base leading-relaxed">
+            <strong class="text-gold-300">Makki Madni Travel & Tours</strong>
+            helps pilgrims explore Umrah travel options, hotel accommodation,
+            transport and Ziyarat arrangements for Makkah and Madinah.
+            Contact our Karachi office to discuss your requirements.
+          </p>
+
+          <div class="space-y-4">
+            <div class="flex items-start gap-4 p-4 rounded-xl bg-navy-800/60 border border-gold-500/20">
+              <i class="fa-solid fa-mosque text-gold-400 text-2xl mt-1"></i>
+              <div>
+                <h3 class="font-bold text-slate-100 text-sm">Hotel Choices</h3>
+                <p class="text-xs text-slate-300 mt-1">
+                  Compare available options, location, room types and views by contacting our team.
                 </p>
+              </div>
             </div>
 
-            <h1 class="font-cinzel text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tight uppercase leading-none mb-2">
-                <span class="gold-gradient-text drop-shadow-2xl">MAKKI MADNI</span>
-            </h1>
-            <p class="font-cinzel text-xl sm:text-3xl md:text-4xl tracking-[0.35em] text-slate-100 font-bold uppercase mb-6 border-b-2 border-gold-500/40 pb-4 inline-block drop-shadow">
-                TRAVEL & TOURS
-            </p>
-
-            <p class="text-slate-100 text-base sm:text-xl md:text-2xl max-w-3xl mx-auto font-light leading-relaxed mb-8 drop-shadow">
-                Your Sacred Journey to Makkah & Madinah — Guided by Trust, Luxury & Unmatched Excellence in Karachi.
-            </p>
-
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-                <a href="#calculator" class="gold-button px-8 py-4 rounded-full text-navy-950 font-extrabold text-sm uppercase tracking-widest shadow-xl hover:scale-105 transition w-full sm:w-auto">
-                    <i class="fa-solid fa-calculator mr-2"></i> Custom Umrah Calculator
-                </a>
-<a href="https://wa.me/923357476744?text=Assalamu%20Alaikum%20Makki%20Madni%20Travel!%20I%20would%20like%20to%20get%20information%20for%20Umrah%20packages.%20(Ref:%20Website)" 
-   target="_blank" 
-   class="bg-navy-800/80 hover:bg-navy-700 border border-gold-500/50 text-gold-300 px-8 py-4 rounded-full font-bold text-sm uppercase tracking-widest backdrop-blur-md transition w-full sm:w-auto flex items-center justify-center gap-2">
-    <i class="fa-brands fa-whatsapp text-emerald-400 text-lg"></i> Direct WhatsApp Inquiry
-</a>
-            </div>
-
-            <!-- Quick Filter Widget -->
-            <div class="bg-navy-950/80 backdrop-blur-md p-6 rounded-2xl gold-border-glow text-left max-w-4xl mx-auto">
-                <p class="text-xs font-bold uppercase tracking-widest text-gold-400 mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-magnifying-glass"></i> Quick Package & Hotel Finder
+            <div class="flex items-start gap-4 p-4 rounded-xl bg-navy-800/60 border border-gold-500/20">
+              <i class="fa-solid fa-map-location-dot text-gold-400 text-2xl mt-1"></i>
+              <div>
+                <h3 class="font-bold text-slate-100 text-sm">Guided Ziyarat Options</h3>
+                <p class="text-xs text-slate-300 mt-1">
+                  Ask about visits to historical and religious sites in both holy cities.
                 </p>
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                    <div>
-                        <label class="block text-xs text-slate-400 mb-1">Target Month</label>
-                        <select id="quick-month" class="w-full bg-navy-900 border border-gold-500/30 rounded-lg p-2.5 text-xs text-slate-200 focus:border-gold-500 focus:outline-none">
-                            <option>Rabi ul Awwal</option>
-                            <option>Rajab / Sha'ban</option>
-                            <option>Ramadan 2026</option>
-                            <option>Regular Season</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs text-slate-400 mb-1">Duration</label>
-                        <select id="quick-duration" class="w-full bg-navy-900 border border-gold-500/30 rounded-lg p-2.5 text-xs text-slate-200 focus:border-gold-500 focus:outline-none">
-                            <option>7 Days (Quick Umrah)</option>
-                            <option>10 Days Standard</option>
-                            <option>14 Days Luxury</option>
-                            <option>21 Days Extended</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs text-slate-400 mb-1">Hotel Category</label>
-                        <select id="quick-category" class="w-full bg-navy-900 border border-gold-500/30 rounded-lg p-2.5 text-xs text-slate-200 focus:border-gold-500 focus:outline-none">
-                            <option>5-Star Haram View VIP</option>
-                            <option>4-Star Walking Distance</option>
-                            <option>3-Star Economy Comfort</option>
-                        </select>
-                    </div>
-                    <div class="flex items-end">
-                        <button onclick="sendQuickFilterWhatsApp()" class="w-full gold-button py-2.5 rounded-lg text-navy-950 font-bold text-xs uppercase tracking-wider">
-                            Find Availability
-                        </button>
-                    </div>
-                </div>
+              </div>
             </div>
+
+            <div class="flex items-start gap-4 p-4 rounded-xl bg-navy-800/60 border border-gold-500/20">
+              <i class="fa-solid fa-headset text-gold-400 text-2xl mt-1"></i>
+              <div>
+                <h3 class="font-bold text-slate-100 text-sm">Personal Assistance</h3>
+                <p class="text-xs text-slate-300 mt-1">
+                  Share your dates, group size and preferred budget to request a quotation.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <a href="#contact" class="inline-flex items-center gap-2 text-gold-300 font-bold text-sm hover:text-gold-100">
+            Contact Our Office
+            <i class="fa-solid fa-arrow-right"></i>
+          </a>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 
-    <!-- TRUST BADGES BAR -->
-    <section class="bg-navy-950 border-y border-gold-500/20 py-8">
-        <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            <div class="p-3">
-                <i class="fa-solid fa-kaaba text-3xl text-gold-400 mb-2"></i>
-                <h4 class="font-cinzel text-sm font-bold text-slate-200">Authorized Agency</h4>
-                <p class="text-xs text-slate-400">Direct Visa & Ministry Support</p>
-            </div>
-            <div class="p-3">
-                <i class="fa-solid fa-hotel text-3xl text-gold-400 mb-2"></i>
-                <h4 class="font-cinzel text-sm font-bold text-slate-200">Guaranteed Hotels</h4>
-                <p class="text-xs text-slate-400">Authentic Haram & Prophet Mosque Views</p>
-            </div>
-            <div class="p-3">
-                <i class="fa-solid fa-plane-departure text-3xl text-gold-400 mb-2"></i>
-                <h4 class="font-cinzel text-sm font-bold text-slate-200">Complete Transfers</h4>
-                <p class="text-xs text-slate-400">Luxury AC Private & Group Buses</p>
-            </div>
-            <div class="p-3">
-                <i class="fa-solid fa-handshake-angle text-3xl text-gold-400 mb-2"></i>
-                <h4 class="font-cinzel text-sm font-bold text-slate-200">Karachi Local Office</h4>
-                <p class="text-xs text-slate-400">Garden West Physical Desk Assistance</p>
-            </div>
+  <!-- 3. MAKKAH HOTELS -->
+  <section id="makkah-hotels" class="py-20 bg-navy-950 relative border-t border-gold-500/20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center section-intro mb-14">
+        <span class="text-gold-400 font-cinzel text-xs uppercase tracking-widest font-bold">
+          Makkah Accommodation
+        </span>
+
+        <h2 class="font-playfair text-3xl sm:text-5xl font-bold text-white mt-3">
+          Makkah Hotels with Haram & Kaaba Views
+        </h2>
+
+        <p class="text-slate-300 text-sm sm:text-base mt-5 leading-relaxed">
+          Explore the hotel options added by our team. Contact us to confirm
+          location, room availability, rates and actual views.
+        </p>
+
+        <div class="section-heading-line"></div>
+      </div>
+
+      <div id="cms-makkah-hotels-grid" class="content-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <p class="text-slate-300 text-sm col-span-full text-center">Loading Makkah hotels...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. MADINAH HOTELS -->
+  <section id="madinah-hotels" class="py-20 bg-navy-900 relative border-t border-gold-500/20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center section-intro mb-14">
+        <span class="text-gold-400 font-cinzel text-xs uppercase tracking-widest font-bold">
+          Madinah Accommodation
+        </span>
+
+        <h2 class="font-playfair text-3xl sm:text-5xl font-bold text-white mt-3">
+          Madinah Hotels Near Masjid an-Nabawi
+        </h2>
+
+        <p class="text-slate-300 text-sm sm:text-base mt-5 leading-relaxed">
+          Browse the Madinah hotel information published by our team and
+          request current rates and room availability.
+        </p>
+
+        <div class="section-heading-line"></div>
+      </div>
+
+      <div id="cms-madinah-hotels-grid" class="content-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <p class="text-slate-300 text-sm col-span-full text-center">Loading Madinah hotels...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. UMRAH PACKAGES -->
+  <section id="packages" class="py-20 bg-navy-950 border-t border-gold-500/20 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center section-intro mb-14">
+        <span class="text-gold-400 font-cinzel text-xs uppercase tracking-widest font-bold">
+          Tailored Spiritual Journeys
+        </span>
+
+        <h2 class="font-playfair text-3xl sm:text-5xl font-bold text-white mt-3">
+          Umrah & Hajj Travel Packages
+        </h2>
+
+        <p class="text-slate-300 text-sm sm:text-base mt-5 leading-relaxed">
+          Explore the package details published by our team. Ask us for
+          updated prices, travel dates, inclusions and availability.
+        </p>
+
+        <div class="section-heading-line"></div>
+      </div>
+
+      <div id="cms-packages-grid" class="content-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <p class="text-slate-300 text-sm col-span-full text-center">Loading Umrah packages...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. MAKKAH ZIYARAT -->
+  <section id="makkah-ziyarat" class="py-20 bg-navy-900 border-t border-gold-500/20 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center section-intro mb-14">
+        <span class="text-gold-400 font-cinzel text-xs uppercase tracking-widest font-bold">
+          Explore the Holy City
+        </span>
+
+        <h2 class="font-playfair text-3xl sm:text-5xl font-bold text-white mt-3">
+          Makkah Ziyarat Tours
+        </h2>
+
+        <p class="text-slate-300 text-sm sm:text-base mt-5 leading-relaxed">
+          Discover the Makkah Ziyarat options published by our team, including
+          available tour information, photographs and videos.
+        </p>
+
+        <div class="section-heading-line"></div>
+      </div>
+
+      <div id="cms-makkah-ziyarat-grid" class="content-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <p class="text-slate-300 text-sm col-span-full text-center">Loading Makkah Ziyarat...</p>
+      </div>
+
+      <div class="text-center mt-10">
+        <a href="https://wa.me/923357476744?text=Assalamu%20Alaikum!%20Please%20share%20Makkah%20Ziyarat%20details."
+           target="_blank"
+           rel="noopener noreferrer"
+           class="gold-button inline-flex items-center justify-center gap-2 px-7 py-4 rounded-full text-navy-950 font-bold text-xs uppercase tracking-widest">
+          <i class="fa-brands fa-whatsapp text-lg"></i>
+          Ask About Makkah Ziyarat
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. MADINAH ZIYARAT -->
+  <section id="madinah-ziyarat" class="py-20 bg-navy-950 border-t border-gold-500/20 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center section-intro mb-14">
+        <span class="text-gold-400 font-cinzel text-xs uppercase tracking-widest font-bold">
+          Historic & Spiritual Places
+        </span>
+
+        <h2 class="font-playfair text-3xl sm:text-5xl font-bold text-white mt-3">
+          Madinah Ziyarat Tours
+        </h2>
+
+        <p class="text-slate-300 text-sm sm:text-base mt-5 leading-relaxed">
+          View Madinah Ziyarat details, media and tour information added by
+          Makki Madni Travel & Tours.
+        </p>
+
+        <div class="section-heading-line"></div>
+      </div>
+
+      <div id="cms-madinah-ziyarat-grid" class="content-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <p class="text-slate-300 text-sm col-span-full text-center">Loading Madinah Ziyarat...</p>
+      </div>
+
+      <div class="text-center mt-10">
+        <a href="https://wa.me/923357476744?text=Assalamu%20Alaikum!%20Please%20share%20Madinah%20Ziyarat%20details."
+           target="_blank"
+           rel="noopener noreferrer"
+           class="gold-button inline-flex items-center justify-center gap-2 px-7 py-4 rounded-full text-navy-950 font-bold text-xs uppercase tracking-widest">
+          <i class="fa-brands fa-whatsapp text-lg"></i>
+          Ask About Madinah Ziyarat
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. GALLERY / MEDIA INTRO -->
+  <section id="gallery" class="py-16 bg-navy-900 border-t border-gold-500/20">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 text-center">
+      <span class="text-gold-400 font-cinzel text-xs uppercase tracking-widest font-bold">
+        View & Explore
+      </span>
+
+      <h2 class="font-playfair text-3xl sm:text-5xl font-bold text-white mt-3">
+        Makkah, Madinah & Travel Gallery
+      </h2>
+
+      <div class="section-heading-line"></div>
+
+      <p class="text-slate-300 text-sm sm:text-base leading-relaxed mt-6 max-w-3xl mx-auto">
+        Explore photos and videos attached to our hotel, Umrah package and
+        Ziyarat listings. Select a listing's media to open its gallery.
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-10">
+        <a href="#makkah-hotels" class="premium-panel rounded-2xl p-6 hover:border-gold-400 transition">
+          <i class="fa-solid fa-kaaba text-3xl text-gold-400 mb-3"></i>
+          <h3 class="font-cinzel text-sm font-bold text-white">Makkah</h3>
+          <p class="text-xs text-slate-400 mt-2">Hotels & Haram views</p>
+        </a>
+
+        <a href="#madinah-hotels" class="premium-panel rounded-2xl p-6 hover:border-gold-400 transition">
+          <i class="fa-solid fa-mosque text-3xl text-gold-400 mb-3"></i>
+          <h3 class="font-cinzel text-sm font-bold text-white">Madinah</h3>
+          <p class="text-xs text-slate-400 mt-2">Hotels & city views</p>
+        </a>
+
+        <a href="#makkah-ziyarat" class="premium-panel rounded-2xl p-6 hover:border-gold-400 transition">
+          <i class="fa-solid fa-map-location-dot text-3xl text-gold-400 mb-3"></i>
+          <h3 class="font-cinzel text-sm font-bold text-white">Ziyarat</h3>
+          <p class="text-xs text-slate-400 mt-2">Tour photos & videos</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. UMRAH CALCULATOR -->
+  <section id="calculator" class="py-20 bg-navy-900 border-t border-gold-500/20">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6">
+      <div class="premium-panel rounded-3xl p-6 sm:p-10">
+        <div class="text-center mb-8">
+          <span class="text-gold-400 font-cinzel text-xs uppercase tracking-widest font-bold">
+            Interactive Tool
+          </span>
+
+          <h2 class="font-playfair text-2xl sm:text-4xl font-bold text-white mt-2">
+            Build Your Custom Umrah Quote
+          </h2>
+
+          <p class="text-slate-300 text-sm mt-4">
+            Select your travel requirements and send them to our team for a quotation.
+          </p>
         </div>
-    </section>
 
-    <!-- 2. MADINAH SECTION -->
-    <section class="py-20 bg-navy-900 relative overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div class="relative rounded-2xl overflow-hidden gold-border-glow group">
-                    <img src="https://images.unsplash.com/photo-1565552070098-fd83a8dd7196?q=80&w=1200&auto=format&fit=crop" 
-                         alt="Masjid an-Nabawi Green Dome Madinah" 
-                         class="w-full h-[450px] object-cover group-hover:scale-105 transition duration-700">
-                    <div class="absolute inset-0 bg-gradient-to-t from-navy-950 via-transparent to-transparent"></div>
-                    <div class="absolute bottom-6 left-6 right-6">
-                        <span class="inline-block bg-gold-500/20 border border-gold-400/40 text-gold-300 text-xs px-3 py-1 rounded-full uppercase tracking-wider mb-2">
-                            Al Madinah Al Munawwarah
-                        </span>
-                        <h3 class="font-cinzel text-2xl font-bold text-white">The Peaceful Sanctuary of Al-Madinah</h3>
-                    </div>
-                </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label for="calc-adults" class="block text-xs font-bold uppercase text-gold-400 mb-2">
+              Number of Pilgrims
+            </label>
 
-                <div class="space-y-6">
-                    <div class="inline-block border-l-2 border-gold-500 pl-4">
-                        <p class="text-gold-400 font-cinzel text-sm uppercase tracking-widest font-semibold">Peace & Tranquility</p>
-                        <h2 class="font-playfair text-3xl sm:text-4xl font-bold text-white mt-1">
-                            Experience the Divine Serenity of Masjid an-Nabawi
-                        </h2>
-                    </div>
+            <select id="calc-adults" class="w-full bg-navy-900 border border-gold-500/30 rounded-xl p-3 text-sm text-slate-100 focus:border-gold-500 focus:outline-none">
+              <option value="1">1 Person</option>
+              <option value="2" selected>2 Persons (Double Room)</option>
+              <option value="3">3 Persons (Triple Room)</option>
+              <option value="4">4 Persons (Quad Room)</option>
+              <option value="5">5 Persons</option>
+              <option value="6">6 Persons Group</option>
+              <option value="8">8 Persons Group</option>
+              <option value="10">10 Persons Group</option>
+            </select>
+          </div>
 
-                    <p class="text-slate-300 text-base leading-relaxed">
-                        Madinah holds a special place in every pilgrim's heart. At <strong class="text-gold-300">Makki Madni Travel & Tours</strong>, we ensure your stay in the city of the Holy Prophet ﷺ is seamless, spiritual, and utterly peaceful.
-                    </p>
+          <div>
+            <label for="calc-category" class="block text-xs font-bold uppercase text-gold-400 mb-2">
+              Hotel Category
+            </label>
 
-                    <div class="space-y-4">
-                        <div class="flex items-start gap-4 p-4 rounded-xl bg-navy-800/50 border border-gold-500/10">
-                            <i class="fa-solid fa-mosque text-gold-400 text-2xl mt-1"></i>
-                            <div>
-                                <h4 class="font-bold text-slate-100 text-sm">Close Proximity to Courtyard</h4>
-                                <p class="text-xs text-slate-400">Hotels positioned just minutes away from Gate 25 (Ladies Entrance) and Gate 1 (Babr-us-Salam).</p>
-                            </div>
-                        </div>
+            <select id="calc-category" class="w-full bg-navy-900 border border-gold-500/30 rounded-xl p-3 text-sm text-slate-100 focus:border-gold-500 focus:outline-none">
+              <option value="5star">5-Star VIP Haram View</option>
+              <option value="4star">4-Star Walking Distance</option>
+              <option value="3star">3-Star Economy Comfort</option>
+            </select>
+          </div>
 
-                        <div class="flex items-start gap-4 p-4 rounded-xl bg-navy-800/50 border border-gold-500/10">
-                            <i class="fa-solid fa-heart text-gold-400 text-2xl mt-1"></i>
-                            <div>
-                                <h4 class="font-bold text-slate-100 text-sm">Guided Ziyarat Tour</h4>
-                                <p class="text-xs text-slate-400">Explore Quba Mosque, Mount Uhud, and historical sites in air-conditioned luxury transport.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          <div>
+            <label for="calc-makkah-nights" class="block text-xs font-bold uppercase text-gold-400 mb-2">
+              Nights in Makkah
+            </label>
+
+            <input type="number" id="calc-makkah-nights" value="7" min="1" max="30" inputmode="numeric" class="w-full bg-navy-900 border border-gold-500/30 rounded-xl p-3 text-sm text-slate-100 focus:border-gold-500 focus:outline-none">
+          </div>
+
+          <div>
+            <label for="calc-madinah-nights" class="block text-xs font-bold uppercase text-gold-400 mb-2">
+              Nights in Madinah
+            </label>
+
+            <input type="number" id="calc-madinah-nights" value="7" min="1" max="30" inputmode="numeric" class="w-full bg-navy-900 border border-gold-500/30 rounded-xl p-3 text-sm text-slate-100 focus:border-gold-500 focus:outline-none">
+          </div>
         </div>
-    </section>
 
-    <!-- 3. DYNAMIC MAKKAH HOTELS SECTION -->
-    <section id="makkah-hotels" class="py-20 bg-navy-950 relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-3xl mx-auto mb-16">
-                <span class="text-gold-400 font-cinzel text-xs uppercase tracking-widest font-bold">Authentic Accommodations</span>
-                <h2 class="font-playfair text-3xl sm:text-5xl font-bold text-white mt-2">
-                    Makkah Hotels with Haram & Kaaba Views
-                </h2>
-                <div class="w-24 h-1 bg-gradient-to-r from-transparent via-gold-500 to-transparent mx-auto mt-4"></div>
-            </div>
+        <div class="bg-navy-900 p-6 rounded-2xl border border-gold-500/20 text-center mb-6">
+          <p class="text-xs uppercase tracking-widest text-slate-300 mb-2">
+            Your Selected Requirements
+          </p>
 
-            <!-- Dynamic Grid populated by cms-public.js -->
-            <div id="cms-makkah-hotels-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <p class="text-slate-300 text-sm col-span-3 text-center">Loading Makkah hotels...</p>
-            </div>
+          <p id="calc-result" class="font-cinzel text-xl sm:text-2xl font-extrabold text-gold-300" aria-live="polite">
+            14 Nights / 5-Star VIP (2 Persons)
+          </p>
+
+          <p class="text-xs text-slate-400 mt-3">
+            This is a requirements summary, not a confirmed price.
+          </p>
         </div>
-    </section>
 
-    <!-- 4. DYNAMIC MADINAH HOTELS SECTION -->
-    <section id="madinah-hotels" class="py-20 bg-navy-900 relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-3xl mx-auto mb-16">
-                <span class="text-gold-400 font-cinzel text-xs uppercase tracking-widest font-bold">Close to Prophet's Mosque</span>
-                <h2 class="font-playfair text-3xl sm:text-5xl font-bold text-white mt-2">
-                    Madinah Hotels Near Masjid an-Nabawi
-                </h2>
-                <div class="w-24 h-1 bg-gradient-to-r from-transparent via-gold-500 to-transparent mx-auto mt-4"></div>
+        <button type="button" onclick="sendCalculatorWhatsApp()" class="w-full gold-button py-4 rounded-xl text-navy-950 font-black text-sm uppercase tracking-widest flex items-center justify-center gap-2">
+          <i class="fa-brands fa-whatsapp text-xl"></i>
+          Send Requirements to WhatsApp
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. CONTACT -->
+  <section id="contact" class="py-20 bg-navy-950 border-t border-gold-500/20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto">
+        <span class="text-gold-400 font-cinzel text-xs uppercase tracking-widest font-bold">
+          Visit Our Karachi Office
+        </span>
+
+        <h2 class="font-playfair text-3xl sm:text-5xl font-bold text-white mt-3 mb-6">
+          Makki Madni Travel & Tours
+        </h2>
+
+        <div class="premium-panel rounded-3xl p-6 sm:p-9">
+          <div class="flex justify-center mb-5">
+            <div class="w-16 h-16 rounded-full border border-gold-500/50 bg-navy-900 flex items-center justify-center">
+              <i class="fa-solid fa-location-dot text-2xl text-gold-400"></i>
             </div>
+          </div>
 
-            <!-- Dynamic Grid populated by cms-public.js -->
-            <div id="cms-madinah-hotels-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <p class="text-slate-300 text-sm col-span-3 text-center">Loading Madinah hotels...</p>
-            </div>
-        </div>
-    </section>
+          <p class="text-slate-200 text-sm sm:text-base leading-relaxed">
+            Shop #10, Diamond City Building, Near Zeenat-ul-Islam Masjid,
+            Garden West, Karachi, Pakistan.
+          </p>
 
-    <!-- 5. DYNAMIC UMRAH PACKAGES SECTION -->
-    <section id="packages" class="py-20 bg-navy-950 border-t border-gold-500/20 relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-3xl mx-auto mb-12">
-                <span class="text-gold-400 font-cinzel text-xs uppercase tracking-widest font-bold">Tailored Spiritual Pilgrimages</span>
-                <h2 class="font-playfair text-3xl sm:text-5xl font-bold text-white mt-2">
-                    Premium Umrah & Hajj Packages
-                </h2>
-                <div class="w-24 h-1 bg-gradient-to-r from-transparent via-gold-500 to-transparent mx-auto mt-4"></div>
-            </div>
-
-            <!-- Dynamic Grid populated by cms-public.js -->
-            <div id="cms-packages-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <p class="text-slate-300 text-sm col-span-3 text-center">Loading Umrah packages...</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- INTERACTIVE PACKAGE PRICE CALCULATOR -->
-    <section id="calculator" class="py-20 bg-navy-900 border-t border-gold-500/20">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6">
-            <div class="bg-navy-950 rounded-3xl p-6 sm:p-10 gold-border-glow">
-                <div class="text-center mb-8">
-                    <span class="text-gold-400 font-cinzel text-xs uppercase tracking-widest font-bold">Interactive Tool</span>
-                    <h2 class="font-playfair text-2xl sm:text-4xl font-bold text-white mt-1">
-                        Build Your Custom Umrah Quote
-                    </h2>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-gold-400 mb-2">Number of Adult Pilgrims</label>
-                        <select id="calc-adults" class="w-full bg-navy-900 border border-gold-500/30 rounded-xl p-3 text-sm text-slate-200 focus:border-gold-500 focus:outline-none">
-                            <option value="1">1 Person</option>
-                            <option value="2" selected>2 Persons (Double Room)</option>
-                            <option value="3">3 Persons (Triple Room)</option>
-                            <option value="4">4 Persons (Quad Room)</option>
-                            <option value="5">5 Persons (Quint Room)</option>
-                            <option value="6">6 Persons Group</option>
-                            <option value="8">8 Persons Group</option>
-                            <option value="10">10+ Family Group</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-gold-400 mb-2">Hotel Category</label>
-                        <select id="calc-category" class="w-full bg-navy-900 border border-gold-500/30 rounded-xl p-3 text-sm text-slate-200 focus:border-gold-500 focus:outline-none">
-                            <option value="5star">5-Star VIP Haram View</option>
-                            <option value="4star">4-Star Walking Distance</option>
-                            <option value="3star">3-Star Economy Comfort</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-gold-400 mb-2">Nights in Makkah</label>
-                        <input type="number" id="calc-makkah-nights" value="7" min="1" max="30" class="w-full bg-navy-900 border border-gold-500/30 rounded-xl p-3 text-sm text-slate-200 focus:border-gold-500 focus:outline-none">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-gold-400 mb-2">Nights in Madinah</label>
-                        <input type="number" id="calc-madinah-nights" value="7" min="1" max="30" class="w-full bg-navy-900 border border-gold-500/30 rounded-xl p-3 text-sm text-slate-200 focus:border-gold-500 focus:outline-none">
-                    </div>
-                </div>
-
-                <div class="bg-navy-900 p-6 rounded-2xl border border-gold-500/20 text-center mb-6">
-                    <p class="text-xs uppercase tracking-widest text-slate-400 mb-1">Estimated Package Budget Indicator</p>
-                    <p id="calc-result" class="font-cinzel text-2xl sm:text-3xl font-extrabold text-gold-300">
-                        14 Days / 5-Star VIP (2 Persons)
-                    </p>
-                </div>
-
-                <button onclick="sendCalculatorWhatsApp()" class="w-full gold-button py-4 rounded-xl text-navy-950 font-black text-sm uppercase tracking-widest flex items-center justify-center gap-2">
-                    <i class="fa-brands fa-whatsapp text-xl"></i> Send Requirements to WhatsApp
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <!-- CONTACT & LOCATION -->
-    <section id="contact" class="py-20 bg-navy-950 border-t border-gold-500/20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <span class="text-gold-400 font-cinzel text-xs uppercase tracking-widest font-bold">Visit Our Karachi Office</span>
-            <h2 class="font-playfair text-3xl sm:text-4xl font-bold text-white mt-1 mb-6">Makki Madni Travel & Tours</h2>
-            <p class="text-slate-300 text-sm max-w-xl mx-auto mb-6">
-                Shop #10, Diamond City Building, Near Zeenat-ul-Islam Masjid, Garden West, Karachi, Pakistan.<br>
-                <strong>Phone:</strong> 0335-7476744 | <strong>WhatsApp:</strong> +92 335 7476744
-            </p>
-            <a href="https://wa.me/923357476744" target="_blank" class="gold-button px-8 py-4 rounded-full text-navy-950 font-black text-xs uppercase tracking-widest inline-flex items-center gap-2">
-                <i class="fa-brands fa-whatsapp text-lg"></i> Chat with Karachi Office Now
+          <div class="flex flex-col sm:flex-row justify-center gap-4 sm:gap-8 mt-6 text-sm">
+            <a href="tel:+923357476744" class="text-gold-300 hover:text-gold-100">
+              <i class="fa-solid fa-phone mr-2"></i>
+              0335-7476744
             </a>
+
+            <a href="mailto:makkimadnitravel@gmail.com" class="text-gold-300 hover:text-gold-100 break-all">
+              <i class="fa-solid fa-envelope mr-2"></i>
+              makkimadnitravel@gmail.com
+            </a>
+          </div>
+
+          <a href="https://wa.me/923357476744"
+             target="_blank"
+             rel="noopener noreferrer"
+             class="gold-button px-8 py-4 rounded-full text-navy-950 font-black text-xs uppercase tracking-widest inline-flex items-center justify-center gap-2 mt-8">
+            <i class="fa-brands fa-whatsapp text-lg"></i>
+            Chat with Karachi Office
+          </a>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 
-    <!-- FOOTER -->
-    <footer class="bg-navy-950 border-t border-gold-500/30 py-8 text-slate-400 text-xs text-center">
-        <p>&copy; 2026 MAKKI MADNI Travel & Tours. All Rights Reserved. Garden West, Karachi.</p>
-    </footer>
+  <!-- FOOTER -->
+  <footer class="bg-navy-950 border-t border-gold-500/30 py-8 text-slate-400 text-xs text-center">
+    <div class="max-w-7xl mx-auto px-4">
+      <p class="font-cinzel text-gold-300 font-bold tracking-wider mb-2">
+        MAKKI MADNI TRAVEL & TOURS
+      </p>
 
-    <!-- FLOATING WHATSAPP -->
-    <a href="https://wa.me/923357476744" target="_blank" class="fixed bottom-6 right-6 z-50 bg-emerald-500 hover:bg-emerald-600 text-white p-4 rounded-full shadow-2xl transition hover:scale-110 flex items-center justify-center">
-        <i class="fa-brands fa-whatsapp text-3xl"></i>
-    </a>
+      <p>
+        &copy; <span id="footer-year">2026</span> Makki Madni Travel & Tours. All Rights Reserved.
+      </p>
 
-    <!-- JAVASCRIPT -->
-    <script>
-        const calcAdults = document.getElementById('calc-adults');
-        const calcCategory = document.getElementById('calc-category');
-        const calcMakkahNights = document.getElementById('calc-makkah-nights');
-        const calcMadinahNights = document.getElementById('calc-madinah-nights');
-        const calcResult = document.getElementById('calc-result');
+      <p class="mt-2">
+        Garden West, Karachi, Pakistan
+      </p>
 
-        function updateCalculator() {
-            const adults = calcAdults.value;
-            const category = calcCategory.value;
-            const totalNights = parseInt(calcMakkahNights.value || 0) + parseInt(calcMadinahNights.value || 0);
+      <div class="flex flex-wrap justify-center gap-x-5 gap-y-2 mt-5">
+        <a href="#packages" class="hover:text-gold-300">Umrah Packages</a>
+        <a href="#makkah-hotels" class="hover:text-gold-300">Makkah Hotels</a>
+        <a href="#madinah-hotels" class="hover:text-gold-300">Madinah Hotels</a>
+        <a href="#makkah-ziyarat" class="hover:text-gold-300">Makkah Ziyarat</a>
+        <a href="#madinah-ziyarat" class="hover:text-gold-300">Madinah Ziyarat</a>
+        <a href="#contact" class="hover:text-gold-300">Contact</a>
+      </div>
+    </div>
+  </footer>
 
-            let catLabel = "5-Star VIP";
-            if (category === "4star") catLabel = "4-Star Deluxe";
-            if (category === "3star") catLabel = "3-Star Economy Saver";
+  <!-- FLOATING WHATSAPP -->
+  <a href="https://wa.me/923357476744"
+     target="_blank"
+     rel="noopener noreferrer"
+     aria-label="Contact Makki Madni Travel on WhatsApp"
+     class="fixed bottom-5 right-5 z-50 bg-emerald-500 hover:bg-emerald-600 text-white w-14 h-14 sm:w-16 sm:h-16 rounded-full shadow-2xl transition hover:scale-110 flex items-center justify-center">
+    <i class="fa-brands fa-whatsapp text-3xl"></i>
+  </a>
 
-            calcResult.innerHTML = `${totalNights} Days / ${catLabel} (${adults} Person${adults > 1 ? 's' : ''})`;
+  <!-- PAGE JAVASCRIPT -->
+  <script>
+    "use strict";
+
+    // -------------------------------------------------------
+    // MOBILE MENU
+    // -------------------------------------------------------
+
+    const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+    const mobileMenu = document.getElementById("mobile-menu");
+    const mobileMenuIcon = document.getElementById("mobile-menu-icon");
+
+    if (mobileMenuBtn && mobileMenu) {
+      mobileMenuBtn.addEventListener("click", function () {
+        const isHidden = mobileMenu.classList.toggle("hidden");
+
+        mobileMenuBtn.setAttribute("aria-expanded", String(!isHidden));
+        mobileMenuBtn.setAttribute(
+          "aria-label",
+          isHidden ? "Open navigation menu" : "Close navigation menu"
+        );
+
+        if (mobileMenuIcon) {
+          mobileMenuIcon.className = isHidden
+            ? "fa-solid fa-bars text-2xl"
+            : "fa-solid fa-xmark text-2xl";
         }
+      });
 
-        calcAdults.addEventListener('change', updateCalculator);
-        calcCategory.addEventListener('change', updateCalculator);
-        calcMakkahNights.addEventListener('input', updateCalculator);
-        calcMadinahNights.addEventListener('input', updateCalculator);
+      mobileMenu.querySelectorAll("a").forEach(function (link) {
+        link.addEventListener("click", function () {
+          mobileMenu.classList.add("hidden");
+          mobileMenuBtn.setAttribute("aria-expanded", "false");
 
-        function sendCalculatorWhatsApp() {
-            const adults = calcAdults.value;
-            const category = calcCategory.options[calcCategory.selectedIndex].text;
-            const makkah = calcMakkahNights.value;
-            const madinah = calcMadinahNights.value;
+          if (mobileMenuIcon) {
+            mobileMenuIcon.className = "fa-solid fa-bars text-2xl";
+          }
+        });
+      });
+    }
 
-            const text = `Assalamu Alaikum Makki Madni Travel!%0A%0ACustom Quote Request (Website Inquiry):%0A- Pilgrims: ${adults} Adult(s)%0A- Category: ${category}%0A- Makkah Nights: ${makkah}%0A- Madinah Nights: ${madinah}`;
-            window.open(`https://wa.me/923357476744?text=${text}`, '_blank');
-        }
+    // -------------------------------------------------------
+    // UMRAH CALCULATOR
+    // -------------------------------------------------------
 
-        function sendQuickFilterWhatsApp() {
-            const month = document.getElementById('quick-month').value;
-            const duration = document.getElementById('quick-duration').value;
-            const category = document.getElementById('quick-category').value;
+    const calcAdults = document.getElementById("calc-adults");
+    const calcCategory = document.getElementById("calc-category");
+    const calcMakkahNights = document.getElementById("calc-makkah-nights");
+    const calcMadinahNights = document.getElementById("calc-madinah-nights");
+    const calcResult = document.getElementById("calc-result");
 
-            const text = `Assalamu Alaikum!%0AQuick Finder Request (Website Inquiry):%0A- Month: ${month}%0A- Duration: ${duration}%0A- Category: ${category}`;
-            window.open(`https://wa.me/923357476744?text=${text}`, '_blank');
-        }
-    </script>
+    function getValidNights(input) {
+      const value = Number.parseInt(input.value, 10);
+
+      if (!Number.isFinite(value)) return 1;
+
+      return Math.min(30, Math.max(1, value));
+    }
+
+    function updateCalculator() {
+      if (
+        !calcAdults ||
+        !calcCategory ||
+        !calcMakkahNights ||
+        !calcMadinahNights ||
+        !calcResult
+      ) {
+        return;
+      }
+
+      const adults = Number.parseInt(calcAdults.value, 10) || 1;
+      const makkahNights = getValidNights(calcMakkahNights);
+      const madinahNights = getValidNights(calcMadinahNights);
+      const totalNights = makkahNights + madinahNights;
+
+      const categoryLabels = {
+        "5star": "5-Star VIP",
+        "4star": "4-Star Deluxe",
+        "3star": "3-Star Economy"
+      };
+
+      const category = categoryLabels[calcCategory.value] || "Selected Hotel";
+
+      calcResult.textContent =
+        totalNights +
+        " Nights / " +
+        category +
+        " (" +
+        adults +
+        " Person" +
+        (adults > 1 ? "s" : "") +
+        ")";
+    }
+
+    if (calcAdults) calcAdults.addEventListener("change", updateCalculator);
+    if (calcCategory) calcCategory.addEventListener("change", updateCalculator);
+    if (calcMakkahNights) calcMakkahNights.addEventListener("input", updateCalculator);
+    if (calcMadinahNights) calcMadinahNights.addEventListener("input", updateCalculator);
+
+    // -------------------------------------------------------
+    // WHATSAPP CALCULATOR REQUEST
+    // -------------------------------------------------------
+
+    function sendCalculatorWhatsApp() {
+      const adults = calcAdults ? calcAdults.value : "2";
+      const category = calcCategory
+        ? calcCategory.options[calcCategory.selectedIndex].text
+        : "5-Star VIP Haram View";
+
+      const makkah = calcMakkahNights
+        ? getValidNights(calcMakkahNights)
+        : 7;
+
+      const madinah = calcMadinahNights
+        ? getValidNights(calcMadinahNights)
+        : 7;
+
+      const message =
+        "Assalamu Alaikum Makki Madni Travel & Tours!\n\n" +
+        "Custom Umrah Quote Request (Website Inquiry)\n" +
+        "- Pilgrims: " + adults + " Person(s)\n" +
+        "- Hotel Category: " + category + "\n" +
+        "- Makkah Nights: " + makkah + "\n" +
+        "- Madinah Nights: " + madinah + "\n" +
+        "- Total Nights: " + (makkah + madinah) + "\n\n" +
+        "Please share current availability and quotation.";
+
+      window.open(
+        "https://wa.me/923357476744?text=" + encodeURIComponent(message),
+        "_blank",
+        "noopener,noreferrer"
+      );
+    }
+
+    // -------------------------------------------------------
+    // QUICK FINDER WHATSAPP REQUEST
+    // -------------------------------------------------------
+
+    function sendQuickFilterWhatsApp() {
+      const month = document.getElementById("quick-month");
+      const duration = document.getElementById("quick-duration");
+      const category = document.getElementById("quick-category");
+
+      const message =
+        "Assalamu Alaikum Makki Madni Travel & Tours!\n\n" +
+        "Quick Finder Request (Website Inquiry)\n" +
+        "- Travel Season: " + (month ? month.value : "Any Available Month") + "\n" +
+        "- Duration: " + (duration ? duration.value : "14 Days") + "\n" +
+        "- Hotel Category: " + (category ? category.value : "5-Star VIP Haram View") + "\n\n" +
+        "Please share current packages, rates and availability.";
+
+      window.open(
+        "https://wa.me/923357476744?text=" + encodeURIComponent(message),
+        "_blank",
+        "noopener,noreferrer"
+      );
+    }
+
+    // Expose functions to HTML onclick handlers.
+    window.sendCalculatorWhatsApp = sendCalculatorWhatsApp;
+    window.sendQuickFilterWhatsApp = sendQuickFilterWhatsApp;
+
+    // -------------------------------------------------------
+    // FOOTER YEAR
+    // -------------------------------------------------------
+
+    const footerYear = document.getElementById("footer-year");
+
+    if (footerYear) {
+      footerYear.textContent = new Date().getFullYear();
+    }
+
+    // Initial calculator result.
+    updateCalculator();
+  </script>
 </body>
 </html>
