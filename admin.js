@@ -647,7 +647,7 @@
         image_url: finalImages[0] || null,
         images: finalImages,
         videos: finalVideos,
-        pdfs: [$("f-pdfs"]?.value.trim()].filter(Boolean),
+        pdfs: [$("f-pdfs")?.value.trim()].filter(Boolean),
         sort_order: Number($("f-order")?.value) || 0,
         is_visible: $("f-visible")?.checked ?? true,
         updated_at: new Date().toISOString()
