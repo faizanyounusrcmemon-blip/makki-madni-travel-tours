@@ -221,6 +221,95 @@ video{background:#000;max-width:100%}
   .mobile-full{width:100%}
   .btn,.btn2{font-size:12px}
 }
+
+
+/* ===== ANALYTICS + RESOURCE MONITOR: COMPACT SIDE-BY-SIDE ===== */
+
+#dashboard .monitor-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  margin: 18px 0 22px;
+}
+
+#dashboard .monitor-row > .panel {
+  min-width: 0;
+  margin: 0 !important;
+  padding: 16px !important;
+  border-radius: 14px;
+}
+
+#dashboard .monitor-row h2,
+#dashboard .monitor-row h3 {
+  font-size: 16px !important;
+  line-height: 1.5;
+}
+
+#dashboard .monitor-row .section-card {
+  padding: 12px;
+  border-radius: 11px;
+}
+
+#dashboard .monitor-row .text-3xl {
+  font-size: 24px;
+  line-height: 1.3;
+}
+
+#dashboard .monitor-row .text-lg {
+  font-size: 16px;
+}
+
+#dashboard .monitor-row .usage-bar {
+  height: 8px;
+}
+
+#dashboard .monitor-row .small-note {
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+#dashboard .monitor-row .btn2 {
+  padding: 8px 10px;
+  font-size: 11px;
+}
+
+#dashboard .monitor-row .grid {
+  min-width: 0;
+}
+
+#dashboard .monitor-row table {
+  min-width: 300px;
+}
+
+#dashboard .monitor-row #an-chart > div {
+  margin-bottom: 10px;
+}
+
+/* Tablet and mobile: stack panels */
+@media (max-width: 900px) {
+  #dashboard .monitor-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 480px) {
+  #dashboard .monitor-row > .panel {
+    padding: 12px !important;
+  }
+
+  #dashboard .monitor-row .text-3xl {
+    font-size: 21px;
+  }
+
+  #dashboard .monitor-row .section-card {
+    padding: 10px;
+  }
+}
+
+
 </style>
 </head>
 
@@ -617,10 +706,23 @@ document.addEventListener("DOMContentLoaded", function () {
   const config = window.CMS_CONFIG;
   const validConfig = !!(
     config &&
-    typeof config.url === "string" &&
-    typeof config.anonKey === "string" &&
-    config.url.trim() &&
-    config.anonKey.trim()
+
+const config = window.CMS_CONFIG;
+
+const validConfig = Boolean(
+  config &&
+  typeof config.SUPABASE_URL === "string" &&
+  config.SUPABASE_URL.trim() &&
+  typeof config.SUPABASE_ANON_KEY === "string" &&
+  config.SUPABASE_ANON_KEY.trim() &&
+  !config.SUPABASE_URL.includes("PASTE_") &&
+  !config.SUPABASE_ANON_KEY.includes("PASTE_")
+);
+
+if (configWarning) {
+  configWarning.classList.toggle("hidden", validConfig);
+}
+
   );
 
   if (configWarning && !validConfig) {

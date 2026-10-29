@@ -236,36 +236,36 @@
           </p>
         </div>
         <button id="analytics-refresh" class="btn2" type="button">
-          â†» Refresh Analytics
+          ? Refresh Analytics
         </button>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
         <div class="section-card">
           <p class="text-sm text-slate-300">Today Visitors</p>
-          <p id="an-today" class="text-3xl font-bold gold mt-2">â€”</p>
+          <p id="an-today" class="text-3xl font-bold gold mt-2">—</p>
         </div>
 
         <div class="section-card">
           <p class="text-sm text-slate-300">Monthly Visitors</p>
-          <p id="an-month" class="text-3xl font-bold gold mt-2">â€”</p>
+          <p id="an-month" class="text-3xl font-bold gold mt-2">—</p>
         </div>
 
         <div class="section-card">
           <p class="text-sm text-slate-300">Yearly Visitors</p>
-          <p id="an-year" class="text-3xl font-bold gold mt-2">â€”</p>
+          <p id="an-year" class="text-3xl font-bold gold mt-2">—</p>
         </div>
 
         <div class="section-card">
           <p class="text-sm text-slate-300">Total Visitors</p>
-          <p id="an-total" class="text-3xl font-bold gold mt-2">â€”</p>
+          <p id="an-total" class="text-3xl font-bold gold mt-2">—</p>
         </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
         <div class="section-card">
           <h3 class="font-bold gold mb-2">Photo & Video Views</h3>
-          <p id="an-media" class="text-3xl font-bold">â€”</p>
+          <p id="an-media" class="text-3xl font-bold">—</p>
           <p class="text-xs text-slate-400 mt-2">
             Total media views returned by the analytics RPC.
           </p>
@@ -273,7 +273,7 @@
 
         <div class="section-card">
           <h3 class="font-bold gold mb-2">Currently Active Visitors</h3>
-          <p id="an-active" class="text-3xl font-bold">â€”</p>
+          <p id="an-active" class="text-3xl font-bold">—</p>
           <p id="an-active-note" class="text-xs text-slate-400 mt-2">
             Active visitors ke liye SQL mein session tracking zaroori hai.
           </p>
@@ -281,7 +281,7 @@
       </div>
 
       <div class="section-card mt-4">
-        <h3 class="font-bold gold mb-3">Daily Visits â€” Last 30 Days</h3>
+        <h3 class="font-bold gold mb-3">Daily Visits — Last 30 Days</h3>
         <div id="an-chart" class="space-y-3">
           <p class="text-sm text-slate-400">Analytics load ho rahi hai...</p>
         </div>
@@ -307,7 +307,31 @@
       </p>
     `;
 
+    
+  // Analytics aur Resource Monitor ko ek shared row mein rakhein.
+  const resourcePanel = $("usage-refresh")?.closest("section");
+
+  if (resourcePanel) {
+    let monitorRow = dashboard.querySelector(".monitor-row");
+
+    if (!monitorRow) {
+      monitorRow = document.createElement("div");
+      monitorRow.className = "monitor-row";
+
+      // Resource Monitor ko uski original jagah se temporarily move karein.
+      resourcePanel.parentNode.insertBefore(monitorRow, resourcePanel);
+      monitorRow.appendChild(resourcePanel);
+    }
+
+    // Analytics panel ko Resource Monitor ke saath place karein.
+    monitorRow.prepend(panel);
+  } else {
+    // Agar Resource Monitor nahi mila, Analytics ko normal show karein.
     dashboard.prepend(panel);
+  }
+
+  $("analytics-refresh")?.addEventListener("click", loadAnalytics);
+
 
     $("analytics-refresh")?.addEventListener("click", loadAnalytics);
   }
@@ -372,8 +396,8 @@
               <td class="p-2 break-words">
                 ${esc(item.content_name || item.media_url || "Media")}
               </td>
-              <td class="p-2">${esc(item.content_type || "â€”")}</td>
-              <td class="p-2">${esc(item.media_type || "â€”")}</td>
+              <td class="p-2">${esc(item.content_type || "—")}</td>
+              <td class="p-2">${esc(item.media_type || "—")}</td>
               <td class="p-2 text-right font-bold gold">
                 ${Number(item.views || 0).toLocaleString()}
               </td>
@@ -499,9 +523,9 @@
     const videos = getVideos(item);
 
     const category = type === "hotel"
-      ? `Hotel â€¢ ${esc(item.city || "â€”")}`
+      ? `Hotel • ${esc(item.city || "—")}`
       : type === "ziyarat"
-        ? `Ziyarat â€¢ ${esc(item.city || "â€”")}`
+        ? `Ziyarat • ${esc(item.city || "—")}`
         : "Umrah Package";
 
     const photoCount = images.length;
@@ -513,7 +537,7 @@
           alt="" loading="lazy"
           onerror="this.style.display='none'">`
       : `<div class="w-16 h-16 rounded-lg bg-slate-900 border border-yellow-700/30 flex items-center justify-center shrink-0">
-           <span class="text-2xl">ðŸ•‹</span>
+           <span class="text-2xl">??</span>
          </div>`;
 
     return `
@@ -529,8 +553,8 @@
 
           <div class="flex flex-wrap gap-2 mt-2 text-xs">
             <span class="status-pill">${item.is_visible ? "Visible" : "Hidden"}</span>
-            <span class="status-pill">ðŸ“· ${photoCount}</span>
-            <span class="status-pill">ðŸŽ¬ ${videoCount}</span>
+            <span class="status-pill">?? ${photoCount}</span>
+            <span class="status-pill">?? ${videoCount}</span>
           </div>
 
           <div class="flex flex-wrap gap-2 mt-3">
