@@ -571,7 +571,7 @@
     }
   });
 
-  $("editor")?.addEventListener("submit", async event => {
+$("editor")?.addEventListener("submit", async event => {
     event.preventDefault();
     if (busy) return;
     busy = true;
@@ -581,9 +581,20 @@
       const id = $("record-id")?.value;
       const existingItem = id ? recordArray(type).find(i => String(i.id) === String(id)) : null;
 
+      // Photos upload
       const photos = Array.from($("f-files")?.files || []);
       const uploadedImages = photos.length ? await uploadPhotos(photos) : [];
       const finalImages = uploadedImages.length ? [...getImages(existingItem), ...uploadedImages] : getImages(existingItem);
+
+      // Videos upload (File selection support)
+      const videoFiles = Array.from($("f-video-files")?.files || []);
+      const uploadedVideos = videoFiles.length ? await uploadVideos(videoFiles) : [];
+      
+      // Textarea wale video URLs
+      const textVideoUrls = ($("f-videos")?.value || "").split("\n").map(s => s.trim()).filter(Boolean);
+      
+      // Purane videos, naye uploaded videos aur URLs sab ko combine karna
+      const finalVideos = [...getVideos(existingItem), ...uploadedVideos, ...textVideoUrls];
 
       const row = {
         name: $("f-name")?.value.trim(),
@@ -592,7 +603,7 @@
         price: $("f-price")?.value.trim() || "",
         image_url: finalImages[0] || null,
         images: finalImages,
-        videos: getVideos(existingItem),
+        videos: finalVideos,
         pdfs: [$("f-pdfs")?.value.trim()].filter(Boolean),
         sort_order: Number($("f-order")?.value) || 0,
         is_visible: $("f-visible")?.checked ?? true,
