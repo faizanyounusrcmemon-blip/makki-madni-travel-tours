@@ -18,6 +18,10 @@
   if (!ready) {
     $("config-warning")?.classList.remove("hidden");
 
+    if ($("login-msg")) {
+      $("login-msg").textContent =
+        "Pehle cms-config.js mein Supabase URL aur anon key configure karein.";
+    }
 
     $("login-form")?.addEventListener("submit", e => e.preventDefault());
     return;
