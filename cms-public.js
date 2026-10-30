@@ -298,7 +298,7 @@
 
     box.id = "media-lightbox";
     box.className =
-      "hidden fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-center p-4";
+       "hidden fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-start p-3 sm:p-4 overflow-y-auto";
 
     box.innerHTML = `
       <div class="relative max-w-5xl w-full max-h-[90vh] flex flex-col items-center">
@@ -309,9 +309,10 @@
           ✕ Close
         </button>
 
-        <div id="lightbox-content"
-          class="w-full max-h-[85vh] flex flex-col items-center justify-center overflow-y-auto">
-        </div>
+     <div id="lightbox-content"
+       class="w-full flex flex-col items-center justify-start overflow-visible"
+        style="min-height:0; flex-shrink:0;">
+     </div>
       </div>
     `;
 
