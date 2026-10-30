@@ -41,6 +41,7 @@
     ziyarat: []
   };
 
+  let mediaViewsMap = {};
   let busy = false;
 
   function esc(value) {
@@ -83,10 +84,6 @@
         background: "#071225", color: "#f8fafc"
       });
     }
-  }
-
-  function mediaDownloadLink(url, label) {
-    return `<a href="${esc(url)}" target="_blank" rel="noopener" class="text-xs text-amber-300 underline break-all">${label}</a>`;
   }
 
   function downloadHref(url) {
@@ -241,7 +238,7 @@
         <div>
           <p class="text-xs text-slate-400">WEBSITE PERFORMANCE</p>
           <h2 class="text-xl md:text-2xl font-bold gold mt-1">Website Visitor Analytics</h2>
-          <p class="text-sm text-slate-300 mt-1">Visitors, page visits aur photo/video views</p>
+          <p class="text-sm text-slate-300 mt-1">Visitors, page visits aur media statistics</p>
         </div>
         <button id="analytics-refresh" class="btn2" type="button"><i class="fa-solid fa-rotate mr-1"></i> Refresh Analytics</button>
       </div>
@@ -254,13 +251,12 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-        <div class="section-card"><h3 class="font-bold gold mb-2"><i class="fa-solid fa-photo-film mr-1"></i> Photo & Video Views</h3><p id="an-media" class="text-3xl font-bold">—</p></div>
+        <div class="section-card"><h3 class="font-bold gold mb-2"><i class="fa-solid fa-photo-film mr-1"></i> Total Photo & Video Views</h3><p id="an-media" class="text-3xl font-bold">—</p></div>
         <div class="section-card"><h3 class="font-bold gold mb-2"><i class="fa-solid fa-users mr-1"></i> Currently Active Visitors</h3><p id="an-active" class="text-3xl font-bold">—</p></div>
       </div>
 
       <div class="section-card mt-4"><h3 class="font-bold gold mb-3"><i class="fa-solid fa-chart-line mr-1"></i> Daily Visits — Last 30 Days</h3><div id="an-chart" class="space-y-3"><p class="text-sm text-slate-400">Analytics load ho rahi hai...</p></div></div>
       <div class="section-card mt-4"><h3 class="font-bold gold mb-3"><i class="fa-solid fa-file-lines mr-1"></i> Page-wise Visits</h3><div id="an-pages" class="overflow-x-auto text-sm"><p class="text-slate-400">Analytics load ho rahi hai...</p></div></div>
-      <div class="section-card mt-4"><h3 class="font-bold gold mb-3"><i class="fa-solid fa-video mr-1"></i> Individual Photo & Video Views</h3><div id="an-media-list" class="overflow-x-auto text-sm"><p class="text-slate-400">Analytics load ho rahi hai...</p></div></div>
       <p id="an-status" role="status" class="text-xs text-amber-200 mt-4">Analytics load ho rahi hai...</p>
     `;
 
@@ -301,30 +297,6 @@
     }).join("");
   }
 
-  function drawMediaTable(media) {
-    const container = $("an-media-list");
-    if (!container) return;
-    if (!Array.isArray(media) || !media.length) {
-      container.innerHTML = '<p class="text-slate-400">Abhi media views record nahi huay.</p>';
-      return;
-    }
-    container.innerHTML = `
-      <table class="w-full text-left">
-        <thead><tr class="border-b border-yellow-700/30 gold"><th class="p-2">Content</th><th class="p-2">Category</th><th class="p-2">Media</th><th class="p-2 text-right">Views</th></tr></thead>
-        <tbody>
-          ${media.map(item => `
-            <tr class="border-b border-slate-800">
-              <td class="p-2 break-words">${esc(item.content_name || item.media_url || "Media")}</td>
-              <td class="p-2">${esc(item.content_type || "—")}</td>
-              <td class="p-2">${esc(item.media_type || "—")}</td>
-              <td class="p-2 text-right font-bold gold">${Number(item.views || 0).toLocaleString()}</td>
-            </tr>
-          `).join("")}
-        </tbody>
-      </table>
-    `;
-  }
-
   function drawPagesTable(pages) {
     const container = $("an-pages");
     if (!container) return;
@@ -363,8 +335,18 @@
       if ($("an-active")) $("an-active").textContent = data.active_visitors == null ? "SQL update required" : Number(data.active_visitors).toLocaleString();
 
       drawDailyChart(data.daily || []);
-      drawMediaTable(data.media || []);
       drawPagesTable(data.pages || []);
+
+      // Build mediaViewsMap so each photo/video card shows its individual views
+      mediaViewsMap = {};
+      if (Array.isArray(data.media)) {
+        data.media.forEach(m => {
+          if (m.media_url) {
+            mediaViewsMap[m.media_url] = Number(m.views || 0);
+          }
+        });
+      }
+      renderAllContentLists();
     } catch (error) {
       console.error("Analytics error:", error);
     }
@@ -381,24 +363,32 @@
         : `<i class="fa-solid fa-kaaba mr-1"></i> Umrah Package`;
 
     let mediaPreviews = "";
+    let totalPhotoViews = 0;
+    let totalVideoViews = 0;
 
     images.forEach((url, index) => {
+      const views = mediaViewsMap[url] || 0;
+      totalPhotoViews += views;
       mediaPreviews += `
         <div class="w-24 shrink-0 rounded-lg border border-yellow-700/40 bg-slate-950 p-1.5 space-y-1">
           <a href="${esc(url)}" target="_blank" rel="noopener" title="Open photo">
             <img src="${esc(url)}" class="w-full h-20 object-contain rounded bg-black" alt="Photo ${index + 1}" loading="lazy" onerror="this.style.display='none'">
           </a>
+          <div class="text-[10px] text-amber-300 text-center font-bold"><i class="fa-solid fa-eye mr-1"></i>${views.toLocaleString()}</div>
           <a href="${esc(downloadHref(url))}" download target="_blank" rel="noopener" class="block text-center text-[10px] text-amber-300 hover:text-white"><i class="fa-solid fa-download mr-1"></i>Download</a>
         </div>`;
     });
 
     videos.forEach((url, index) => {
+      const views = mediaViewsMap[url] || 0;
+      totalVideoViews += views;
       const embed = youtubeEmbed(url);
       mediaPreviews += `
         <div class="w-44 shrink-0 rounded-lg border border-yellow-700/40 bg-slate-950 p-1.5 space-y-1">
           ${embed
             ? `<iframe src="${esc(embed)}" class="w-full h-24 rounded bg-black" title="Video ${index + 1}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>`
             : `<video src="${esc(url)}" class="w-full h-24 object-contain rounded bg-black" controls playsinline preload="metadata"></video>`}
+          <div class="text-[10px] text-amber-300 text-center font-bold"><i class="fa-solid fa-eye mr-1"></i>${views.toLocaleString()} views</div>
           ${embed ? `<a href="${esc(url)}" target="_blank" rel="noopener" class="block text-center text-[10px] text-amber-300 hover:text-white"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>Open video</a>` : `<a href="${esc(downloadHref(url))}" download target="_blank" rel="noopener" class="block text-center text-[10px] text-amber-300 hover:text-white"><i class="fa-solid fa-download mr-1"></i>Download video</a>`}
         </div>`;
     });
@@ -419,8 +409,8 @@
           
           <div class="flex flex-wrap gap-2 mt-2 text-xs">
             <span class="status-pill">${item.is_visible ? "Visible" : "Hidden"}</span>
-            <span class="status-pill"><i class="fa-solid fa-image mr-1"></i> ${images.length} Photos</span>
-            <span class="status-pill"><i class="fa-solid fa-video mr-1"></i> ${videos.length} Videos</span>
+            <span class="status-pill"><i class="fa-solid fa-image mr-1"></i> ${images.length} Photos (${totalPhotoViews} views)</span>
+            <span class="status-pill"><i class="fa-solid fa-video mr-1"></i> ${videos.length} Videos (${totalVideoViews} views)</span>
           </div>
 
           <div class="flex flex-wrap gap-2 mt-3">
@@ -431,6 +421,18 @@
         </div>
       </article>
     `;
+  }
+
+  function renderAllContentLists() {
+    if ($("hotels-list")) {
+      $("hotels-list").innerHTML = records.hotels.map(item => itemHtml(item, "hotel")).join("") || '<p class="text-sm text-slate-400">Abhi hotels add nahi kiye.</p>';
+    }
+
+    if ($("packages-list")) {
+      $("packages-list").innerHTML = records.packages.map(item => itemHtml(item, "package")).join("") || '<p class="text-sm text-slate-400">Abhi Umrah packages add nahi kiye.</p>';
+    }
+
+    renderZiyarat();
   }
 
   async function load() {
@@ -449,15 +451,7 @@
       records.packages = results[1].data || [];
       records.ziyarat = results[2].data || [];
 
-      if ($("hotels-list")) {
-        $("hotels-list").innerHTML = records.hotels.map(item => itemHtml(item, "hotel")).join("") || '<p class="text-sm text-slate-400">Abhi hotels add nahi kiye.</p>';
-      }
-
-      if ($("packages-list")) {
-        $("packages-list").innerHTML = records.packages.map(item => itemHtml(item, "package")).join("") || '<p class="text-sm text-slate-400">Abhi Umrah packages add nahi kiye.</p>';
-      }
-
-      renderZiyarat();
+      renderAllContentLists();
       setStatus("Hotels, packages aur ziyarat successfully load ho gaye.");
     } catch (error) {
       setStatus("Content load error: " + error.message);
@@ -540,7 +534,6 @@
 
   window.openEditor = openEditor;
 
-  // Live preview for newly selected Photos
   $("f-files")?.addEventListener("change", function () {
     const container = $("preview-images");
     if (!container) return;
@@ -555,7 +548,6 @@
     });
   });
 
-  // Live preview for newly selected Videos
   $("f-video-files")?.addEventListener("change", function () {
     const container = $("preview-videos");
     if (!container) return;
@@ -654,7 +646,6 @@
   $("close-editor")?.addEventListener("click", closeEditor);
   $("cancel-editor")?.addEventListener("click", closeEditor);
 
-  // Global click handler for Edit, Hide/Show, and Delete actions
   document.addEventListener("click", async event => {
     const target = event.target.closest("button");
     if (!target) return;
@@ -707,7 +698,7 @@
       const confirmation = await popup({
         icon: "warning",
         title: "Delete permanently?",
-        text: `Kya aap "${item.name}" ko delete karna chahte hain? Yeh action undo nahi hoga.`,
+        text: `Kya aap "${item.name}" ko delete karna chahte hain? Isse related media views bhi delete honge.`,
         showCancelButton: true,
         confirmButtonText: "Yes, Delete",
         cancelButtonText: "No, Keep It",
@@ -717,11 +708,16 @@
 
       target.disabled = true;
       try {
+        // Delete item from content table
         const { error } = await db.from(table(type)).delete().eq("id", id);
         if (error) throw error;
-        await load();
-        setStatus("Record successfully delete ho gaya.");
-        toast("success", "Content successfully deleted");
+
+        // Automatically delete associated photo/video views from database
+        await db.from("website_media_views").delete().eq("content_id", String(id));
+
+        await Promise.all([load(), loadAnalytics()]);
+        setStatus("Record aur uske media views successfully delete ho gaye.");
+        toast("success", "Content and media views deleted");
       } catch (error) {
         setStatus("Error: " + error.message);
         await popup({ icon: "error", title: "Delete failed", text: error.message, confirmButtonText: "OK" });
@@ -739,25 +735,16 @@
     try {
       const type = $("record-type")?.value;
       const id = $("record-id")?.value;
-      const existingItem = id ? recordArray(type).find(i => String(i.id) === String(id)) : null;
 
-      // Photos upload
       const photos = Array.from($("f-files")?.files || []);
       const uploadedImages = photos.length ? await uploadPhotos(photos) : [];
-      // Existing URLs are editable: remove a line to remove that photo.
       const existingImageUrls = ($("f-images")?.value || "")
         .split("\n").map(s => s.trim()).filter(Boolean);
       const finalImages = [...new Set([...existingImageUrls, ...uploadedImages])];
 
-      // Videos upload (File selection support)
       const videoFiles = Array.from($("f-video-files")?.files || []);
       const uploadedVideos = videoFiles.length ? await uploadVideos(videoFiles) : [];
-      
-      // Textarea wale video URLs
       const textVideoUrls = ($("f-videos")?.value || "").split("\n").map(s => s.trim()).filter(Boolean);
-      
-      // Video textarea already contains the existing URLs. Do not append them
-      // a second time: that caused duplicates every time an item was edited.
       const finalVideos = [...new Set([...textVideoUrls, ...uploadedVideos])];
 
       const invalidMediaUrl = [...finalImages, ...finalVideos].find(value => {
