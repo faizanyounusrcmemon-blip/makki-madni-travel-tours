@@ -548,15 +548,19 @@
       drawPagesTable(data.pages || []);
 
       // Har photo/video ka individual view count
-      mediaViewsMap = {};
 
-      if (Array.isArray(data.media)) {
-        data.media.forEach(m => {
-          if (m.media_url) {
-            mediaViewsMap[m.media_url] = Number(m.views || 0);
-          }
-        });
-      }
+mediaViewsMap = {};
+
+if (Array.isArray(data.media)) {
+  data.media.forEach(m => {
+    if (m.media_url) {
+      const url = String(m.media_url).trim();
+      mediaViewsMap[url] =
+        (mediaViewsMap[url] || 0) + Number(m.views || 0);
+    }
+  });
+}
+
 
       renderAllContentLists();
 
