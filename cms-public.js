@@ -1,4 +1,3 @@
-
 (function () {
   "use strict";
 
@@ -20,9 +19,9 @@
     cfg.SUPABASE_ANON_KEY
   );
 
-  // =========================================================
-  // BASIC HELPERS
-  // =========================================================
+  // Check if visitor is coming via Admin's 'View Website' link or referer
+  const urlParams = new URLSearchParams(window.location.search);
+  const isAdminView = urlParams.get("from") === "admin" || document.referrer.includes("admin.html");
 
   const esc = (value) =>
     String(value ?? "").replace(/[&<>"']/g, (char) => ({
@@ -49,7 +48,6 @@
     if (typeof value === "string" && value.trim()) {
       try {
         const parsed = JSON.parse(value);
-
         if (Array.isArray(parsed)) return parsed;
         if (typeof parsed === "string") return [parsed];
       } catch (_) {
@@ -138,15 +136,6 @@
     }
   }
 
-  function isVideoFile(url) {
-    try {
-      const pathname = new URL(url, window.location.href).pathname;
-      return /\.(mp4|webm|ogg|ogv|m4v)$/i.test(pathname);
-    } catch (_) {
-      return /\.(mp4|webm|ogg|ogv|m4v)(?:[?#]|$)/i.test(url);
-    }
-  }
-
   function safeJson(value) {
     return JSON.stringify(value)
       .replace(/</g, "\\u003c")
@@ -156,7 +145,7 @@
   }
 
   // =========================================================
-  // ANALYTICS
+  // ANALYTICS (Bypassed for Admin)
   // =========================================================
 
   function getVisitorKey() {
@@ -179,7 +168,6 @@
 
       return key;
     } catch (_) {
-      // Fallback when browser storage is unavailable.
       return (
         "visitor_" +
         Date.now().toString(36) +
@@ -206,6 +194,9 @@
     mediaType = null,
     mediaUrl: mediaURL = null
   }) {
+    // Check 1 & 2: Bypass tracking if opened via Admin's 'View Website'
+    if (isAdminView) return;
+
     try {
       const { error } = await db.rpc("website_track_event", {
         p_event_type: eventType,
@@ -226,16 +217,15 @@
     }
   }
 
-  // Avoid sending the same page-view RPC repeatedly in this page session.
-  // The database should also apply its own daily duplicate rules.
   function trackPageView() {
+    if (isAdminView) return;
+
     const pageKey = "mmt_page_view_" + currentPagePath();
 
     try {
       if (sessionStorage.getItem(pageKey)) return;
       sessionStorage.setItem(pageKey, "1");
     } catch (_) {
-      // Continue to track if sessionStorage is unavailable.
     }
 
     trackEvent({
@@ -243,9 +233,8 @@
     });
   }
 
-  // Prevent repeated play/click callbacks for the same media element.
   function trackMediaOnce(element, details) {
-    if (!element || element.dataset.analyticsTracked === "1") return;
+    if (isAdminView || !element || element.dataset.analyticsTracked === "1") return;
 
     element.dataset.analyticsTracked = "1";
 
@@ -445,10 +434,8 @@
 
     content.innerHTML = html || '<p class="text-white text-center">No media available.</p>';
 
-    // Render the first photo in the dedicated viewer; arrows move one photo at a time.
     if (imgs.length) renderLightboxPhoto();
 
-    // Local videos: count only when playback starts.
     content.querySelectorAll("video.analytics-lightbox-video").forEach((video) => {
       video.addEventListener("play", function () {
         trackMediaOnce(video, {
@@ -461,7 +448,6 @@
       });
     });
 
-    // YouTube videos are counted when opened in the lightbox.
     content.querySelectorAll("iframe.analytics-lightbox-video").forEach((frame) => {
       trackMediaOnce(frame, {
         contentType: frame.dataset.analyticsContentType,
@@ -476,7 +462,7 @@
   };
 
   // =========================================================
-  // PHOTO GALLERY
+  // PHOTO GALLERY & VIDEO PLAYERS
   // =========================================================
 
   function imageGallery(
@@ -541,10 +527,6 @@
     `;
   }
 
-  // =========================================================
-  // VIDEO PLAYERS
-  // =========================================================
-
   function videoPlayers(
     videos,
     extraClass = "",
@@ -570,8 +552,6 @@
           const embed = getYouTubeEmbed(url);
 
           if (embed) {
-            // YouTube views are tracked when the visitor opens the video.
-            // Embedded autoplay/playback tracking needs the YouTube API.
             return `
               <button
                 type="button"
@@ -611,10 +591,8 @@
     `;
   }
 
-  // Track inline video only when the visitor starts playing it.
   document.addEventListener("play", function (event) {
     const video = event.target;
-
     if (!video || !video.matches("video.analytics-inline-video")) return;
 
     trackMediaOnce(video, {
@@ -627,7 +605,7 @@
   }, true);
 
   // =========================================================
-  // HOTEL CARDS
+  // CARDS RENDERERS
   // =========================================================
 
   function hotelCard(h, city) {
@@ -728,10 +706,6 @@
     `;
   }
 
-  // =========================================================
-  // UMRAH PACKAGE CARDS
-  // =========================================================
-
   function packageCard(p, index) {
     const name = esc(p.name);
     const price = esc(p.price || "Direct Quote");
@@ -810,10 +784,6 @@
       </article>
     `;
   }
-
-  // =========================================================
-  // MAKKAH / MADINAH ZIYARAT CARDS
-  // =========================================================
 
   function ziyaratCard(item, city) {
     const name = esc(item.name);
@@ -931,10 +901,6 @@
     `;
   }
 
-  // =========================================================
-  // RENDER HELPER
-  // =========================================================
-
   function renderGrid(id, records, renderer, emptyMessage) {
     const element = document.getElementById(id);
     if (!element) return;
@@ -978,109 +944,27 @@
             .order("created_at")
         ]);
 
-      // -----------------------------------------------------
-      // HOTELS
-      // -----------------------------------------------------
-
-      if (hotelsResult.error) {
-        console.error(
-          "Hotel loading error:",
-          hotelsResult.error.message
-        );
-      } else {
+      if (!hotelsResult.error) {
         const hotels = hotelsResult.data || [];
+        const makkahHotels = hotels.filter((hotel) => hotel.city === "makkah");
+        const madinahHotels = hotels.filter((hotel) => hotel.city === "madinah");
 
-        const makkahHotels = hotels.filter(
-          (hotel) => hotel.city === "makkah"
-        );
-
-        const madinahHotels = hotels.filter(
-          (hotel) => hotel.city === "madinah"
-        );
-
-        renderGrid(
-          "cms-makkah-hotels-grid",
-          makkahHotels,
-          (hotel) => hotelCard(hotel, "makkah"),
-          "Makkah hotel details are being updated."
-        );
-
-        renderGrid(
-          "cms-madinah-hotels-grid",
-          madinahHotels,
-          (hotel) => hotelCard(hotel, "madinah"),
-          "Madinah hotel details are being updated."
-        );
+        renderGrid("cms-makkah-hotels-grid", makkahHotels, (hotel) => hotelCard(hotel, "makkah"), "Makkah hotel details are being updated.");
+        renderGrid("cms-madinah-hotels-grid", madinahHotels, (hotel) => hotelCard(hotel, "madinah"), "Madinah hotel details are being updated.");
       }
 
-      // -----------------------------------------------------
-      // UMRAH PACKAGES
-      // -----------------------------------------------------
-
-      if (packagesResult.error) {
-        console.error(
-          "Package loading error:",
-          packagesResult.error.message
-        );
-      } else {
+      if (!packagesResult.error) {
         const packages = packagesResult.data || [];
-
-        renderGrid(
-          "cms-packages-grid",
-          packages,
-          (item, index) => packageCard(item, index),
-          "Umrah packages are being updated."
-        );
+        renderGrid("cms-packages-grid", packages, (item, index) => packageCard(item, index), "Umrah packages are being updated.");
       }
 
-      // -----------------------------------------------------
-      // ZIYARAT
-      // -----------------------------------------------------
-
-      if (ziyaratResult.error) {
-        console.error(
-          "Ziyarat loading error:",
-          ziyaratResult.error.message
-        );
-
-        // Show a useful message only if the section exists.
-        renderGrid(
-          "cms-makkah-ziyarat-grid",
-          [],
-          () => "",
-          "Ziyarat information is temporarily unavailable."
-        );
-
-        renderGrid(
-          "cms-madinah-ziyarat-grid",
-          [],
-          () => "",
-          "Ziyarat information is temporarily unavailable."
-        );
-      } else {
+      if (!ziyaratResult.error) {
         const ziyaratItems = ziyaratResult.data || [];
+        const makkahZiyarat = ziyaratItems.filter((item) => item.city === "makkah");
+        const madinahZiyarat = ziyaratItems.filter((item) => item.city === "madinah");
 
-        const makkahZiyarat = ziyaratItems.filter(
-          (item) => item.city === "makkah"
-        );
-
-        const madinahZiyarat = ziyaratItems.filter(
-          (item) => item.city === "madinah"
-        );
-
-        renderGrid(
-          "cms-makkah-ziyarat-grid",
-          makkahZiyarat,
-          (item) => ziyaratCard(item, "makkah"),
-          "Makkah Ziyarat details are being updated."
-        );
-
-        renderGrid(
-          "cms-madinah-ziyarat-grid",
-          madinahZiyarat,
-          (item) => ziyaratCard(item, "madinah"),
-          "Madinah Ziyarat details are being updated."
-        );
+        renderGrid("cms-makkah-ziyarat-grid", makkahZiyarat, (item) => ziyaratCard(item, "makkah"), "Makkah Ziyarat details are being updated.");
+        renderGrid("cms-madinah-ziyarat-grid", madinahZiyarat, (item) => ziyaratCard(item, "madinah"), "Madinah Ziyarat details are being updated.");
       }
     } catch (error) {
       console.error("Website CMS unavailable:", error);
