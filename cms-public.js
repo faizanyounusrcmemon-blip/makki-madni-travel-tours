@@ -359,7 +359,7 @@
   let activeLightboxIndex = 0;
   let activeLightboxMeta = {};
 
-  function renderLightboxPhoto() {
+function renderLightboxPhoto() {
     const content = document.getElementById("lightbox-photo-viewer");
 
     if (!content || !activeLightboxImages.length) return;
@@ -368,7 +368,6 @@
     const total = activeLightboxImages.length;
     const meta = activeLightboxMeta;
 
-    // FIX: Image container ko properly flex aur fit kar diya gaya hai taake image cut na ho
     content.innerHTML = `
       <div class="w-full flex flex-col items-center gap-3">
         <div class="w-full flex items-center justify-between gap-3 px-1">
@@ -379,12 +378,12 @@
           </span>
         </div>
 
-        <div class="relative w-full flex items-center justify-center bg-black rounded-2xl border border-yellow-500/30 overflow-hidden p-2" style="min-height:320px; max-height:72vh;">
+        <div class="relative w-full flex items-center justify-center bg-black/90 rounded-2xl border border-yellow-500/30 overflow-hidden p-2">
           <img
             id="lightbox-current-image"
             src="${esc(url)}"
             alt="${esc(meta.contentName || "Gallery")} photo ${activeLightboxIndex + 1}"
-            class="max-w-full max-h-[68vh] w-auto h-auto object-contain block mx-auto"
+            class="w-auto h-auto max-w-full max-h-[75vh] object-contain mx-auto block rounded-lg"
             data-analytics-content-type="${esc(meta.contentType)}"
             data-analytics-content-id="${esc(meta.contentId)}"
             data-analytics-content-name="${esc(meta.contentName)}"
@@ -432,6 +431,11 @@
       mediaType: "photo",
       mediaUrl: img.dataset.analyticsMediaUrl
     });
+
+    img.addEventListener("load", track, { once: true });
+
+    if (img.complete && img.naturalWidth > 0) track();
+  }
 
     img.addEventListener("load", track, { once: true });
 
