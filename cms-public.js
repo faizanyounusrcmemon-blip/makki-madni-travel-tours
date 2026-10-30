@@ -368,6 +368,7 @@
     const total = activeLightboxImages.length;
     const meta = activeLightboxMeta;
 
+    // FIX: Image container ko properly flex aur fit kar diya gaya hai taake image cut na ho
     content.innerHTML = `
       <div class="w-full flex flex-col items-center gap-3">
         <div class="w-full flex items-center justify-between gap-3 px-1">
@@ -378,13 +379,12 @@
           </span>
         </div>
 
-        <div class="relative w-full flex items-center justify-center bg-black rounded-2xl border border-yellow-500/30 overflow-hidden" style="height:min(68vh,680px);min-height:260px">
+        <div class="relative w-full flex items-center justify-center bg-black rounded-2xl border border-yellow-500/30 overflow-hidden p-2" style="min-height:320px; max-height:72vh;">
           <img
             id="lightbox-current-image"
             src="${esc(url)}"
             alt="${esc(meta.contentName || "Gallery")} photo ${activeLightboxIndex + 1}"
-            class="max-w-full max-h-full w-auto h-auto object-contain p-2"
-            style="max-width:100%;max-height:68vh"
+            class="max-w-full max-h-[68vh] w-auto h-auto object-contain block mx-auto"
             data-analytics-content-type="${esc(meta.contentType)}"
             data-analytics-content-id="${esc(meta.contentId)}"
             data-analytics-content-name="${esc(meta.contentName)}"
@@ -567,7 +567,6 @@
     contentId = "",
     contentName = "Website media"
   ) {
-    // FIX: Agar sirf video hai aur photo ek bhi nahi hai, toh upar thumbnail/box render nahi hoga.
     if (!images.length) return "";
 
     const args = safeJson([
@@ -688,10 +687,6 @@
       mediaUrl: video.dataset.analyticsMediaUrl
     });
   }, true);
-
-  // =========================================================
-  // CARDS RENDERERS
-  // =========================================================
 
   function hotelCard(h, city) {
     const name = esc(h.name);
