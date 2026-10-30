@@ -1,3 +1,4 @@
+
 (function () {
   "use strict";
 
@@ -19,9 +20,10 @@
     cfg.SUPABASE_ANON_KEY
   );
 
-  // Check if visitor is coming via Admin's 'View Website' link or referer
   const urlParams = new URLSearchParams(window.location.search);
-  const isAdminView = urlParams.get("from") === "admin" || document.referrer.includes("admin.html");
+  const isAdminView =
+    urlParams.get("from") === "admin" ||
+    document.referrer.includes("admin.html");
 
   const esc = (value) =>
     String(value ?? "").replace(/[&<>"']/g, (char) => ({
@@ -39,6 +41,7 @@
       details,
       "Please share availability and further details. (Website Inquiry)"
     ].filter(Boolean).join("\n");
+
     return "https://wa.me/923357476744?text=" + encodeURIComponent(message);
   };
 
@@ -145,7 +148,7 @@
   }
 
   // =========================================================
-  // ANALYTICS (Bypassed for Admin)
+  // ANALYTICS
   // =========================================================
 
   function getVisitorKey() {
@@ -194,7 +197,6 @@
     mediaType = null,
     mediaUrl: mediaURL = null
   }) {
-    // Check 1 & 2: Bypass tracking if opened via Admin's 'View Website'
     if (isAdminView) return;
 
     try {
@@ -234,7 +236,11 @@
   }
 
   function trackMediaOnce(element, details) {
-    if (isAdminView || !element || element.dataset.analyticsTracked === "1") return;
+    if (
+      isAdminView ||
+      !element ||
+      element.dataset.analyticsTracked === "1"
+    ) return;
 
     element.dataset.analyticsTracked = "1";
 
@@ -245,6 +251,55 @@
       contentName: details.contentName,
       mediaType: details.mediaType,
       mediaUrl: details.mediaUrl
+    });
+  }
+
+  // =========================================================
+  // LIVE VISITOR HEARTBEAT - NEW
+  // =========================================================
+
+  let heartbeatTimer = null;
+
+  async function sendVisitorHeartbeat() {
+    if (isAdminView) return;
+
+    // Hidden tab se heartbeat bhejne ki zaroorat nahi
+    if (document.visibilityState === "hidden") return;
+
+    try {
+      const { error } = await db.rpc("website_visitor_heartbeat", {
+        p_visitor_key: visitorKey
+      });
+
+      if (error) {
+        console.warn("Visitor heartbeat failed:", error.message);
+      }
+    } catch (error) {
+      console.warn("Visitor heartbeat unavailable:", error);
+    }
+  }
+
+  function startVisitorHeartbeat() {
+    if (isAdminView || heartbeatTimer) return;
+
+    // Website open hote hi active visitor register karein
+    sendVisitorHeartbeat();
+
+    // Har 15 seconds baad heartbeat update
+    heartbeatTimer = setInterval(() => {
+      sendVisitorHeartbeat();
+    }, 15000);
+
+    // Tab dobara active hone par heartbeat
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) {
+        sendVisitorHeartbeat();
+      }
+    });
+
+    // Browser page restore hone par heartbeat
+    window.addEventListener("pageshow", () => {
+      sendVisitorHeartbeat();
     });
   }
 
@@ -286,9 +341,12 @@
 
     if (!window.__mediaLightboxKeyboardBound) {
       window.__mediaLightboxKeyboardBound = true;
+
       document.addEventListener("keydown", function (event) {
         const lightbox = document.getElementById("media-lightbox");
+
         if (!lightbox || lightbox.classList.contains("hidden")) return;
+
         if (event.key === "ArrowRight") window.changeLightboxImage(1);
         if (event.key === "ArrowLeft") window.changeLightboxImage(-1);
         if (event.key === "Escape") window.closeMediaLightbox();
@@ -302,6 +360,7 @@
 
     if (content) {
       content.querySelectorAll("video").forEach((video) => video.pause());
+
       content.querySelectorAll("iframe").forEach((frame) => {
         frame.src = "about:blank";
       });
@@ -318,6 +377,7 @@
 
   function renderLightboxPhoto() {
     const content = document.getElementById("lightbox-photo-viewer");
+
     if (!content || !activeLightboxImages.length) return;
 
     const url = activeLightboxImages[activeLightboxIndex];
@@ -328,35 +388,59 @@
       <div class="w-full flex flex-col items-center gap-3">
         <div class="w-full flex items-center justify-between gap-3 px-1">
           <span class="text-yellow-400 font-bold text-sm">${esc(meta.contentName || "Gallery")}</span>
+
           <span class="text-white bg-gray-800 border border-yellow-500/40 rounded-full px-3 py-1 text-xs font-bold">
             ${activeLightboxIndex + 1} / ${total}
           </span>
         </div>
+
         <div class="relative w-full flex items-center justify-center bg-black rounded-2xl border border-yellow-500/30 overflow-hidden" style="height:min(68vh,680px);min-height:260px">
-          <img id="lightbox-current-image" src="${esc(url)}" alt="${esc(meta.contentName || "Gallery")} photo ${activeLightboxIndex + 1}"
-            class="max-w-full max-h-full w-auto h-auto object-contain" style="max-width:100%;max-height:68vh"
+          <img
+            id="lightbox-current-image"
+            src="${esc(url)}"
+            alt="${esc(meta.contentName || "Gallery")} photo ${activeLightboxIndex + 1}"
+            class="max-w-full max-h-full w-auto h-auto object-contain"
+            style="max-width:100%;max-height:68vh"
             data-analytics-content-type="${esc(meta.contentType)}"
             data-analytics-content-id="${esc(meta.contentId)}"
             data-analytics-content-name="${esc(meta.contentName)}"
             data-analytics-media-url="${esc(url)}">
+
           ${total > 1 ? `
-            <button type="button" onclick="window.changeLightboxImage(-1)" aria-label="Previous photo"
+            <button
+              type="button"
+              onclick="window.changeLightboxImage(-1)"
+              aria-label="Previous photo"
               class="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/75 border border-yellow-400 text-yellow-300 text-2xl flex items-center justify-center hover:bg-yellow-500 hover:text-black">‹</button>
-            <button type="button" onclick="window.changeLightboxImage(1)" aria-label="Next photo"
+
+            <button
+              type="button"
+              onclick="window.changeLightboxImage(1)"
+              aria-label="Next photo"
               class="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/75 border border-yellow-400 text-yellow-300 text-2xl flex items-center justify-center hover:bg-yellow-500 hover:text-black">›</button>
           ` : ""}
         </div>
+
         ${total > 1 ? `
           <div class="w-full flex items-center justify-between gap-3">
-            <button type="button" onclick="window.changeLightboxImage(-1)" class="px-4 py-2 rounded-full border border-yellow-500/50 text-yellow-300 text-xs font-bold hover:bg-yellow-500 hover:text-black">← Previous</button>
+            <button
+              type="button"
+              onclick="window.changeLightboxImage(-1)"
+              class="px-4 py-2 rounded-full border border-yellow-500/50 text-yellow-300 text-xs font-bold hover:bg-yellow-500 hover:text-black">← Previous</button>
+
             <span class="text-slate-400 text-xs">Click next to view all photos</span>
-            <button type="button" onclick="window.changeLightboxImage(1)" class="px-4 py-2 rounded-full bg-yellow-500 text-black text-xs font-black hover:bg-yellow-400">Next →</button>
+
+            <button
+              type="button"
+              onclick="window.changeLightboxImage(1)"
+              class="px-4 py-2 rounded-full bg-yellow-500 text-black text-xs font-black hover:bg-yellow-400">Next →</button>
           </div>
         ` : ""}
       </div>
     `;
 
     const img = document.getElementById("lightbox-current-image");
+
     const track = () => trackMediaOnce(img, {
       contentType: img.dataset.analyticsContentType,
       contentId: img.dataset.analyticsContentId,
@@ -364,13 +448,19 @@
       mediaType: "photo",
       mediaUrl: img.dataset.analyticsMediaUrl
     });
+
     img.addEventListener("load", track, { once: true });
+
     if (img.complete && img.naturalWidth > 0) track();
   }
 
   window.changeLightboxImage = function (direction) {
     if (!activeLightboxImages.length) return;
-    activeLightboxIndex = (activeLightboxIndex + direction + activeLightboxImages.length) % activeLightboxImages.length;
+
+    activeLightboxIndex =
+      (activeLightboxIndex + direction + activeLightboxImages.length) %
+      activeLightboxImages.length;
+
     renderLightboxPhoto();
   };
 
@@ -385,6 +475,7 @@
 
     const imgs = normalizeList(images).map(mediaUrl).filter(Boolean);
     const vids = normalizeList(videos).map(mediaUrl).filter(Boolean);
+
     const content = document.getElementById("lightbox-content");
 
     activeLightboxImages = imgs;
@@ -392,6 +483,7 @@
     activeLightboxMeta = { contentType, contentId, contentName };
 
     let html = "";
+
     if (imgs.length) {
       html += `<div id="lightbox-photo-viewer" class="w-full"></div>`;
     }
@@ -404,16 +496,24 @@
 
       vids.forEach((url, index) => {
         const embed = getYouTubeEmbed(url);
+
         if (embed) {
           html += `
             <div class="w-full">
               <p class="text-xs text-yellow-300 mb-2">Video ${index + 1}</p>
+
               <div class="w-full aspect-video">
-                <iframe src="${esc(embed)}" title="${esc(contentName)} virtual tour"
-                  class="analytics-lightbox-video w-full h-full rounded-xl border border-yellow-500/30" loading="lazy"
-                  data-analytics-content-type="${esc(contentType)}" data-analytics-content-id="${esc(contentId)}"
-                  data-analytics-content-name="${esc(contentName)}" data-analytics-media-url="${esc(url)}"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                <iframe
+                  src="${esc(embed)}"
+                  title="${esc(contentName)} virtual tour"
+                  class="analytics-lightbox-video w-full h-full rounded-xl border border-yellow-500/30"
+                  loading="lazy"
+                  data-analytics-content-type="${esc(contentType)}"
+                  data-analytics-content-id="${esc(contentId)}"
+                  data-analytics-content-name="${esc(contentName)}"
+                  data-analytics-media-url="${esc(url)}"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowfullscreen></iframe>
               </div>
             </div>
           `;
@@ -421,18 +521,27 @@
           html += `
             <div class="w-full">
               <p class="text-xs text-yellow-300 mb-2">Video ${index + 1}</p>
-              <video src="${esc(url)}" controls playsinline preload="metadata"
-                data-analytics-content-type="${esc(contentType)}" data-analytics-content-id="${esc(contentId)}"
-                data-analytics-content-name="${esc(contentName)}" data-analytics-media-url="${esc(url)}"
+
+              <video
+                src="${esc(url)}"
+                controls
+                playsinline
+                preload="metadata"
+                data-analytics-content-type="${esc(contentType)}"
+                data-analytics-content-id="${esc(contentId)}"
+                data-analytics-content-name="${esc(contentName)}"
+                data-analytics-media-url="${esc(url)}"
                 class="analytics-lightbox-video w-full max-h-[65vh] bg-black rounded-xl border border-yellow-500/30">Your browser does not support this video.</video>
             </div>
           `;
         }
       });
+
       html += `</div>`;
     }
 
-    content.innerHTML = html || '<p class="text-white text-center">No media available.</p>';
+    content.innerHTML =
+      html || '<p class="text-white text-center">No media available.</p>';
 
     if (imgs.length) renderLightboxPhoto();
 
@@ -593,6 +702,7 @@
 
   document.addEventListener("play", function (event) {
     const video = event.target;
+
     if (!video || !video.matches("video.analytics-inline-video")) return;
 
     trackMediaOnce(video, {
@@ -653,7 +763,6 @@
 
     return `
       <article class="bg-navy-900 rounded-2xl overflow-hidden gold-border-glow flex flex-col justify-between">
-
         <div>
           <div class="relative">
             ${mediaHtml}
@@ -826,7 +935,6 @@
 
     return `
       <article class="bg-navy-900 rounded-2xl overflow-hidden gold-border-glow flex flex-col justify-between">
-
         <div>
           <div class="relative">
             ${mediaHtml}
@@ -920,7 +1028,12 @@
 
   async function load() {
     initLightbox();
+
+    // Existing page analytics
     trackPageView();
+
+    // NEW: Start live visitor heartbeat
+    startVisitorHeartbeat();
 
     try {
       const [hotelsResult, packagesResult, ziyaratResult] =
@@ -946,25 +1059,65 @@
 
       if (!hotelsResult.error) {
         const hotels = hotelsResult.data || [];
-        const makkahHotels = hotels.filter((hotel) => hotel.city === "makkah");
-        const madinahHotels = hotels.filter((hotel) => hotel.city === "madinah");
 
-        renderGrid("cms-makkah-hotels-grid", makkahHotels, (hotel) => hotelCard(hotel, "makkah"), "Makkah hotel details are being updated.");
-        renderGrid("cms-madinah-hotels-grid", madinahHotels, (hotel) => hotelCard(hotel, "madinah"), "Madinah hotel details are being updated.");
+        const makkahHotels = hotels.filter(
+          (hotel) => hotel.city === "makkah"
+        );
+
+        const madinahHotels = hotels.filter(
+          (hotel) => hotel.city === "madinah"
+        );
+
+        renderGrid(
+          "cms-makkah-hotels-grid",
+          makkahHotels,
+          (hotel) => hotelCard(hotel, "makkah"),
+          "Makkah hotel details are being updated."
+        );
+
+        renderGrid(
+          "cms-madinah-hotels-grid",
+          madinahHotels,
+          (hotel) => hotelCard(hotel, "madinah"),
+          "Madinah hotel details are being updated."
+        );
       }
 
       if (!packagesResult.error) {
         const packages = packagesResult.data || [];
-        renderGrid("cms-packages-grid", packages, (item, index) => packageCard(item, index), "Umrah packages are being updated.");
+
+        renderGrid(
+          "cms-packages-grid",
+          packages,
+          (item, index) => packageCard(item, index),
+          "Umrah packages are being updated."
+        );
       }
 
       if (!ziyaratResult.error) {
         const ziyaratItems = ziyaratResult.data || [];
-        const makkahZiyarat = ziyaratItems.filter((item) => item.city === "makkah");
-        const madinahZiyarat = ziyaratItems.filter((item) => item.city === "madinah");
 
-        renderGrid("cms-makkah-ziyarat-grid", makkahZiyarat, (item) => ziyaratCard(item, "makkah"), "Makkah Ziyarat details are being updated.");
-        renderGrid("cms-madinah-ziyarat-grid", madinahZiyarat, (item) => ziyaratCard(item, "madinah"), "Madinah Ziyarat details are being updated.");
+        const makkahZiyarat = ziyaratItems.filter(
+          (item) => item.city === "makkah"
+        );
+
+        const madinahZiyarat = ziyaratItems.filter(
+          (item) => item.city === "madinah"
+        );
+
+        renderGrid(
+          "cms-makkah-ziyarat-grid",
+          makkahZiyarat,
+          (item) => ziyaratCard(item, "makkah"),
+          "Makkah Ziyarat details are being updated."
+        );
+
+        renderGrid(
+          "cms-madinah-ziyarat-grid",
+          madinahZiyarat,
+          (item) => ziyaratCard(item, "madinah"),
+          "Madinah Ziyarat details are being updated."
+        );
       }
     } catch (error) {
       console.error("Website CMS unavailable:", error);
