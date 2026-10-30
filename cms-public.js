@@ -219,21 +219,17 @@
     }
   }
 
-  function trackPageView() {
-    if (isAdminView) return;
 
-    const pageKey = "mmt_page_view_" + currentPagePath();
+function trackPageView() {
+  if (isAdminView) return;
 
-    try {
-      if (sessionStorage.getItem(pageKey)) return;
-      sessionStorage.setItem(pageKey, "1");
-    } catch (_) {
-    }
+  // Database duplicate requests ko control karega.
+  // sessionStorage ki purani rok hata di gayi hai.
+  trackEvent({
+    eventType: "page_view"
+  });
+}
 
-    trackEvent({
-      eventType: "page_view"
-    });
-  }
 
   function trackMediaOnce(element, details) {
     if (
