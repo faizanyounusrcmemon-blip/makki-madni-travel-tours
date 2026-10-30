@@ -19,9 +19,9 @@
     cfg.SUPABASE_ANON_KEY
   );
 
-  // Sirf tab admin mana jayega jab URL mein explicitly ?from=admin ho
+  // Check if visitor is coming via Admin's 'View Website' link or referer
   const urlParams = new URLSearchParams(window.location.search);
-  const isAdminView = urlParams.get("from") === "admin";
+  const isAdminView = urlParams.get("from") === "admin" || document.referrer.includes("admin.html");
 
   const esc = (value) =>
     String(value ?? "").replace(/[&<>"']/g, (char) => ({
@@ -194,7 +194,8 @@
     mediaType = null,
     mediaUrl: mediaURL = null
   }) {
-    if (isAdminView) return[cite: 6];
+    // Check 1 & 2: Bypass tracking if opened via Admin's 'View Website'
+    if (isAdminView) return;
 
     try {
       const { error } = await db.rpc("website_track_event", {
@@ -217,7 +218,7 @@
   }
 
   function trackPageView() {
-    if (isAdminView) return[cite: 6];
+    if (isAdminView) return;
 
     const pageKey = "mmt_page_view_" + currentPagePath();
 
@@ -233,7 +234,7 @@
   }
 
   function trackMediaOnce(element, details) {
-    if (isAdminView || !element || element.dataset.analyticsTracked === "1") return[cite: 6];
+    if (isAdminView || !element || element.dataset.analyticsTracked === "1") return;
 
     element.dataset.analyticsTracked = "1";
 
@@ -592,7 +593,7 @@
 
   document.addEventListener("play", function (event) {
     const video = event.target;
-    if (!video || !video.matches("video.analytics-inline-video")) return[cite: 6];
+    if (!video || !video.matches("video.analytics-inline-video")) return;
 
     trackMediaOnce(video, {
       contentType: video.dataset.analyticsContentType,
