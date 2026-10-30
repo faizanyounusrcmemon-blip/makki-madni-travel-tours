@@ -61,6 +61,58 @@
     if ($("editor-msg")) $("editor-msg").textContent = message;
   }
 
+  function popup(options) {
+    if (window.Swal) {
+      return window.Swal.fire({
+        background: "#071225",
+        color: "#f8fafc",
+        confirmButtonColor: "#b8892e",
+        cancelButtonColor: "#475569",
+        customClass: { popup: "border border-yellow-700/50 rounded-2xl" },
+        ...options
+      });
+    }
+    return Promise.resolve({ isConfirmed: window.confirm(options.text || options.title || "Are you sure?") });
+  }
+
+  function toast(icon, title) {
+    if (window.Swal) {
+      window.Swal.fire({
+        toast: true, position: "top-end", icon, title,
+        showConfirmButton: false, timer: 2300, timerProgressBar: true,
+        background: "#071225", color: "#f8fafc"
+      });
+    }
+  }
+
+  function mediaDownloadLink(url, label) {
+    return `<a href="${esc(url)}" target="_blank" rel="noopener" class="text-xs text-amber-300 underline break-all">${label}</a>`;
+  }
+
+  function downloadHref(url) {
+    try {
+      const parsed = new URL(url);
+      if (parsed.hostname.includes("supabase.co")) parsed.searchParams.set("download", "");
+      return parsed.toString();
+    } catch (_) {
+      return url;
+    }
+  }
+
+  function youtubeEmbed(url) {
+    try {
+      const parsed = new URL(url);
+      let id = "";
+      if (parsed.hostname.includes("youtu.be")) id = parsed.pathname.slice(1);
+      else if (parsed.hostname.includes("youtube.com")) {
+        id = parsed.searchParams.get("v") || parsed.pathname.split("/").filter(Boolean).pop() || "";
+      }
+      return id ? `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}` : "";
+    } catch (_) {
+      return "";
+    }
+  }
+
   function table(type) {
     if (type === "hotel") return "website_hotels";
     if (type === "ziyarat") return "website_ziyarat";
@@ -329,23 +381,35 @@
         : `<i class="fa-solid fa-kaaba mr-1"></i> Umrah Package`;
 
     let mediaPreviews = "";
-    
-    images.forEach(url => {
-      mediaPreviews += `<img src="${esc(url)}" class="w-16 h-16 object-cover rounded-lg border border-yellow-700/40 shrink-0" alt="Photo" loading="lazy" onerror="this.style.display='none'">`;
+
+    images.forEach((url, index) => {
+      mediaPreviews += `
+        <div class="w-24 shrink-0 rounded-lg border border-yellow-700/40 bg-slate-950 p-1.5 space-y-1">
+          <a href="${esc(url)}" target="_blank" rel="noopener" title="Open photo">
+            <img src="${esc(url)}" class="w-full h-20 object-contain rounded bg-black" alt="Photo ${index + 1}" loading="lazy" onerror="this.style.display='none'">
+          </a>
+          <a href="${esc(downloadHref(url))}" download target="_blank" rel="noopener" class="block text-center text-[10px] text-amber-300 hover:text-white"><i class="fa-solid fa-download mr-1"></i>Download</a>
+        </div>`;
     });
 
-    videos.forEach(url => {
-      mediaPreviews += `<video src="${esc(url)}" class="w-16 h-16 object-cover rounded-lg border border-yellow-700/40 shrink-0 bg-black" preload="metadata"></video>`;
+    videos.forEach((url, index) => {
+      const embed = youtubeEmbed(url);
+      mediaPreviews += `
+        <div class="w-44 shrink-0 rounded-lg border border-yellow-700/40 bg-slate-950 p-1.5 space-y-1">
+          ${embed
+            ? `<iframe src="${esc(embed)}" class="w-full h-24 rounded bg-black" title="Video ${index + 1}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>`
+            : `<video src="${esc(url)}" class="w-full h-24 object-contain rounded bg-black" controls playsinline preload="metadata"></video>`}
+          ${embed ? `<a href="${esc(url)}" target="_blank" rel="noopener" class="block text-center text-[10px] text-amber-300 hover:text-white"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>Open video</a>` : `<a href="${esc(downloadHref(url))}" download target="_blank" rel="noopener" class="block text-center text-[10px] text-amber-300 hover:text-white"><i class="fa-solid fa-download mr-1"></i>Download video</a>`}
+        </div>`;
     });
 
-    
     if (!mediaPreviews) {
       mediaPreviews = `<div class="w-16 h-16 rounded-lg bg-slate-900 border border-yellow-700/30 flex items-center justify-center shrink-0"><i class="fa-solid fa-image text-gold text-lg"></i></div>`;
     }
 
     return `
       <article class="border border-yellow-700/30 rounded-xl p-3 flex flex-col sm:flex-row gap-4 items-start">
-        <div class="flex flex-wrap gap-2 max-w-xs overflow-x-auto">
+        <div class="flex flex-wrap gap-3 w-full sm:w-auto sm:max-w-[48%]">
           ${mediaPreviews}
         </div>
 
@@ -440,19 +504,29 @@
 
     const oldImages = getImages(item);
     if ($("preview-images") && oldImages.length) {
-      $("preview-images").innerHTML = oldImages.map(url => `
-        <div class="relative"><img src="${esc(url)}" class="w-20 h-20 object-cover rounded-lg border border-yellow-700/40" loading="lazy"></div>
+      $("preview-images").innerHTML = oldImages.map((url, index) => `
+        <div class="flex flex-col gap-1 bg-slate-900 p-1.5 rounded-lg border border-yellow-700/30">
+          <a href="${esc(url)}" target="_blank" rel="noopener"><img src="${esc(url)}" class="w-24 h-20 object-contain rounded bg-black" alt="Photo ${index + 1}" loading="lazy"></a>
+          <a href="${esc(downloadHref(url))}" download target="_blank" rel="noopener" class="text-[10px] text-amber-300 text-center"><i class="fa-solid fa-download mr-1"></i>Download</a>
+        </div>
       `).join("");
     }
 
     const oldVideos = getVideos(item);
     if ($("preview-videos") && oldVideos.length) {
-      $("preview-videos").innerHTML = oldVideos.map(url => `
-        <div class="relative flex flex-col gap-2 bg-slate-900 p-2 rounded-lg border border-yellow-700/30">
-          <video src="${esc(url)}" class="w-full max-h-32 object-cover rounded bg-black" controls preload="metadata"></video>
-          <span class="text-xs text-slate-300 truncate">${esc(url)}</span>
-        </div>
-      `).join("");
+      $("preview-videos").innerHTML = oldVideos.map(url => {
+        const embed = youtubeEmbed(url);
+        return `
+          <div class="relative flex flex-col gap-2 bg-slate-900 p-2 rounded-lg border border-yellow-700/30">
+            ${embed
+              ? `<iframe src="${esc(embed)}" class="w-full h-48 rounded bg-black" title="Video preview" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>`
+              : `<video src="${esc(url)}" class="w-full max-h-48 object-contain rounded bg-black" controls playsinline preload="metadata"></video>`}
+            ${embed
+              ? `<a href="${esc(url)}" target="_blank" rel="noopener" class="text-xs text-amber-300 text-center"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>Open video</a>`
+              : `<a href="${esc(downloadHref(url))}" download target="_blank" rel="noopener" class="text-xs text-amber-300 text-center"><i class="fa-solid fa-download mr-1"></i>Download video</a>`}
+            <span class="text-xs text-slate-300 truncate">${esc(url)}</span>
+          </div>`;
+      }).join("");
     }
 
     $("editor-wrap")?.classList.remove("hidden");
@@ -588,7 +662,17 @@
     if (target.dataset.edit) {
       const [type, id] = target.dataset.edit.split(":");
       const item = recordArray(type).find(r => String(r.id) === String(id));
-      if (item) openEditor(type, item, item.city || "makkah");
+      if (item) {
+        const result = await popup({
+          icon: "question",
+          title: "Edit this content?",
+          text: `Aap "${item.name || "this item"}" ki details edit karna chahte hain?`,
+          showCancelButton: true,
+          confirmButtonText: "Yes, Edit",
+          cancelButtonText: "Cancel"
+        });
+        if (result.isConfirmed) openEditor(type, item, item.city || "makkah");
+      }
       return;
     }
 
@@ -620,7 +704,16 @@
       const item = recordArray(type).find(r => String(r.id) === String(id));
       if (!item) return;
 
-      if (!window.confirm(`Kya aap "${item.name}" ko delete karna chahte hain?`)) return;
+      const confirmation = await popup({
+        icon: "warning",
+        title: "Delete permanently?",
+        text: `Kya aap "${item.name}" ko delete karna chahte hain? Yeh action undo nahi hoga.`,
+        showCancelButton: true,
+        confirmButtonText: "Yes, Delete",
+        cancelButtonText: "No, Keep It",
+        confirmButtonColor: "#dc2626"
+      });
+      if (!confirmation.isConfirmed) return;
 
       target.disabled = true;
       try {
@@ -628,8 +721,10 @@
         if (error) throw error;
         await load();
         setStatus("Record successfully delete ho gaya.");
+        toast("success", "Content successfully deleted");
       } catch (error) {
         setStatus("Error: " + error.message);
+        await popup({ icon: "error", title: "Delete failed", text: error.message, confirmButtonText: "OK" });
       } finally {
         target.disabled = false;
       }
@@ -695,8 +790,10 @@
       closeEditor();
       await Promise.all([load(), loadUsage(), loadAnalytics()]);
       setStatus("Successfully save ho gaya.");
+      toast("success", id ? "Changes updated successfully" : "New content added successfully");
     } catch (error) {
       setEditorMessage(error.message);
+      await popup({ icon: "error", title: "Save failed", text: error.message, confirmButtonText: "OK" });
     } finally {
       busy = false;
     }
