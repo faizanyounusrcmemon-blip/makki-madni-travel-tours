@@ -527,7 +527,11 @@ video{background:#000;max-width:100%}
       <div class="section-card">
         <h3 class="gold font-bold mb-3"><i class="fa-solid fa-image mr-1"></i> Photos</h3>
         <label class="block text-sm font-semibold">
-          Upload Multiple Pictures
+          Existing Photo URLs (one URL per line — remove a line to remove that photo)
+          <textarea id="f-images" class="field mt-2" rows="3" placeholder="Existing photo links appear here when editing."></textarea>
+        </label>
+        <label class="block text-sm font-semibold mt-4">
+          Upload More Pictures
           <input id="f-files" class="field mt-2" type="file" multiple accept="image/png,image/jpeg,image/webp,image/gif">
         </label>
         <div id="preview-images" class="flex flex-wrap gap-2 mt-3"></div>
@@ -543,7 +547,7 @@ video{background:#000;max-width:100%}
       </div>
 
       <label class="block text-sm font-semibold">
-        Video URLs
+        Video URLs (one URL per line — remove a line to remove that video)
         <textarea id="f-videos" class="field mt-2" rows="4" placeholder="YouTube ya direct video URL. Har URL alag line mein."></textarea>
       </label>
 

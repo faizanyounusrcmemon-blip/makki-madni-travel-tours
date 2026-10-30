@@ -33,13 +33,15 @@
       "'": "&#39;"
     }[char]));
 
-  const wa = (name) =>
-    "https://wa.me/923357476744?text=" +
-    encodeURIComponent(
-      "Assalamu Alaikum Makki Madni Travel & Tours! Please share details/rates for " +
-      name +
-      ". (Website Inquiry)"
-    );
+  const wa = (name, details = "") => {
+    const message = [
+      "Assalamu Alaikum Makki Madni Travel & Tours!",
+      "I am interested in: " + name,
+      details,
+      "Please share availability and further details. (Website Inquiry)"
+    ].filter(Boolean).join("\n");
+    return "https://wa.me/923357476744?text=" + encodeURIComponent(message);
+  };
 
   function normalizeList(value) {
     if (Array.isArray(value)) return value;
@@ -789,7 +791,7 @@
         </div>
 
         <a
-          href="${wa(p.name || "Umrah Package")}"
+          href="${wa(p.name || "Umrah Package", `Package Price: ${p.price || "Please quote"}\nDetails: ${p.description || "Please share package details."}`)}"
           target="_blank"
           rel="noopener noreferrer"
           class="w-full gold-button py-3.5 rounded-xl text-gray-950 font-extrabold text-xs uppercase tracking-wider text-center block">

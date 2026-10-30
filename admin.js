@@ -92,14 +92,26 @@
     return [];
   }
 
+  function mediaUrl(value) {
+    if (typeof value === "string") return value.trim();
+    if (value && typeof value === "object") {
+      return String(value.url || value.publicUrl || value.public_url || value.src || "").trim();
+    }
+    return "";
+  }
+
+  function normalizeMediaUrls(value) {
+    return normalizeArray(value).map(mediaUrl).filter(Boolean);
+  }
+
   function getImages(item) {
-    const images = normalizeArray(item?.images);
+    const images = normalizeMediaUrls(item?.images);
     if (images.length) return images;
-    return item?.image_url ? [item.image_url] : [];
+    return item?.image_url ? [mediaUrl(item.image_url)].filter(Boolean) : [];
   }
 
   function getVideos(item) {
-    return normalizeArray(item?.videos);
+    return normalizeMediaUrls(item?.videos);
   }
 
   function getPdfs(item) {
@@ -366,6 +378,9 @@
         db.from("website_ziyarat").select("*").order("sort_order", { ascending: true })
       ]);
 
+      const failed = results.find(result => result.error);
+      if (failed) throw failed.error;
+
       records.hotels = results[0].data || [];
       records.packages = results[1].data || [];
       records.ziyarat = results[2].data || [];
@@ -413,8 +428,11 @@
     setField("f-view", item?.view_text || "");
     setField("f-price", item?.price || "");
     setField("f-order", item?.sort_order ?? 0);
+    setField("f-images", getImages(item).join("\n"));
     setField("f-videos", getVideos(item).join("\n"));
     setField("f-pdfs", getPdfs(item)[0] || "");
+    if ($("f-files")) $("f-files").value = "";
+    if ($("f-video-files")) $("f-video-files").value = "";
 
     if ($("f-visible")) $("f-visible").checked = item?.is_visible ?? true;
     if ($("preview-images")) $("preview-images").innerHTML = "";
@@ -486,7 +504,10 @@
     if (file.size > maxBytes) throw new Error(`${file.name}: File size zyaada hai.`);
 
     const ext = file.name.split(".").pop().toLowerCase().replace(/[^a-z0-9]/g, "") || "file";
-    const path = `${folder}/${crypto.randomUUID()}.${ext}`;
+    const uniqueId = window.crypto?.randomUUID
+      ? window.crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const path = `${folder}/${uniqueId}.${ext}`;
 
     const { data, error } = await db.storage.from("website-photos").upload(path, file, { contentType: file.type });
     if (error) throw error;
@@ -628,7 +649,10 @@
       // Photos upload
       const photos = Array.from($("f-files")?.files || []);
       const uploadedImages = photos.length ? await uploadPhotos(photos) : [];
-      const finalImages = uploadedImages.length ? [...getImages(existingItem), ...uploadedImages] : getImages(existingItem);
+      // Existing URLs are editable: remove a line to remove that photo.
+      const existingImageUrls = ($("f-images")?.value || "")
+        .split("\n").map(s => s.trim()).filter(Boolean);
+      const finalImages = [...new Set([...existingImageUrls, ...uploadedImages])];
 
       // Videos upload (File selection support)
       const videoFiles = Array.from($("f-video-files")?.files || []);
@@ -637,8 +661,15 @@
       // Textarea wale video URLs
       const textVideoUrls = ($("f-videos")?.value || "").split("\n").map(s => s.trim()).filter(Boolean);
       
-      // Purane videos, naye uploaded videos aur URLs sab ko combine karna
-      const finalVideos = [...getVideos(existingItem), ...uploadedVideos, ...textVideoUrls];
+      // Video textarea already contains the existing URLs. Do not append them
+      // a second time: that caused duplicates every time an item was edited.
+      const finalVideos = [...new Set([...textVideoUrls, ...uploadedVideos])];
+
+      const invalidMediaUrl = [...finalImages, ...finalVideos].find(value => {
+        try { return !["http:", "https:"].includes(new URL(value).protocol); }
+        catch (_) { return true; }
+      });
+      if (invalidMediaUrl) throw new Error("Photo/video URL valid http(s) link hona chahiye.");
 
       const row = {
         name: $("f-name")?.value.trim(),
