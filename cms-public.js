@@ -359,7 +359,7 @@
   let activeLightboxIndex = 0;
   let activeLightboxMeta = {};
 
-function renderLightboxPhoto() {
+  function renderLightboxPhoto() {
     const content = document.getElementById("lightbox-photo-viewer");
 
     if (!content || !activeLightboxImages.length) return;
@@ -378,12 +378,13 @@ function renderLightboxPhoto() {
           </span>
         </div>
 
-        <div class="relative w-full flex items-center justify-center bg-black/90 rounded-2xl border border-yellow-500/30 overflow-hidden p-2">
+        <div class="relative w-full flex items-center justify-center bg-black rounded-2xl border border-yellow-500/30 overflow-hidden" style="height:min(68vh,680px);min-height:260px">
           <img
             id="lightbox-current-image"
             src="${esc(url)}"
             alt="${esc(meta.contentName || "Gallery")} photo ${activeLightboxIndex + 1}"
-            class="w-auto h-auto max-w-full max-h-[75vh] object-contain mx-auto block rounded-lg"
+            class="max-w-full max-h-full w-auto h-auto object-contain p-2"
+            style="max-width:100%;max-height:68vh"
             data-analytics-content-type="${esc(meta.contentType)}"
             data-analytics-content-id="${esc(meta.contentId)}"
             data-analytics-content-name="${esc(meta.contentName)}"
@@ -431,11 +432,6 @@ function renderLightboxPhoto() {
       mediaType: "photo",
       mediaUrl: img.dataset.analyticsMediaUrl
     });
-
-    img.addEventListener("load", track, { once: true });
-
-    if (img.complete && img.naturalWidth > 0) track();
-  }
 
     img.addEventListener("load", track, { once: true });
 
@@ -571,6 +567,7 @@ function renderLightboxPhoto() {
     contentId = "",
     contentName = "Website media"
   ) {
+    // FIX: Agar sirf video hai aur photo ek bhi nahi hai, toh upar thumbnail/box render nahi hoga.
     if (!images.length) return "";
 
     const args = safeJson([
@@ -691,6 +688,10 @@ function renderLightboxPhoto() {
       mediaUrl: video.dataset.analyticsMediaUrl
     });
   }, true);
+
+  // =========================================================
+  // CARDS RENDERERS
+  // =========================================================
 
   function hotelCard(h, city) {
     const name = esc(h.name);
