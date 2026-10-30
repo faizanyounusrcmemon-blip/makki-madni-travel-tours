@@ -302,12 +302,16 @@
 
     box.innerHTML = `
       <div class="relative max-w-5xl w-full max-h-[90vh] flex flex-col items-center">
-        <button
-          type="button"
-          onclick="window.closeMediaLightbox()"
-          class="absolute -top-12 right-0 z-10 text-white text-sm font-bold bg-yellow-600 hover:bg-yellow-500 px-4 py-2 rounded-full">
-          ✕ Close
-        </button>
+
+<button
+  type="button"
+  onclick="window.closeMediaLightbox()"
+  class="fixed top-3 right-3 z-[9999] text-black text-sm font-bold bg-yellow-500 hover:bg-yellow-400 px-5 py-3 rounded-full shadow-lg">
+
+  ✕ Close
+
+</button>
+
 
      <div id="lightbox-content"
        class="w-full flex flex-col items-center justify-start overflow-visible"
