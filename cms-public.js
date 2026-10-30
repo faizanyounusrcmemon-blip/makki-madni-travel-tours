@@ -19,9 +19,9 @@
     cfg.SUPABASE_ANON_KEY
   );
 
-  // Check if visitor is coming via Admin's 'View Website' link or referer
+  // Sirf tab admin mana jayega jab URL mein explicitly ?from=admin ho
   const urlParams = new URLSearchParams(window.location.search);
-  const isAdminView = urlParams.get("from") === "admin" || document.referrer.includes("admin.html");
+  const isAdminView = urlParams.get("from") === "admin";
 
   const esc = (value) =>
     String(value ?? "").replace(/[&<>"']/g, (char) => ({
@@ -145,7 +145,7 @@
   }
 
   // =========================================================
-  // ANALYTICS (Bypassed for Admin)
+  // ANALYTICS
   // =========================================================
 
   function getVisitorKey() {
@@ -247,13 +247,6 @@
     });
   }
 
-  // Active Visitor Heartbeat (Pings every 30 seconds to keep active status updated)
-  if (!isAdminView) {
-    setInterval(() => {
-      trackEvent({ eventType: "heartbeat" });
-    }, 30000);
-  }
-
   // =========================================================
   // LIGHTBOX
   // =========================================================
@@ -266,8 +259,6 @@
     box.id = "media-lightbox";
     box.className =
       "hidden fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-center p-4";
-
-    box.html = `...`; // (unchanged)
 
     box.innerHTML = `
       <div class="relative max-w-5xl w-full max-h-[90vh] flex flex-col items-center">
