@@ -145,7 +145,7 @@
   }
 
   // =========================================================
-  // ANALYTICS
+  // ANALYTICS (Bypassed for Admin)
   // =========================================================
 
   function getVisitorKey() {
@@ -194,7 +194,7 @@
     mediaType = null,
     mediaUrl: mediaURL = null
   }) {
-    if (isAdminView) return;
+    if (isAdminView) return[cite: 6];
 
     try {
       const { error } = await db.rpc("website_track_event", {
@@ -217,7 +217,7 @@
   }
 
   function trackPageView() {
-    if (isAdminView) return;
+    if (isAdminView) return[cite: 6];
 
     const pageKey = "mmt_page_view_" + currentPagePath();
 
@@ -233,7 +233,7 @@
   }
 
   function trackMediaOnce(element, details) {
-    if (isAdminView || !element || element.dataset.analyticsTracked === "1") return;
+    if (isAdminView || !element || element.dataset.analyticsTracked === "1") return[cite: 6];
 
     element.dataset.analyticsTracked = "1";
 
@@ -592,7 +592,7 @@
 
   document.addEventListener("play", function (event) {
     const video = event.target;
-    if (!video || !video.matches("video.analytics-inline-video")) return;
+    if (!video || !video.matches("video.analytics-inline-video")) return[cite: 6];
 
     trackMediaOnce(video, {
       contentType: video.dataset.analyticsContentType,
