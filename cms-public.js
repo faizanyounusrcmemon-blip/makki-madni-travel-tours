@@ -359,84 +359,164 @@
   let activeLightboxIndex = 0;
   let activeLightboxMeta = {};
 
-  function renderLightboxPhoto() {
-    const content = document.getElementById("lightbox-photo-viewer");
 
-    if (!content || !activeLightboxImages.length) return;
+function renderLightboxPhoto() {
+  const content = document.getElementById("lightbox-photo-viewer");
 
-    const url = activeLightboxImages[activeLightboxIndex];
-    const total = activeLightboxImages.length;
-    const meta = activeLightboxMeta;
+  if (!content || !activeLightboxImages.length) return;
 
-    content.innerHTML = `
-      <div class="w-full flex flex-col items-center gap-3">
-        <div class="w-full flex items-center justify-between gap-3 px-1">
-          <span class="text-yellow-400 font-bold text-sm">${esc(meta.contentName || "Gallery")}</span>
+  const url = activeLightboxImages[activeLightboxIndex];
+  const total = activeLightboxImages.length;
+  const meta = activeLightboxMeta;
 
-          <span class="text-white bg-gray-800 border border-yellow-500/40 rounded-full px-3 py-1 text-xs font-bold">
-            ${activeLightboxIndex + 1} / ${total}
-          </span>
-        </div>
+  content.innerHTML = `
+    <div class="w-full flex flex-col items-center gap-3">
 
-        <div class="relative w-full flex items-center justify-center bg-black rounded-2xl border border-yellow-500/30 overflow-hidden" style="height:min(68vh,680px);min-height:260px">
-          <img
-            id="lightbox-current-image"
-            src="${esc(url)}"
-            alt="${esc(meta.contentName || "Gallery")} photo ${activeLightboxIndex + 1}"
-            class="max-w-full max-h-full w-auto h-auto object-contain p-2"
-            style="max-width:100%;max-height:68vh"
-            data-analytics-content-type="${esc(meta.contentType)}"
-            data-analytics-content-id="${esc(meta.contentId)}"
-            data-analytics-content-name="${esc(meta.contentName)}"
-            data-analytics-media-url="${esc(url)}">
+      <!-- IMAGE TITLE + COUNTER -->
+      <div class="w-full flex items-center justify-between gap-3 px-1">
 
-          ${total > 1 ? `
-            <button
-              type="button"
-              onclick="window.changeLightboxImage(-1)"
-              aria-label="Previous photo"
-              class="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/75 border border-yellow-400 text-yellow-300 text-2xl flex items-center justify-center hover:bg-yellow-500 hover:text-black">‹</button>
+        <span class="text-yellow-400 font-bold text-sm truncate">
+          ${esc(meta.contentName || "Gallery")}
+        </span>
 
-            <button
-              type="button"
-              onclick="window.changeLightboxImage(1)"
-              aria-label="Next photo"
-              class="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/75 border border-yellow-400 text-yellow-300 text-2xl flex items-center justify-center hover:bg-yellow-500 hover:text-black">›</button>
-          ` : ""}
-        </div>
+        <span class="text-white bg-gray-800 border border-yellow-500/40 rounded-full px-3 py-1 text-xs font-bold shrink-0">
+          ${activeLightboxIndex + 1} / ${total}
+        </span>
 
-        ${total > 1 ? `
-          <div class="w-full flex items-center justify-between gap-3">
-            <button
-              type="button"
-              onclick="window.changeLightboxImage(-1)"
-              class="px-4 py-2 rounded-full border border-yellow-500/50 text-yellow-300 text-xs font-bold hover:bg-yellow-500 hover:text-black">← Previous</button>
-
-            <span class="text-slate-400 text-xs">Click next to view all photos</span>
-
-            <button
-              type="button"
-              onclick="window.changeLightboxImage(1)"
-              class="px-4 py-2 rounded-full bg-yellow-500 text-black text-xs font-black hover:bg-yellow-400">Next →</button>
-          </div>
-        ` : ""}
       </div>
-    `;
 
-    const img = document.getElementById("lightbox-current-image");
+      <!-- FULL IMAGE VIEWER -->
+      <div
+        class="relative w-full flex items-center justify-center bg-black rounded-2xl border border-yellow-500/30"
+        style="
+          width:100%;
+          height:75vh;
+          max-height:750px;
+          min-height:220px;
+          overflow:hidden;
+      ">
 
-    const track = () => trackMediaOnce(img, {
+        <!-- FULL IMAGE -->
+        <img
+          id="lightbox-current-image"
+          src="${esc(url)}"
+          alt="${esc(meta.contentName || "Gallery")} photo ${activeLightboxIndex + 1}"
+
+          class="block"
+
+          style="
+            display:block;
+            width:auto;
+            height:auto;
+            max-width:100%;
+            max-height:calc(75vh - 20px);
+            object-fit:contain;
+            object-position:center;
+            margin:auto;
+            padding:4px;
+          "
+
+          data-analytics-content-type="${esc(meta.contentType)}"
+          data-analytics-content-id="${esc(meta.contentId)}"
+          data-analytics-content-name="${esc(meta.contentName)}"
+          data-analytics-media-url="${esc(url)}"
+        >
+
+        <!-- PREVIOUS BUTTON -->
+        ${
+          total > 1
+            ? `
+              <button
+                type="button"
+                onclick="window.changeLightboxImage(-1)"
+                aria-label="Previous photo"
+
+                class="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/80 border border-yellow-400 text-yellow-300 text-2xl flex items-center justify-center hover:bg-yellow-500 hover:text-black z-10">
+
+                ‹
+
+              </button>
+            `
+            : ""
+        }
+
+        <!-- NEXT BUTTON -->
+        ${
+          total > 1
+            ? `
+              <button
+                type="button"
+                onclick="window.changeLightboxImage(1)"
+                aria-label="Next photo"
+
+                class="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/80 border border-yellow-400 text-yellow-300 text-2xl flex items-center justify-center hover:bg-yellow-500 hover:text-black z-10">
+
+                ›
+
+              </button>
+            `
+            : ""
+        }
+
+      </div>
+
+      <!-- NAVIGATION -->
+      ${
+        total > 1
+          ? `
+            <div class="w-full flex items-center justify-between gap-3">
+
+              <button
+                type="button"
+                onclick="window.changeLightboxImage(-1)"
+                class="px-4 py-2 rounded-full border border-yellow-500/50 text-yellow-300 text-xs font-bold hover:bg-yellow-500 hover:text-black">
+
+                ← Previous
+
+              </button>
+
+              <span class="text-slate-400 text-xs text-center">
+                ${activeLightboxIndex + 1} of ${total} Photos
+              </span>
+
+              <button
+                type="button"
+                onclick="window.changeLightboxImage(1)"
+                class="px-4 py-2 rounded-full bg-yellow-500 text-black text-xs font-black hover:bg-yellow-400">
+
+                Next →
+
+              </button>
+
+            </div>
+          `
+          : ""
+      }
+
+    </div>
+  `;
+
+  const img = document.getElementById("lightbox-current-image");
+
+  if (!img) return;
+
+  const track = () => {
+    trackMediaOnce(img, {
       contentType: img.dataset.analyticsContentType,
       contentId: img.dataset.analyticsContentId,
       contentName: img.dataset.analyticsContentName,
       mediaType: "photo",
       mediaUrl: img.dataset.analyticsMediaUrl
     });
+  };
 
-    img.addEventListener("load", track, { once: true });
+  img.addEventListener("load", track, { once: true });
 
-    if (img.complete && img.naturalWidth > 0) track();
+  if (img.complete && img.naturalWidth > 0) {
+    track();
   }
+}
+
 
   window.changeLightboxImage = function (direction) {
     if (!activeLightboxImages.length) return;
