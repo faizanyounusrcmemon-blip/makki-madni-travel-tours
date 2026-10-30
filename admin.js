@@ -1,4 +1,3 @@
-
 (() => {
   "use strict";
 
@@ -453,10 +452,6 @@
     `;
   }
 
-  // =========================================================
-  // LIVE ACTIVE VISITORS - NEW
-  // =========================================================
-
   async function loadActiveVisitors() {
     const element = $("an-active");
 
@@ -482,7 +477,6 @@
       clearInterval(activeVisitorsTimer);
     }
 
-    // Dashboard par active visitors har 15 seconds mein refresh
     activeVisitorsTimer = setInterval(() => {
       if (
         document.visibilityState === "visible" &&
@@ -541,26 +535,22 @@
             : Number(data.yearly_visits).toLocaleString();
       }
 
-      // NEW: Separate real-time active visitors RPC
       await loadActiveVisitors();
 
       drawDailyChart(data.daily || []);
       drawPagesTable(data.pages || []);
 
-      // Har photo/video ka individual view count
+      mediaViewsMap = {};
 
-mediaViewsMap = {};
-
-if (Array.isArray(data.media)) {
-  data.media.forEach(m => {
-    if (m.media_url) {
-      const url = String(m.media_url).trim();
-      mediaViewsMap[url] =
-        (mediaViewsMap[url] || 0) + Number(m.views || 0);
-    }
-  });
-}
-
+      if (Array.isArray(data.media)) {
+        data.media.forEach(m => {
+          if (m.media_url) {
+            const url = String(m.media_url).trim();
+            mediaViewsMap[url] =
+              (mediaViewsMap[url] || 0) + Number(m.views || 0);
+          }
+        });
+      }
 
       renderAllContentLists();
 
@@ -578,6 +568,63 @@ if (Array.isArray(data.media)) {
     }
   }
 
+  // UPDATED: Merged Media Preview & Popup Functionality
+  function openMediaPopup(type, id) {
+    const item = recordArray(type).find(r => String(r.id) === String(id));
+    if (!item) return;
+
+    const images = getImages(item);
+    const videos = getVideos(item);
+
+    let contentHtml = `<div class="max-h-[65vh] overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-3 p-2 text-left">`;
+
+    images.forEach(url => {
+      const views = mediaViewsMap[url] || 0;
+      contentHtml += `
+        <div class="bg-slate-900 border border-yellow-700/40 p-2 rounded-lg space-y-1">
+          <a href="${esc(url)}" target="_blank" rel="noopener">
+            <img src="${esc(url)}" class="w-full h-36 object-contain rounded bg-black" alt="Photo">
+          </a>
+          <div class="flex justify-between items-center text-xs text-amber-300 px-1">
+            <span><i class="fa-solid fa-eye mr-1"></i>${views} views</span>
+            <a href="${esc(downloadHref(url))}" download target="_blank" class="hover:text-white"><i class="fa-solid fa-download mr-1"></i>Download</a>
+          </div>
+        </div>`;
+    });
+
+    videos.forEach(url => {
+      const views = mediaViewsMap[url] || 0;
+      const embed = youtubeEmbed(url);
+      contentHtml += `
+        <div class="bg-slate-900 border border-yellow-700/40 p-2 rounded-lg space-y-1">
+          ${embed 
+            ? `<iframe src="${esc(embed)}" class="w-full h-36 rounded bg-black" allowfullscreen></iframe>`
+            : `<video src="${esc(url)}" class="w-full h-36 object-contain rounded bg-black" controls preload="metadata"></video>`}
+          <div class="flex justify-between items-center text-xs text-amber-300 px-1">
+            <span><i class="fa-solid fa-eye mr-1"></i>${views} views</span>
+            <a href="${esc(downloadHref(url))}" download target="_blank" class="hover:text-white"><i class="fa-solid fa-download mr-1"></i>Download</a>
+          </div>
+        </div>`;
+    });
+
+    contentHtml += `</div>`;
+
+    if (window.Swal) {
+      window.Swal.fire({
+        title: `<span class="gold">${esc(item.name)} — Media Gallery</span>`,
+        html: contentHtml,
+        width: '700px',
+        background: "#071225",
+        color: "#f8fafc",
+        confirmButtonColor: "#b8892e",
+        confirmButtonText: "Close",
+        customClass: { popup: "border border-yellow-700/50 rounded-2xl" }
+      });
+    }
+  }
+
+  window.openMediaPopup = openMediaPopup;
+
   function itemHtml(item, type) {
     const images = getImages(item);
     const videos = getVideos(item);
@@ -588,97 +635,34 @@ if (Array.isArray(data.media)) {
         ? `<i class="fa-solid fa-mosque mr-1"></i> Ziyarat • ${esc(item.city || "—")}`
         : `<i class="fa-solid fa-kaaba mr-1"></i> Umrah Package`;
 
-    let mediaPreviews = "";
     let totalPhotoViews = 0;
     let totalVideoViews = 0;
 
-    images.forEach((url, index) => {
-      const views = mediaViewsMap[url] || 0;
-      totalPhotoViews += views;
+    images.forEach(url => { totalPhotoViews += (mediaViewsMap[url] || 0); });
+    videos.forEach(url => { totalVideoViews += (mediaViewsMap[url] || 0); });
 
-      mediaPreviews += `
-        <div class="w-24 shrink-0 rounded-lg border border-yellow-700/40 bg-slate-950 p-1.5 space-y-1">
-          <a href="${esc(url)}" target="_blank" rel="noopener" title="Open photo">
-            <img
-              src="${esc(url)}"
-              class="w-full h-20 object-contain rounded bg-black"
-              alt="Photo ${index + 1}"
-              loading="lazy"
-              onerror="this.style.display='none'">
-          </a>
+    const totalMediaCount = images.length + videos.length;
+    const firstImage = images[0] || "";
 
-          <div class="text-[10px] text-amber-300 text-center font-bold">
-            <i class="fa-solid fa-eye mr-1"></i>${views.toLocaleString()}
-          </div>
-
-          <a
-            href="${esc(downloadHref(url))}"
-            download
-            target="_blank"
-            rel="noopener"
-            class="block text-center text-[10px] text-amber-300 hover:text-white">
-            <i class="fa-solid fa-download mr-1"></i>Download
-          </a>
-        </div>`;
-    });
-
-    videos.forEach((url, index) => {
-      const views = mediaViewsMap[url] || 0;
-      totalVideoViews += views;
-
-      const embed = youtubeEmbed(url);
-
-      mediaPreviews += `
-        <div class="w-44 shrink-0 rounded-lg border border-yellow-700/40 bg-slate-950 p-1.5 space-y-1">
-          ${embed
-            ? `<iframe
-                src="${esc(embed)}"
-                class="w-full h-24 rounded bg-black"
-                title="Video ${index + 1}"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowfullscreen
-                loading="lazy"></iframe>`
-            : `<video
-                src="${esc(url)}"
-                class="w-full h-24 object-contain rounded bg-black"
-                controls
-                playsinline
-                preload="metadata"></video>`}
-
-          <div class="text-[10px] text-amber-300 text-center font-bold">
-            <i class="fa-solid fa-eye mr-1"></i>${views.toLocaleString()} views
-          </div>
-
-          ${embed
-            ? `<a
-                href="${esc(url)}"
-                target="_blank"
-                rel="noopener"
-                class="block text-center text-[10px] text-amber-300 hover:text-white">
-                <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>Open video
-              </a>`
-            : `<a
-                href="${esc(downloadHref(url))}"
-                download
-                target="_blank"
-                rel="noopener"
-                class="block text-center text-[10px] text-amber-300 hover:text-white">
-                <i class="fa-solid fa-download mr-1"></i>Download video
-              </a>`}
-        </div>`;
-    });
-
-    if (!mediaPreviews) {
-      mediaPreviews = `
-        <div class="w-16 h-16 rounded-lg bg-slate-900 border border-yellow-700/30 flex items-center justify-center shrink-0">
-          <i class="fa-solid fa-image text-gold text-lg"></i>
-        </div>`;
-    }
+    let mergedPreviewHtml = `
+      <div class="relative w-28 h-24 shrink-0 rounded-xl border border-yellow-700/50 bg-slate-950 overflow-hidden cursor-pointer group flex items-center justify-center"
+           onclick="window.openMediaPopup('${type}', '${item.id}')">
+        ${firstImage 
+          ? `<img src="${esc(firstImage)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt="Preview">` 
+          : `<i class="fa-solid fa-photo-film text-gold text-2xl"></i>`}
+        <div class="absolute inset-0 bg-black/60 flex flex-col items-center justify-center opacity-90 group-hover:opacity-100 transition">
+          <i class="fa-solid fa-layer-group text-amber-400 text-lg mb-1"></i>
+          <span class="text-xs font-bold text-white bg-slate-900/80 px-2 py-0.5 rounded-full border border-yellow-700/40">
+            ${totalMediaCount} Items
+          </span>
+        </div>
+      </div>
+    `;
 
     return `
       <article class="border border-yellow-700/30 rounded-xl p-3 flex flex-col sm:flex-row gap-4 items-start">
-        <div class="flex flex-wrap gap-3 w-full sm:w-auto sm:max-w-[48%]">
-          ${mediaPreviews}
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+          ${mergedPreviewHtml}
         </div>
 
         <div class="min-w-0 flex-1">
@@ -1059,7 +1043,6 @@ if (Array.isArray(data.media)) {
         loadAnalytics()
       ]);
 
-      // Start automatic active visitor refresh after login
       startActiveVisitorsAutoRefresh();
 
     } catch (error) {
@@ -1208,7 +1191,6 @@ if (Array.isArray(data.media)) {
       target.disabled = true;
 
       try {
-        // Delete item from content table
         const { error } = await db
           .from(table(type))
           .delete()
@@ -1216,7 +1198,6 @@ if (Array.isArray(data.media)) {
 
         if (error) throw error;
 
-        // Existing media views cleanup
         await db
           .from("website_media_views")
           .delete()
@@ -1377,7 +1358,6 @@ if (Array.isArray(data.media)) {
     }
   });
 
-  // Initial session check
   showSession();
 
 })();
