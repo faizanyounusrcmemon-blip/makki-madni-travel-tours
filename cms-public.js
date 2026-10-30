@@ -1,4 +1,3 @@
-
 (function () {
   "use strict";
 
@@ -219,17 +218,12 @@
     }
   }
 
-
-function trackPageView() {
-  if (isAdminView) return;
-
-  // Database duplicate requests ko control karega.
-  // sessionStorage ki purani rok hata di gayi hai.
-  trackEvent({
-    eventType: "page_view"
-  });
-}
-
+  function trackPageView() {
+    if (isAdminView) return;
+    trackEvent({
+      eventType: "page_view"
+    });
+  }
 
   function trackMediaOnce(element, details) {
     if (
@@ -251,15 +245,13 @@ function trackPageView() {
   }
 
   // =========================================================
-  // LIVE VISITOR HEARTBEAT - NEW
+  // LIVE VISITOR HEARTBEAT
   // =========================================================
 
   let heartbeatTimer = null;
 
   async function sendVisitorHeartbeat() {
     if (isAdminView) return;
-
-    // Hidden tab se heartbeat bhejne ki zaroorat nahi
     if (document.visibilityState === "hidden") return;
 
     try {
@@ -278,22 +270,18 @@ function trackPageView() {
   function startVisitorHeartbeat() {
     if (isAdminView || heartbeatTimer) return;
 
-    // Website open hote hi active visitor register karein
     sendVisitorHeartbeat();
 
-    // Har 15 seconds baad heartbeat update
     heartbeatTimer = setInterval(() => {
       sendVisitorHeartbeat();
     }, 15000);
 
-    // Tab dobara active hone par heartbeat
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) {
         sendVisitorHeartbeat();
       }
     });
 
-    // Browser page restore hone par heartbeat
     window.addEventListener("pageshow", () => {
       sendVisitorHeartbeat();
     });
@@ -395,7 +383,7 @@ function trackPageView() {
             id="lightbox-current-image"
             src="${esc(url)}"
             alt="${esc(meta.contentName || "Gallery")} photo ${activeLightboxIndex + 1}"
-            class="max-w-full max-h-full w-auto h-auto object-contain"
+            class="max-w-full max-h-full w-auto h-auto object-contain p-2"
             style="max-width:100%;max-height:68vh"
             data-analytics-content-type="${esc(meta.contentType)}"
             data-analytics-content-id="${esc(meta.contentId)}"
@@ -579,7 +567,8 @@ function trackPageView() {
     contentId = "",
     contentName = "Website media"
   ) {
-    if (!images.length && !videos.length) return "";
+    // FIX: Agar sirf video hai aur photo ek bhi nahi hai, toh upar thumbnail/box render nahi hoga.
+    if (!images.length) return "";
 
     const args = safeJson([
       images,
@@ -598,22 +587,12 @@ function trackPageView() {
         aria-label="View photos and videos"
         onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.openLightbox(...${args});}">
 
-        ${
-          images.length
-            ? `
-              <img
-                src="${esc(images[0])}"
-                alt="${esc(contentName)} photo"
-                loading="lazy"
-                class="w-full h-full object-contain p-2"
-                onerror="this.style.display='none'">
-            `
-            : `
-              <div class="w-full h-full min-h-32 flex items-center justify-center text-yellow-300">
-                <span class="text-4xl">▶</span>
-              </div>
-            `
-        }
+        <img
+          src="${esc(images[0])}"
+          alt="${esc(contentName)} photo"
+          loading="lazy"
+          class="w-full h-full object-contain p-2"
+          onerror="this.style.display='none'">
 
         <span class="absolute top-3 left-3 bg-yellow-500 text-gray-950 text-xs font-black px-3 py-1 rounded-full">
           VIEW MEDIA
@@ -1018,17 +997,9 @@ function trackPageView() {
       `;
   }
 
-  // =========================================================
-  // LOAD ALL PUBLIC WEBSITE CONTENT
-  // =========================================================
-
   async function load() {
     initLightbox();
-
-    // Existing page analytics
     trackPageView();
-
-    // NEW: Start live visitor heartbeat
     startVisitorHeartbeat();
 
     try {
