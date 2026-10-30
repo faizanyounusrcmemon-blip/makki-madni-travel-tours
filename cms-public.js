@@ -194,7 +194,6 @@
     mediaType = null,
     mediaUrl: mediaURL = null
   }) {
-    // Check 1 & 2: Bypass tracking if opened via Admin's 'View Website'
     if (isAdminView) return;
 
     try {
@@ -248,6 +247,13 @@
     });
   }
 
+  // Active Visitor Heartbeat (Pings every 30 seconds to keep active status updated)
+  if (!isAdminView) {
+    setInterval(() => {
+      trackEvent({ eventType: "heartbeat" });
+    }, 30000);
+  }
+
   // =========================================================
   // LIGHTBOX
   // =========================================================
@@ -260,6 +266,8 @@
     box.id = "media-lightbox";
     box.className =
       "hidden fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-center p-4";
+
+    box.html = `...`; // (unchanged)
 
     box.innerHTML = `
       <div class="relative max-w-5xl w-full max-h-[90vh] flex flex-col items-center">
