@@ -294,6 +294,17 @@
     });
 
     document.body.appendChild(box);
+
+    if (!window.__mediaLightboxKeyboardBound) {
+      window.__mediaLightboxKeyboardBound = true;
+      document.addEventListener("keydown", function (event) {
+        const lightbox = document.getElementById("media-lightbox");
+        if (!lightbox || lightbox.classList.contains("hidden")) return;
+        if (event.key === "ArrowRight") window.changeLightboxImage(1);
+        if (event.key === "ArrowLeft") window.changeLightboxImage(-1);
+        if (event.key === "Escape") window.closeMediaLightbox();
+      });
+    }
   }
 
   window.closeMediaLightbox = function () {
@@ -312,6 +323,68 @@
     if (box) box.classList.add("hidden");
   };
 
+  let activeLightboxImages = [];
+  let activeLightboxIndex = 0;
+  let activeLightboxMeta = {};
+
+  function renderLightboxPhoto() {
+    const content = document.getElementById("lightbox-photo-viewer");
+    if (!content || !activeLightboxImages.length) return;
+
+    const url = activeLightboxImages[activeLightboxIndex];
+    const total = activeLightboxImages.length;
+    const meta = activeLightboxMeta;
+
+    content.innerHTML = `
+      <div class="w-full flex flex-col items-center gap-3">
+        <div class="w-full flex items-center justify-between gap-3 px-1">
+          <span class="text-yellow-400 font-bold text-sm">${esc(meta.contentName || "Gallery")}</span>
+          <span class="text-white bg-gray-800 border border-yellow-500/40 rounded-full px-3 py-1 text-xs font-bold">
+            ${activeLightboxIndex + 1} / ${total}
+          </span>
+        </div>
+        <div class="relative w-full flex items-center justify-center bg-black rounded-2xl border border-yellow-500/30 overflow-hidden" style="height:min(68vh,680px);min-height:260px">
+          <img id="lightbox-current-image" src="${esc(url)}" alt="${esc(meta.contentName || "Gallery")} photo ${activeLightboxIndex + 1}"
+            class="max-w-full max-h-full w-auto h-auto object-contain" style="max-width:100%;max-height:68vh"
+            data-analytics-content-type="${esc(meta.contentType)}"
+            data-analytics-content-id="${esc(meta.contentId)}"
+            data-analytics-content-name="${esc(meta.contentName)}"
+            data-analytics-media-url="${esc(url)}">
+          ${total > 1 ? `
+            <button type="button" onclick="window.changeLightboxImage(-1)" aria-label="Previous photo"
+              class="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/75 border border-yellow-400 text-yellow-300 text-2xl flex items-center justify-center hover:bg-yellow-500 hover:text-black">‹</button>
+            <button type="button" onclick="window.changeLightboxImage(1)" aria-label="Next photo"
+              class="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/75 border border-yellow-400 text-yellow-300 text-2xl flex items-center justify-center hover:bg-yellow-500 hover:text-black">›</button>
+          ` : ""}
+        </div>
+        ${total > 1 ? `
+          <div class="w-full flex items-center justify-between gap-3">
+            <button type="button" onclick="window.changeLightboxImage(-1)" class="px-4 py-2 rounded-full border border-yellow-500/50 text-yellow-300 text-xs font-bold hover:bg-yellow-500 hover:text-black">← Previous</button>
+            <span class="text-slate-400 text-xs">Click next to view all photos</span>
+            <button type="button" onclick="window.changeLightboxImage(1)" class="px-4 py-2 rounded-full bg-yellow-500 text-black text-xs font-black hover:bg-yellow-400">Next →</button>
+          </div>
+        ` : ""}
+      </div>
+    `;
+
+    const img = document.getElementById("lightbox-current-image");
+    const track = () => trackMediaOnce(img, {
+      contentType: img.dataset.analyticsContentType,
+      contentId: img.dataset.analyticsContentId,
+      contentName: img.dataset.analyticsContentName,
+      mediaType: "photo",
+      mediaUrl: img.dataset.analyticsMediaUrl
+    });
+    img.addEventListener("load", track, { once: true });
+    if (img.complete && img.naturalWidth > 0) track();
+  }
+
+  window.changeLightboxImage = function (direction) {
+    if (!activeLightboxImages.length) return;
+    activeLightboxIndex = (activeLightboxIndex + direction + activeLightboxImages.length) % activeLightboxImages.length;
+    renderLightboxPhoto();
+  };
+
   window.openLightbox = function (
     images,
     videos,
@@ -325,119 +398,57 @@
     const vids = normalizeList(videos).map(mediaUrl).filter(Boolean);
     const content = document.getElementById("lightbox-content");
 
+    activeLightboxImages = imgs;
+    activeLightboxIndex = 0;
+    activeLightboxMeta = { contentType, contentId, contentName };
+
     let html = "";
-
     if (imgs.length) {
-      html += `
-        <h3 class="text-yellow-400 font-bold text-xl mb-3">Photos</h3>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full mb-6">
-      `;
-
-      imgs.forEach((url, index) => {
-        html += `
-          <div class="bg-gray-950 rounded-xl overflow-hidden border border-yellow-500/30 p-2">
-            <img
-              src="${esc(url)}"
-              alt="${esc(contentName)} photo ${index + 1}"
-              loading="lazy"
-              data-analytics-content-type="${esc(contentType)}"
-              data-analytics-content-id="${esc(contentId)}"
-              data-analytics-content-name="${esc(contentName)}"
-              data-analytics-media-url="${esc(url)}"
-              class="analytics-lightbox-image max-h-80 w-full object-contain rounded-lg">
-          </div>
-        `;
-      });
-
-      html += "</div>";
+      html += `<div id="lightbox-photo-viewer" class="w-full"></div>`;
     }
 
     if (vids.length) {
       html += `
-        <h3 class="text-yellow-400 font-bold text-xl mb-3">
-          Videos / Virtual Tours
-        </h3>
-
-        <div class="w-full space-y-5 mb-5">
+        <div class="w-full mt-7 space-y-4">
+          <h3 class="text-yellow-400 font-bold text-lg">Videos / Virtual Tours</h3>
       `;
 
       vids.forEach((url, index) => {
         const embed = getYouTubeEmbed(url);
-
         if (embed) {
           html += `
             <div class="w-full">
-              <p class="text-xs text-yellow-300 mb-2">
-                Video ${index + 1}
-              </p>
-
+              <p class="text-xs text-yellow-300 mb-2">Video ${index + 1}</p>
               <div class="w-full aspect-video">
-                <iframe
-                  src="${esc(embed)}"
-                  title="${esc(contentName)} virtual tour"
-                  class="analytics-lightbox-video w-full h-full rounded-xl border border-yellow-500/30"
-                  loading="lazy"
-                  data-analytics-content-type="${esc(contentType)}"
-                  data-analytics-content-id="${esc(contentId)}"
-                  data-analytics-content-name="${esc(contentName)}"
-                  data-analytics-media-url="${esc(url)}"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowfullscreen>
-                </iframe>
+                <iframe src="${esc(embed)}" title="${esc(contentName)} virtual tour"
+                  class="analytics-lightbox-video w-full h-full rounded-xl border border-yellow-500/30" loading="lazy"
+                  data-analytics-content-type="${esc(contentType)}" data-analytics-content-id="${esc(contentId)}"
+                  data-analytics-content-name="${esc(contentName)}" data-analytics-media-url="${esc(url)}"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
               </div>
             </div>
           `;
         } else {
           html += `
-            <video
-              src="${esc(url)}"
-              controls
-              playsinline
-              preload="metadata"
-              data-analytics-content-type="${esc(contentType)}"
-              data-analytics-content-id="${esc(contentId)}"
-              data-analytics-content-name="${esc(contentName)}"
-              data-analytics-media-url="${esc(url)}"
-              class="analytics-lightbox-video w-full max-h-[65vh] bg-black rounded-xl border border-yellow-500/30">
-              Your browser does not support this video.
-            </video>
+            <div class="w-full">
+              <p class="text-xs text-yellow-300 mb-2">Video ${index + 1}</p>
+              <video src="${esc(url)}" controls playsinline preload="metadata"
+                data-analytics-content-type="${esc(contentType)}" data-analytics-content-id="${esc(contentId)}"
+                data-analytics-content-name="${esc(contentName)}" data-analytics-media-url="${esc(url)}"
+                class="analytics-lightbox-video w-full max-h-[65vh] bg-black rounded-xl border border-yellow-500/30">Your browser does not support this video.</video>
+            </div>
           `;
         }
       });
-
-      html += "</div>";
+      html += `</div>`;
     }
 
-    content.innerHTML =
-      html ||
-      '<p class="text-white text-center">No media available.</p>';
+    content.innerHTML = html || '<p class="text-white text-center">No media available.</p>';
 
-    // Track image view when the image successfully loads.
-    content.querySelectorAll(".analytics-lightbox-image").forEach((img) => {
-      img.addEventListener("load", function () {
-        trackMediaOnce(img, {
-          contentType: img.dataset.analyticsContentType,
-          contentId: img.dataset.analyticsContentId,
-          contentName: img.dataset.analyticsContentName,
-          mediaType: "photo",
-          mediaUrl: img.dataset.analyticsMediaUrl
-        });
-      });
+    // Render the first photo in the dedicated viewer; arrows move one photo at a time.
+    if (imgs.length) renderLightboxPhoto();
 
-      // Cached images may already be loaded.
-      if (img.complete && img.naturalWidth > 0) {
-        trackMediaOnce(img, {
-          contentType: img.dataset.analyticsContentType,
-          contentId: img.dataset.analyticsContentId,
-          contentName: img.dataset.analyticsContentName,
-          mediaType: "photo",
-          mediaUrl: img.dataset.analyticsMediaUrl
-        });
-      }
-    });
-
-    // Local video: count when playback starts, not merely when listed.
+    // Local videos: count only when playback starts.
     content.querySelectorAll("video.analytics-lightbox-video").forEach((video) => {
       video.addEventListener("play", function () {
         trackMediaOnce(video, {
@@ -450,8 +461,7 @@
       });
     });
 
-    // YouTube iframe: count when opened in the lightbox.
-    // Actual YouTube playback requires YouTube's IFrame Player API.
+    // YouTube videos are counted when opened in the lightbox.
     content.querySelectorAll("iframe.analytics-lightbox-video").forEach((frame) => {
       trackMediaOnce(frame, {
         contentType: frame.dataset.analyticsContentType,
