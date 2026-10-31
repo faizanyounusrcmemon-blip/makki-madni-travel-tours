@@ -1082,38 +1082,13 @@ function renderLightboxPhoto() {
       `;
   }
 
-
-  function reviewCard(item) {
-    const images = getImages(item);
-    const videos = getVideos(item);
-    const id = item.id || "";
-    const media = `
-      ${imageGallery(images, videos, "h-64", "", "review", id, item.name || "Customer Review")}
-      ${videoPlayers(videos, images.length ? "mt-4 px-3 pb-3" : "p-3", "review", id, item.name || "Customer Review")}
-      ${!images.length && !videos.length ? '<div class="h-28 flex items-center justify-center text-slate-400 text-sm">No review media</div>' : ""}
-    `;
-    return `
-      <article class="bg-navy-900 rounded-2xl overflow-hidden gold-border-glow flex flex-col">
-        <div class="relative">${media}</div>
-        <div class="p-6">
-          <div class="flex items-center gap-1 text-yellow-400 mb-3" aria-label="Customer review">
-            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-          </div>
-          <h3 class="font-cinzel text-xl font-bold text-white mb-2">${esc(item.name || "Customer")}</h3>
-          <p class="text-slate-300 text-sm leading-relaxed whitespace-pre-line">${esc(item.description || "")}</p>
-          ${item.badge ? `<p class="text-xs text-yellow-300 mt-4 font-semibold">${esc(item.badge)}</p>` : ""}
-        </div>
-      </article>
-    `;
-  }
-
   async function load() {
     initLightbox();
     trackPageView();
     startVisitorHeartbeat();
 
     try {
-      const [hotelsResult, packagesResult, ziyaratResult, reviewsResult] =
+      const [hotelsResult, packagesResult, ziyaratResult] =
         await Promise.all([
           db.from("website_hotels")
             .select("*")
@@ -1131,25 +1106,8 @@ function renderLightboxPhoto() {
             .select("*")
             .eq("is_visible", true)
             .order("sort_order")
-            .order("created_at"),
-
-          db.from("website_reviews")
-            .select("*")
-            .eq("is_visible", true)
-            .order("sort_order")
-            .order("created_at", { ascending: false })
+            .order("created_at")
         ]);
-
-      if (!reviewsResult.error) {
-        renderGrid(
-          "cms-reviews-grid",
-          reviewsResult.data || [],
-          (item) => reviewCard(item),
-          "Customer reviews will be published here."
-        );
-      } else {
-        console.warn("Customer reviews table unavailable:", reviewsResult.error.message);
-      }
 
       if (!hotelsResult.error) {
         const hotels = hotelsResult.data || [];

@@ -292,7 +292,7 @@ video{background:#000;max-width:100%}
         <p class="gold text-xs tracking-[.2em] font-bold">CONTROL PANEL</p>
         <h2 class="text-2xl font-bold gold mt-1">Manage Website Content</h2>
         <p class="text-sm text-slate-300 mt-2">
-          Website ke customer reviews, hotels, packages aur ziyarat details manage karein.
+          Website ke hotels, packages aur ziyarat details manage karein.
         </p>
       </div>
       <button id="logout" class="btn2" type="button">
@@ -383,10 +383,6 @@ video{background:#000;max-width:100%}
       </p>
 
       <div class="flex flex-wrap gap-3">
-        <button class="btn" id="new-review" type="button">
-          <i class="fa-solid fa-star"></i> Add Customer Review
-        </button>
-
         <button class="btn" id="new-hotel" type="button">
           <i class="fa-solid fa-hotel"></i> Add Hotel
         </button>
@@ -406,23 +402,6 @@ video{background:#000;max-width:100%}
     </section>
 
     <div id="status" role="status" aria-live="polite" class="text-sm mb-4 text-amber-200"></div>
-
-    <!-- CUSTOMER REVIEWS MANAGEMENT -->
-    <section class="panel p-4 md:p-5 mb-5">
-      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <div>
-          <p class="text-xs text-slate-400">CUSTOMER FEEDBACK</p>
-          <h3 class="gold font-bold text-lg"><i class="fa-solid fa-star mr-1"></i> Customer Reviews</h3>
-          <p class="text-xs text-slate-300 mt-1">Customer ka naam, review text aur photos/videos manage karein.</p>
-        </div>
-        <button id="new-review-secondary" class="btn2" type="button">
-          <i class="fa-solid fa-plus"></i> Add Review
-        </button>
-      </div>
-      <div id="reviews-list" class="space-y-3">
-        <p class="text-sm text-slate-400">Reviews load hone ka intezar karein...</p>
-      </div>
-    </section>
 
     <!-- HOTELS AND PACKAGES -->
     <div class="grid lg:grid-cols-2 gap-5">
@@ -511,8 +490,8 @@ video{background:#000;max-width:100%}
       <input type="hidden" id="record-type">
 
       <label class="block text-sm font-semibold">
-        Name / Title (Optional)
-        <input id="f-name" class="field mt-2" placeholder="Customer name (optional)">
+        Name / Title
+        <input id="f-name" class="field mt-2" required placeholder="Hotel, package or ziyarat name">
       </label>
 
       <div id="city-wrap">
@@ -525,19 +504,15 @@ video{background:#000;max-width:100%}
         </label>
       </div>
 
-      <div id="badge-wrap">
-        <label class="block text-sm font-semibold">
-          Badge / Short Label (Optional — e.g. Verified Customer)
-          <input id="f-badge" class="field mt-2" placeholder="e.g. 5-Star Luxury VIP">
-        </label>
-      </div>
+      <label class="block text-sm font-semibold">
+        Badge / Short Label
+        <input id="f-badge" class="field mt-2" placeholder="5-Star Luxury VIP">
+      </label>
 
-      <div id="description-wrap">
-        <label class="block text-sm font-semibold">
-          Description / Customer Feedback (Optional)
-          <textarea id="f-description" class="field mt-2" rows="4" placeholder="Customer ka review ya extra details (optional)"></textarea>
-        </label>
-      </div>
+      <label class="block text-sm font-semibold">
+        Description
+        <textarea id="f-description" class="field mt-2" rows="4" required placeholder="Details, facilities, location..."></textarea>
+      </label>
 
       <div id="view-wrap">
         <label class="block text-sm font-semibold">
@@ -546,12 +521,10 @@ video{background:#000;max-width:100%}
         </label>
       </div>
 
-      <div id="price-wrap">
-        <label class="block text-sm font-semibold">
-          Price / Rate
-          <input id="f-price" class="field mt-2" placeholder="PKR 250,000 / Direct Quote">
-        </label>
-      </div>
+      <label class="block text-sm font-semibold">
+        Price / Rate
+        <input id="f-price" class="field mt-2" placeholder="PKR 250,000 / Direct Quote">
+      </label>
 
       <div class="section-card">
         <h3 class="gold font-bold mb-3"><i class="fa-solid fa-image mr-1"></i> Photos</h3>
@@ -647,10 +620,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
   }
-
-  document.getElementById("new-review-secondary")?.addEventListener("click", function () {
-    document.getElementById("new-review")?.click();
-  });
 
   const ziyaratButtons = [
     document.getElementById("new-ziyarat"),

@@ -38,8 +38,7 @@
   let records = {
     hotels: [],
     packages: [],
-    ziyarat: [],
-    reviews: []
+    ziyarat: []
   };
 
   let mediaViewsMap = {};
@@ -134,21 +133,18 @@
   function table(type) {
     if (type === "hotel") return "website_hotels";
     if (type === "ziyarat") return "website_ziyarat";
-    if (type === "review") return "website_reviews";
     return "website_packages";
   }
 
   function recordArray(type) {
     if (type === "hotel") return records.hotels;
     if (type === "ziyarat") return records.ziyarat;
-    if (type === "review") return records.reviews;
     return records.packages;
   }
 
   function typeLabel(type) {
     if (type === "hotel") return "Hotel";
     if (type === "ziyarat") return "Ziyarat";
-    if (type === "review") return "Customer Review";
     return "Umrah Package";
   }
 
@@ -637,9 +633,7 @@
       ? `<i class="fa-solid fa-hotel mr-1"></i> Hotel • ${esc(item.city || "—")}`
       : type === "ziyarat"
         ? `<i class="fa-solid fa-mosque mr-1"></i> Ziyarat • ${esc(item.city || "—")}`
-        : type === "review"
-          ? `<i class="fa-solid fa-star mr-1"></i> Customer Review`
-          : `<i class="fa-solid fa-kaaba mr-1"></i> Umrah Package`;
+        : `<i class="fa-solid fa-kaaba mr-1"></i> Umrah Package`;
 
     let totalPhotoViews = 0;
     let totalVideoViews = 0;
@@ -734,17 +728,11 @@
         '<p class="text-sm text-slate-400">Abhi Umrah packages nahi add kiye.</p>';
     }
 
-    if ($("reviews-list")) {
-      $("reviews-list").innerHTML =
-        records.reviews.map(item => itemHtml(item, "review")).join("") ||
-        '<p class="text-sm text-slate-400">Abhi customer reviews add nahi kiye.</p>';
-    }
-
     renderZiyarat();
   }
 
   async function load() {
-    setStatus("Reviews, hotels, packages aur ziyarat load ho rahe hain...");
+    setStatus("Hotels, packages aur ziyarat load ho rahe hain...");
 
     try {
       const results = await Promise.all([
@@ -758,12 +746,7 @@
 
         db.from("website_ziyarat")
           .select("*")
-          .order("sort_order", { ascending: true }),
-
-        db.from("website_reviews")
-          .select("*")
           .order("sort_order", { ascending: true })
-          .order("created_at", { ascending: false })
       ]);
 
       const failed = results.find(result => result.error);
@@ -773,11 +756,10 @@
       records.hotels = results[0].data || [];
       records.packages = results[1].data || [];
       records.ziyarat = results[2].data || [];
-      records.reviews = results[3].data || [];
 
       renderAllContentLists();
 
-      setStatus("Reviews, hotels, packages aur ziyarat successfully load ho gaye.");
+      setStatus("Hotels, packages aur ziyarat successfully load ho gaye.");
 
     } catch (error) {
       setStatus("Content load error: " + error.message);
@@ -822,11 +804,8 @@
         `${item ? "Edit " : "Add "}${typeLabel(type)}`;
     }
 
-    setVisible($("city-wrap"), type === "hotel" || type === "ziyarat");
+    setVisible($("city-wrap"), type !== "package");
     setVisible($("view-wrap"), type === "hotel");
-    setVisible($("price-wrap"), type !== "review");
-    setVisible($("badge-wrap"), true);
-    setVisible($("description-wrap"), true);
 
     setField("f-name", item?.name || "");
     setField("f-city", item?.city || defaultCity);
@@ -1111,10 +1090,6 @@
     openEditor("package");
   });
 
-  $("new-review")?.addEventListener("click", () => {
-    openEditor("review");
-  });
-
   $("new-ziyarat")?.addEventListener("click", () => {
     openEditor("ziyarat", null, "makkah");
   });
@@ -1322,7 +1297,10 @@
       }
 
       const row = {
-        name: $("f-name")?.value.trim() || "",
+        name: $("f-name")?.value.trim(),
+        badge: $("f-badge")?.value.trim() || "",
+        description: $("f-description")?.value.trim(),
+        price: $("f-price")?.value.trim() || "",
         image_url: finalImages[0] || null,
         images: finalImages,
         videos: finalVideos,
@@ -1331,14 +1309,6 @@
         is_visible: $("f-visible")?.checked ?? true,
         updated_at: new Date().toISOString()
       };
-
-      // Reviews do not have a price column. Keep optional review text fields
-      // blank unless supplied; price is only used by packages/hotels/ziyarat.
-      row.badge = $("f-badge")?.value.trim() || "";
-      row.description = $("f-description")?.value.trim() || "";
-      if (type !== "review") {
-        row.price = $("f-price")?.value.trim() || "";
-      }
 
       if (type === "hotel" || type === "ziyarat") {
         row.city = $("f-city")?.value;
