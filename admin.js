@@ -721,10 +721,9 @@
   }
 
   function renderAllContentLists() {
-    // --- HOTELS ALAG ALAG RENDER (Makkah & Madinah) ---
     const makkahHotelsList = $("makkah-hotels-list");
     const madinahHotelsList = $("madinah-hotels-list");
-    const oldHotelsList = $("hotels-list"); // Fallback agar purana element bhi ho
+    const oldHotelsList = $("hotels-list");
 
     const makkahHotels = records.hotels.filter(item => String(item.city).toLowerCase() === "makkah");
     const madinahHotels = records.hotels.filter(item => String(item.city).toLowerCase() === "madinah");
@@ -746,7 +745,6 @@
         records.hotels.map(item => itemHtml(item, "hotel")).join("") ||
         '<p class="text-sm text-slate-400">Abhi hotels add nahi kiye.</p>';
     }
-    // --------------------------------------------------
 
     if ($("packages-list")) {
       $("packages-list").innerHTML =
@@ -1159,7 +1157,7 @@
       );
 
       if (item) {
-        const result = +await popup({
+        const result = await popup({
           icon: "question",
           title: "Edit this content?",
           text: `Aap "${item.name || "this item"}" ki details edit karna chahte hain?`,
@@ -1346,7 +1344,7 @@
         image_url: finalImages[0] || null,
         images: finalImages,
         videos: finalVideos,
-        pdfs: [$("f-pdfs"]?.value.trim()].filter(Boolean),
+        pdfs: [$("f-pdfs")?.value.trim()].filter(Boolean),
         sort_order: Number($("f-order")?.value) || 0,
         is_visible: $("f-visible")?.checked ?? true,
         updated_at: new Date().toISOString()
