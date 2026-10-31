@@ -824,6 +824,9 @@
 
     setVisible($("city-wrap"), type === "hotel" || type === "ziyarat");
     setVisible($("view-wrap"), type === "hotel");
+    setVisible($("price-wrap"), type !== "review");
+    setVisible($("badge-wrap"), true);
+    setVisible($("description-wrap"), true);
 
     setField("f-name", item?.name || "");
     setField("f-city", item?.city || defaultCity);
@@ -1319,10 +1322,7 @@
       }
 
       const row = {
-        name: $("f-name")?.value.trim(),
-        badge: $("f-badge")?.value.trim() || "",
-        description: $("f-description")?.value.trim(),
-        price: $("f-price")?.value.trim() || "",
+        name: $("f-name")?.value.trim() || "",
         image_url: finalImages[0] || null,
         images: finalImages,
         videos: finalVideos,
@@ -1331,6 +1331,14 @@
         is_visible: $("f-visible")?.checked ?? true,
         updated_at: new Date().toISOString()
       };
+
+      // Reviews do not have a price column. Keep optional review text fields
+      // blank unless supplied; price is only used by packages/hotels/ziyarat.
+      row.badge = $("f-badge")?.value.trim() || "";
+      row.description = $("f-description")?.value.trim() || "";
+      if (type !== "review") {
+        row.price = $("f-price")?.value.trim() || "";
+      }
 
       if (type === "hotel" || type === "ziyarat") {
         row.city = $("f-city")?.value;

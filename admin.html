@@ -511,8 +511,8 @@ video{background:#000;max-width:100%}
       <input type="hidden" id="record-type">
 
       <label class="block text-sm font-semibold">
-        Name / Title
-        <input id="f-name" class="field mt-2" required placeholder="Hotel, package or ziyarat name">
+        Name / Title (Optional)
+        <input id="f-name" class="field mt-2" placeholder="Customer name (optional)">
       </label>
 
       <div id="city-wrap">
@@ -525,15 +525,19 @@ video{background:#000;max-width:100%}
         </label>
       </div>
 
-      <label class="block text-sm font-semibold">
-        Badge / Short Label
-        <input id="f-badge" class="field mt-2" placeholder="5-Star Luxury VIP">
-      </label>
+      <div id="badge-wrap">
+        <label class="block text-sm font-semibold">
+          Badge / Short Label (Optional — e.g. Verified Customer)
+          <input id="f-badge" class="field mt-2" placeholder="e.g. 5-Star Luxury VIP">
+        </label>
+      </div>
 
-      <label class="block text-sm font-semibold">
-        Description
-        <textarea id="f-description" class="field mt-2" rows="4" required placeholder="Details, facilities, location..."></textarea>
-      </label>
+      <div id="description-wrap">
+        <label class="block text-sm font-semibold">
+          Description / Customer Feedback (Optional)
+          <textarea id="f-description" class="field mt-2" rows="4" placeholder="Customer ka review ya extra details (optional)"></textarea>
+        </label>
+      </div>
 
       <div id="view-wrap">
         <label class="block text-sm font-semibold">
@@ -542,10 +546,12 @@ video{background:#000;max-width:100%}
         </label>
       </div>
 
-      <label class="block text-sm font-semibold">
-        Price / Rate
-        <input id="f-price" class="field mt-2" placeholder="PKR 250,000 / Direct Quote">
-      </label>
+      <div id="price-wrap">
+        <label class="block text-sm font-semibold">
+          Price / Rate
+          <input id="f-price" class="field mt-2" placeholder="PKR 250,000 / Direct Quote">
+        </label>
+      </div>
 
       <div class="section-card">
         <h3 class="gold font-bold mb-3"><i class="fa-solid fa-image mr-1"></i> Photos</h3>
