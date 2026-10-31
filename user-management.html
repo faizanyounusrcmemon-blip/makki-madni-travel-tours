@@ -44,9 +44,8 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Username / Email</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User ID / Email</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created At</th>
                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
                     </tr>
                 </thead>
@@ -60,11 +59,11 @@
     <!-- Modal for Creating User -->
     <div id="userModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
         <div class="bg-white rounded-lg w-full max-w-md p-6 shadow-lg">
-            <h3 id="modalTitle" class="text-xl font-bold mb-4 text-gray-800">Create New User</h3>
+            <h3 id="modalTitle" class="text-xl font-bold mb-4 text-gray-800">Create New Admin User</h3>
             <form id="userForm" onsubmit="handleUserSubmit(event)">
                 <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">Username</label>
-                    <input type="text" id="usernameInput" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
+                    <input type="email" id="emailInput" required placeholder="admin@example.com" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
@@ -80,18 +79,22 @@
 
     <!-- Script Logic -->
     <script>
-        // Yahan apni Supabase details dalein (jo aapke cms-config.js mein hain)
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Safe Supabase Initialization
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL'; // Apni actual URL dalein
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // Apni actual Key dalein
+
+        if (!window.supabaseClient) {
+            window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
+        const supabase = window.supabaseClient;
 
         let users = [];
 
         async function fetchUsers() {
-            // Database se users fetch karne ka tareeqa
-            const { data, error } = await supabase.from('admin_users').select('*');
+            const { data, error } = await supabase.from('website_admins').select('*');
             if (error) {
-                console.error('Error fetching users:', error);
+                console.error('Error fetching admins:', error);
+                Swal.fire('Error', 'Could not load admin users: ' + error.message, 'error');
                 return;
             }
             users = data || [];
@@ -102,24 +105,19 @@
             const tbody = document.getElementById('userTableBody');
             tbody.innerHTML = '';
 
-            if(users.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="px-6 py-4 text-center text-gray-500">No users found. Create one!</td></tr>`;
+            if (users.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="px-6 py-4 text-center text-gray-500">No admins found. Create one!</td></tr>`;
                 return;
             }
 
             users.forEach(user => {
                 tbody.innerHTML += `
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${user.username}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${user.role || 'Agent'}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                                ${user.is_active ? 'Active' : 'Deactivated'}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                            <button onclick="toggleStatus(${user.id}, ${user.is_active})" class="${user.is_active ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900'}" title="${user.is_active ? 'Deactivate' : 'Activate'}">
-                                <i class="fa-solid ${user.is_active ? 'fa-ban' : 'fa-check'}"></i>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${user.user_id}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${new Date(user.created_at).toLocaleString()}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button onclick="deleteAdmin('${user.user_id}')" class="text-red-600 hover:text-red-900" title="Remove Admin">
+                                <i class="fa-solid fa-trash"></i>
                             </button>
                         </td>
                     </tr>
@@ -128,51 +126,67 @@
         }
 
         function openCreateUserModal() {
-            document.getElementById('usernameInput').value = '';
+            document.getElementById('emailInput').value = '';
             document.getElementById('passwordInput').value = '';
             document.getElementById('userModal').classList.remove('hidden');
         }
 
-function closeUserModal() {
-    document.getElementById('userModal').classList.add('hidden');
-}
+        function closeUserModal() {
+            document.getElementById('userModal').classList.add('hidden');
+        }
 
         async function handleUserSubmit(event) {
             event.preventDefault();
-            const username = document.getElementById('usernameInput').value;
+            const email = document.getElementById('emailInput').value;
             const password = document.getElementById('passwordInput').value;
-            const email = `${username.toLowerCase().replace(/\s+/g, '')}@makkiadmin.com`;
 
-            // 1. Supabase Auth mein register karein
-            const { data, error } = await supabase.auth.signUp({ email, password });
+            // 1. Supabase Auth mein user sign up karein
+            const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
 
-            if (error) {
-                Swal.fire('Error!', error.message, 'error');
+            if (authError) {
+                Swal.fire('Error!', authError.message, 'error');
                 return;
             }
 
-            // 2. Apni custom 'admin_users' table mein entry save karein
-            const { error: dbError } = await supabase.from('admin_users').insert([{ username, email, role: 'Agent', is_active: true }]);
+            const userId = authData.user ? authData.user.id : null;
 
-            if(dbError) {
-                Swal.fire('Warning', 'Auth user created, but database profile failed: ' + dbError.message, 'warning');
+            if (!userId) {
+                Swal.fire('Error!', 'User created in auth, but ID could not be retrieved.', 'error');
+                return;
+            }
+
+            // 2. website_admins table mein user_id insert karein
+            const { error: dbError } = await supabase.from('website_admins').insert([{ user_id: userId }]);
+
+            if (dbError) {
+                Swal.fire('Warning', 'Auth user created, but website_admins table insert failed: ' + dbError.message, 'warning');
             } else {
-                Swal.fire('Success!', 'New user created successfully!', 'success');
+                Swal.fire('Success!', 'New admin user created successfully!', 'success');
             }
 
             closeUserModal();
             fetchUsers();
         }
 
-        async function toggleStatus(id, currentStatus) {
-            const newStatus = !currentStatus;
-            const { error } = await supabase.from('admin_users').update({ is_active: newStatus }).eq('id', id);
-            
-            if(error) {
-                Swal.fire('Error', error.message, 'error');
-            } else {
-                Swal.fire('Updated!', 'User status has been updated.', 'success');
-                fetchUsers();
+        async function deleteAdmin(userId) {
+            const result = await Swal.fire({
+                title: 'Are you sure?',
+                text: "This will remove admin rights for this user!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            });
+
+            if (result.isConfirmed) {
+                const { error } = await supabase.from('website_admins').delete().eq('user_id', userId);
+                if (error) {
+                    Swal.fire('Error', error.message, 'error');
+                } else {
+                    Swal.fire('Deleted!', 'Admin has been removed.', 'success');
+                    fetchUsers();
+                }
             }
         }
 
