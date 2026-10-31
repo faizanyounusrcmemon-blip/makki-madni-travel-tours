@@ -427,16 +427,31 @@ video{background:#000;max-width:100%}
     <!-- HOTELS AND PACKAGES -->
     <div class="grid lg:grid-cols-2 gap-5">
 
-      <section class="panel p-4 md:p-5">
-        <div class="flex items-center justify-between gap-3 mb-4">
+<section class="panel p-4 md:p-5">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
           <div>
             <p class="text-xs text-slate-400">ACCOMMODATION</p>
             <h3 class="gold font-bold text-lg"><i class="fa-solid fa-hotel mr-1"></i> Makkah &amp; Madinah Hotels</h3>
+            <p class="text-xs text-slate-300 mt-1">
+              Dono cities ki hotel listings yahan alag-alag manage hongi.
+            </p>
           </div>
-          <span class="status-pill">Hotels</span>
         </div>
-        <div id="hotels-list" class="space-y-3">
-          <p class="text-sm text-slate-400">Hotels load hone ka intezar karein...</p>
+
+        <div class="grid md:grid-cols-2 gap-5">
+          <div class="section-card">
+            <h4 class="gold font-bold mb-3"><i class="fa-solid fa-kaaba mr-1"></i> Makkah Hotels</h4>
+            <div id="makkah-hotels-list" class="space-y-3">
+              <p class="text-sm text-slate-400">Makkah ke hotels load ho rahe hain...</p>
+            </div>
+          </div>
+
+          <div class="section-card">
+            <h4 class="gold font-bold mb-3"><i class="fa-solid fa-mosque mr-1"></i> Madinah Hotels</h4>
+            <div id="madinah-hotels-list" class="space-y-3">
+              <p class="text-sm text-slate-400">Madinah ke hotels load ho rahe hain...</p>
+            </div>
+          </div>
         </div>
       </section>
 
