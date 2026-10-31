@@ -572,7 +572,6 @@
     }
   }
 
-  // UPDATED: Merged Media Preview & Popup Functionality
   function openMediaPopup(type, id) {
     const item = recordArray(type).find(r => String(r.id) === String(id));
     if (!item) return;
@@ -722,11 +721,32 @@
   }
 
   function renderAllContentLists() {
-    if ($("hotels-list")) {
-      $("hotels-list").innerHTML =
+    // --- HOTELS ALAG ALAG RENDER (Makkah & Madinah) ---
+    const makkahHotelsList = $("makkah-hotels-list");
+    const madinahHotelsList = $("madinah-hotels-list");
+    const oldHotelsList = $("hotels-list"); // Fallback agar purana element bhi ho
+
+    const makkahHotels = records.hotels.filter(item => String(item.city).toLowerCase() === "makkah");
+    const madinahHotels = records.hotels.filter(item => String(item.city).toLowerCase() === "madinah");
+
+    if (makkahHotelsList) {
+      makkahHotelsList.innerHTML =
+        makkahHotels.map(item => itemHtml(item, "hotel")).join("") ||
+        '<p class="text-sm text-slate-400">Makkah ke hotels add nahi kiye.</p>';
+    }
+
+    if (madinahHotelsList) {
+      madinahHotelsList.innerHTML =
+        madinahHotels.map(item => itemHtml(item, "hotel")).join("") ||
+        '<p class="text-sm text-slate-400">Madinah ke hotels add nahi kiye.</p>';
+    }
+
+    if (oldHotelsList && !makkahHotelsList && !madinahHotelsList) {
+      oldHotelsList.innerHTML =
         records.hotels.map(item => itemHtml(item, "hotel")).join("") ||
         '<p class="text-sm text-slate-400">Abhi hotels add nahi kiye.</p>';
     }
+    // --------------------------------------------------
 
     if ($("packages-list")) {
       $("packages-list").innerHTML =
@@ -789,11 +809,11 @@
     const madinahList = $("madinah-ziyarat-list");
 
     const makkah = records.ziyarat.filter(
-      item => item.city === "makkah"
+      item => String(item.city).toLowerCase() === "makkah"
     );
 
     const madinah = records.ziyarat.filter(
-      item => item.city === "madinah"
+      item => String(item.city).toLowerCase() === "madinah"
     );
 
     if (makkahList) {
@@ -1104,7 +1124,7 @@
   });
 
   $("new-hotel")?.addEventListener("click", () => {
-    openEditor("hotel");
+    openEditor("hotel", null, "makkah");
   });
 
   $("new-package")?.addEventListener("click", () => {
@@ -1139,7 +1159,7 @@
       );
 
       if (item) {
-        const result = await popup({
+        const result = +await popup({
           icon: "question",
           title: "Edit this content?",
           text: `Aap "${item.name || "this item"}" ki details edit karna chahte hain?`,
@@ -1326,14 +1346,12 @@
         image_url: finalImages[0] || null,
         images: finalImages,
         videos: finalVideos,
-        pdfs: [$("f-pdfs")?.value.trim()].filter(Boolean),
+        pdfs: [$("f-pdfs"]?.value.trim()].filter(Boolean),
         sort_order: Number($("f-order")?.value) || 0,
         is_visible: $("f-visible")?.checked ?? true,
         updated_at: new Date().toISOString()
       };
 
-      // Reviews do not have a price column. Keep optional review text fields
-      // blank unless supplied; price is only used by packages/hotels/ziyarat.
       row.badge = $("f-badge")?.value.trim() || "";
       row.description = $("f-description")?.value.trim() || "";
       if (type !== "review") {
