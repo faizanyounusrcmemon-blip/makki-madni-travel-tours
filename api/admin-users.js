@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - Admin Dashboard</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 Alerts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <!-- Navbar -->
+    <nav class="bg-blue-900 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-plane-departure text-2xl"></i>
+                <span class="text-xl font-bold">Makki Madni Admin</span>
+            </div>
+            <div class="space-x-4">
+                <a href="admin.html" class="hover:underline"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+                <a href="user-management.html" class="underline font-semibold"><i class="fa-solid fa-users-gear"></i> Users</a>
+                <a href="index.html" class="hover:underline" target="_blank"><i class="fa-solid fa-globe"></i> Visit Site</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-800"><i class="fa-solid fa-users text-blue-600"></i> User Management</h1>
+            <button onclick="openCreateUserModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition flex items-center space-x-2">
+                <i class="fa-solid fa-user-plus"></i><span>Create New User</span>
+            </button>
+        </div>
+
+        <!-- Users Table -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User ID / Email</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created At</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody" class="bg-white divide-y divide-gray-200">
+                    <!-- Data will load here dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal for Creating User -->
+    <div id="userModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-lg w-full max-w-md p-6 shadow-lg">
+            <h3 id="modalTitle" class="text-xl font-bold mb-4 text-gray-800">Create New Admin User</h3>
+            <form id="userForm" onsubmit="handleUserSubmit(event)">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
+                    <input type="email" id="emailInput" required placeholder="admin@example.com" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                    <input type="password" id="passwordInput" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeUserModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg">Cancel</button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">Save User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script Logic -->
+    <script>
+        // Safe Supabase Initialization
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL'; // Apni actual URL dalein
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // Apni actual Key dalein
+
+        if (!window.supabaseClient) {
+            window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
+        const supabase = window.supabaseClient;
+
+        let users = [];
+
+        async function fetchUsers() {
+            const { data, error } = await supabase.from('website_admins').select('*');
+            if (error) {
+                console.error('Error fetching admins:', error);
+                Swal.fire('Error', 'Could not load admin users: ' + error.message, 'error');
+                return;
+            }
+            users = data || [];
+            renderUsers();
+        }
+
+        function renderUsers() {
+            const tbody = document.getElementById('userTableBody');
+            tbody.innerHTML = '';
+
+            if (users.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="px-6 py-4 text-center text-gray-500">No admins found. Create one!</td></tr>`;
+                return;
+            }
+
+            users.forEach(user => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${user.user_id}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${new Date(user.created_at).toLocaleString()}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button onclick="deleteAdmin('${user.user_id}')" class="text-red-600 hover:text-red-900" title="Remove Admin">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function openCreateUserModal() {
+            document.getElementById('emailInput').value = '';
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('userModal').classList.remove('hidden');
+        }
+
+        function closeUserModal() {
+            document.getElementById('userModal').classList.add('hidden');
+        }
+
+        async function handleUserSubmit(event) {
+            event.preventDefault();
+            const email = document.getElementById('emailInput').value;
+            const password = document.getElementById('passwordInput').value;
+
+            // 1. Supabase Auth mein user sign up karein
+            const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
+
+            if (authError) {
+                Swal.fire('Error!', authError.message, 'error');
+                return;
+            }
+
+            const userId = authData.user ? authData.user.id : null;
+
+            if (!userId) {
+                Swal.fire('Error!', 'User created in auth, but ID could not be retrieved.', 'error');
+                return;
+            }
+
+            // 2. website_admins table mein user_id insert karein
+            const { error: dbError } = await supabase.from('website_admins').insert([{ user_id: userId }]);
+
+            if (dbError) {
+                Swal.fire('Warning', 'Auth user created, but website_admins table insert failed: ' + dbError.message, 'warning');
+            } else {
+                Swal.fire('Success!', 'New admin user created successfully!', 'success');
+            }
+
+            closeUserModal();
+            fetchUsers();
+        }
+
+        async function deleteAdmin(userId) {
+            const result = await Swal.fire({
+                title: 'Are you sure?',
+                text: "This will remove admin rights for this user!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            });
+
+            if (result.isConfirmed) {
+                const { error } = await supabase.from('website_admins').delete().eq('user_id', userId);
+                if (error) {
+                    Swal.fire('Error', error.message, 'error');
+                } else {
+                    Swal.fire('Deleted!', 'Admin has been removed.', 'success');
+                    fetchUsers();
+                }
+            }
+        }
+
+        // Page load hone par users fetch karein
+        fetchUsers();
+    </script>
+</body>
+</html>
