@@ -405,61 +405,33 @@ video{background:#000;max-width:100%}
       </div>
     </section>
 
-    <div id="status" role="status" aria-live="polite" class="text-sm mb-4 text-amber-200"></div>
+<!-- CUSTOMER REVIEWS & UMRAH PACKAGES (Sath mein ya upar karne ke liye) -->
+    <div class="grid lg:grid-cols-2 gap-5 mb-5">
 
-    <!-- CUSTOMER REVIEWS MANAGEMENT -->
-    <section class="panel p-4 md:p-5 mb-5">
-      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <div>
-          <p class="text-xs text-slate-400">CUSTOMER FEEDBACK</p>
-          <h3 class="gold font-bold text-lg"><i class="fa-solid fa-star mr-1"></i> Customer Reviews</h3>
-          <p class="text-xs text-slate-300 mt-1">Customer ka naam, review text aur photos/videos manage karein.</p>
-        </div>
-        <button id="new-review-secondary" class="btn2" type="button">
-          <i class="fa-solid fa-plus"></i> Add Review
-        </button>
-      </div>
-      <div id="reviews-list" class="space-y-3">
-        <p class="text-sm text-slate-400">Reviews load hone ka intezar karein...</p>
-      </div>
-    </section>
-
-    <!-- HOTELS AND PACKAGES -->
-    <div class="grid lg:grid-cols-2 gap-5">
-
-<section class="panel p-4 md:p-5">
+      <!-- CUSTOMER REVIEWS -->
+      <section class="panel p-4 md:p-5">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
           <div>
-            <p class="text-xs text-slate-400">ACCOMMODATION</p>
-            <h3 class="gold font-bold text-lg"><i class="fa-solid fa-hotel mr-1"></i> Makkah &amp; Madinah Hotels</h3>
-            <p class="text-xs text-slate-300 mt-1">
-              Dono cities ki hotel listings yahan alag-alag manage hongi.
-            </p>
+            <p class="text-xs text-slate-400">CUSTOMER FEEDBACK</p>
+            <h3 class="gold font-bold text-lg"><i class="fa-solid fa-star mr-1"></i> Customer Reviews</h3>
+            <p class="text-xs text-slate-300 mt-1">Customer ka naam aur review manage karein.</p>
           </div>
+          <button id="new-review-secondary" class="btn2" type="button">
+            <i class="fa-solid fa-plus"></i> Add Review
+          </button>
         </div>
-
-        <div class="grid md:grid-cols-2 gap-5">
-          <div class="section-card">
-            <h4 class="gold font-bold mb-3"><i class="fa-solid fa-kaaba mr-1"></i> Makkah Hotels</h4>
-            <div id="makkah-hotels-list" class="space-y-3">
-              <p class="text-sm text-slate-400">Makkah ke hotels load ho rahe hain...</p>
-            </div>
-          </div>
-
-          <div class="section-card">
-            <h4 class="gold font-bold mb-3"><i class="fa-solid fa-mosque mr-1"></i> Madinah Hotels</h4>
-            <div id="madinah-hotels-list" class="space-y-3">
-              <p class="text-sm text-slate-400">Madinah ke hotels load ho rahe hain...</p>
-            </div>
-          </div>
+        <div id="reviews-list" class="space-y-3">
+          <p class="text-sm text-slate-400">Reviews load hone ka intezar karein...</p>
         </div>
       </section>
 
+      <!-- UMRAH PACKAGES -->
       <section class="panel p-4 md:p-5">
         <div class="flex items-center justify-between gap-3 mb-4">
           <div>
             <p class="text-xs text-slate-400">TRAVEL OFFERS</p>
             <h3 class="gold font-bold text-lg"><i class="fa-solid fa-kaaba mr-1"></i> Umrah Packages</h3>
+            <p class="text-xs text-slate-300 mt-1">Umrah packages yahan manage honge.</p>
           </div>
           <span class="status-pill">Packages</span>
         </div>
@@ -468,6 +440,33 @@ video{background:#000;max-width:100%}
         </div>
       </section>
 
+    </div>
+
+    <!-- HOTELS SECTION (Alag se neeche poore width mein ya acchi grid mein) -->
+    <section class="panel p-4 md:p-5 mb-5">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div>
+          <p class="text-xs text-slate-400">ACCOMMODATION</p>
+          <h3 class="gold font-bold text-lg"><i class="fa-solid fa-hotel mr-1"></i> Makkah &amp; Madinah Hotels</h3>
+          <p class="text-xs text-slate-300 mt-1">Dono cities ke hotels alag-alag manage karein.</p>
+        </div>
+      </div>
+      <div class="grid md:grid-cols-2 gap-5">
+        <div class="section-card">
+          <h4 class="gold font-bold mb-3"><i class="fa-solid fa-kaaba mr-1"></i> Makkah Hotels</h4>
+          <div id="makkah-hotels-list" class="space-y-3">
+            <p class="text-sm text-slate-400">Makkah hotels load ho rahe hain...</p>
+          </div>
+        </div>
+        <div class="section-card">
+          <h4 class="gold font-bold mb-3"><i class="fa-solid fa-mosque mr-1"></i> Madinah Hotels</h4>
+          <div id="madinah-hotels-list" class="space-y-3">
+            <p class="text-sm text-slate-400">Madinah hotels load ho rahe hain...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    
     </div>
 
     <!-- ZIYARAT MANAGEMENT -->
