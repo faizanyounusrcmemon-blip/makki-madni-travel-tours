@@ -300,33 +300,6 @@ video{background:#000;max-width:100%}
       </button>
     </div>
 
-
-    <!-- USER MANAGEMENT -->
-    <section id="user-management" class="panel p-4 md:p-6 mb-5">
-      <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
-        <div>
-          <p class="gold text-xs tracking-[.2em] font-bold">SECURITY CONTROL</p>
-          <h2 class="text-xl md:text-2xl font-bold gold mt-1">User Management</h2>
-          <p class="text-sm text-slate-300 mt-1">Create users, update email/password, or remove accounts.</p>
-        </div>
-        <button id="users-refresh" class="btn2" type="button"><i class="fa-solid fa-rotate"></i> Refresh Users</button>
-      </div>
-      <form id="user-form" class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <input type="hidden" id="user-id">
-        <label class="text-sm font-semibold">Full Name<input id="user-name" class="field mt-2" required maxlength="120" placeholder="User name"></label>
-        <label class="text-sm font-semibold">Email<input id="user-email" class="field mt-2" type="email" required maxlength="254" placeholder="user@example.com"></label>
-        <label class="text-sm font-semibold">Password <span class="text-slate-400">(new user required; edit optional)</span><input id="user-password" class="field mt-2" type="password" minlength="8" autocomplete="new-password" placeholder="At least 8 characters"></label>
-        <label class="text-sm font-semibold">Confirm Password<input id="user-password-confirm" class="field mt-2" type="password" minlength="8" autocomplete="new-password" placeholder="Repeat password"></label>
-        <div class="md:col-span-2 flex flex-wrap gap-2">
-          <button class="btn" type="submit"><i class="fa-solid fa-user-plus"></i> Save User</button>
-          <button id="user-form-reset" class="btn2" type="button">Clear</button>
-        </div>
-      </form>
-      <p id="users-status" role="status" class="text-sm text-amber-200 mt-3"></p>
-      <div id="users-list" class="mt-4 space-y-2"><p class="text-slate-400 text-sm">Users load ho rahe hain...</p></div>
-      <p class="small-note mt-3">User passwords kabhi list mein show nahi hote. Backend Render environment mein SUPABASE_SERVICE_ROLE_KEY secure rakhein.</p>
-    </section>
-
     <!-- RESOURCE MONITOR -->
     <section class="panel p-4 md:p-5 mb-5">
       <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
@@ -705,6 +678,5 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 
 <script src="/admin.js"></script>
-<script src="/users.js"></script>
 </body>
 </html>
